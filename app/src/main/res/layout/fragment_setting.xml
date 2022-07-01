@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.setting.SettingFragment"
+    android:orientation="vertical">
+
+    <TextView android:id="@+id/tvBTPrinterSetting"
+        style="@style/DefaultTextView"
+        android:text="@string/bluetooth_printer_setting"
+        android:drawableLeft="@drawable/ic_print_24"
+        android:drawablePadding="10dp"
+        android:drawableTint="@color/primary_700"
+        android:background="@drawable/btn_transparent"
+        android:padding="20dp"/>
+
+    <View style="@style/Divider" />
+
+    <TextView android:id="@+id/tvNotificationSetting"
+        style="@style/DefaultTextView"
+        android:text="@string/notification_setting"
+        android:drawableLeft="@drawable/ic_notifications_24"
+        android:drawablePadding="10dp"
+        android:drawableTint="@color/primary_700"
+        android:background="@drawable/btn_transparent"
+        android:padding="20dp"/>
+
+    <View style="@style/Divider" />
+
+</LinearLayout>

@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SaleBillActivity"
+    android:background="@color/gray_soft">
+
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center|top"
+        android:padding="10dp">
+
+        <Button android:id="@+id/btnPrint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/print"
+            android:drawableLeft="@drawable/ic_print_24"
+            android:drawableTint="@color/white"/>
+
+        <LinearLayout android:id="@+id/layoutBill"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/bd_gray_1r_white"
+            android:padding="10dp">
+
+            <ImageView android:id="@+id/imgLogo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/ic_launcher"/>
+
+            <TextView android:id="@+id/tvTitle1"
+                style="@style/BillTitle1"
+                android:layout_marginTop="10dp"
+                android:text="Demo Shop"/>
+
+            <TextView android:id="@+id/tvTitle2"
+                style="@style/BillOtherTitle"
+                android:text="Demo Shop Description" />
+
+            <TextView android:id="@+id/tvTitle3"
+                style="@style/BillOtherTitle"
+                android:text="09956789870, 09425467210" />
+
+            <TextView android:id="@+id/tvTitle4"
+                style="@style/BillOtherTitle"
+                android:text="495 Grove Street, Apartment #20, Yangon" />
+
+            <View style="@style/Divider"
+                android:layout_marginTop="5dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView android:id="@+id/tvSaleNo"
+                    style="@style/BillSubHeader"
+                    android:text="Sale #S0001" />
+
+                <TextView android:id="@+id/tvDateTime"
+                    style="@style/BillSubHeader"
+                    android:text="28/06/2022"
+                    android:gravity="right"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView android:id="@+id/tvCustomer"
+                    style="@style/BillSubHeader"
+                    android:text="Customer: Walk in Client" />
+
+                <TextView android:id="@+id/tvSalePerson"
+                    style="@style/BillSubHeader"
+                    android:text="Sale Person: Demo User"
+                    android:gravity="right" />
+
+            </LinearLayout>
+
+            <View style="@style/Divider"
+                android:layout_marginTop="5dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp">
+
+                <TextView style="@style/BillListHeader"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.5"
+                    android:text="@string/hash"/>
+                <TextView style="@style/BillListHeader"
+                    android:layout_width="0dp"
+                    android:layout_weight="2"
+                    android:text="@string/description"/>
+                <TextView style="@style/BillListHeader"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="@string/amount"
+                    android:gravity="right"/>
+                <LinearLayout android:layout_width="0dp"
+                    android:layout_weight="0.5"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+            <View style="@style/Divider"
+                android:layout_marginTop="5dp"/>
+
+            <LinearLayout android:id="@+id/layoutList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            </LinearLayout>
+
+            <View style="@style/Divider"
+                android:layout_marginTop="5dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <LinearLayout android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView style="@style/BillOtherTotal"
+                        android:text="@string/subtotal" />
+
+                    <TextView android:id="@+id/tvSubtotal"
+                        style="@style/BillOtherTotal"
+                        android:text="6,000"
+                        android:gravity="right" />
+
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView android:id="@+id/tvTaxLabel"
+                        style="@style/BillOtherTotal"
+                        android:text="@string/tax" />
+
+                    <TextView android:id="@+id/tvTax"
+                        style="@style/BillOtherTotal"
+                        android:text="300"
+                        android:gravity="right" />
+
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView android:id="@+id/tvChargesLabel"
+                        style="@style/BillOtherTotal"
+                        android:text="@string/charges" />
+
+                    <TextView android:id="@+id/tvCharges"
+                        style="@style/BillOtherTotal"
+                        android:text="0"
+                        android:gravity="right" />
+
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView style="@style/BillGrandTotal"
+                        android:text="@string/total" />
+
+                    <TextView android:id="@+id/tvTotal"
+                        style="@style/BillGrandTotal"
+                        android:text="6,300"
+                        android:gravity="right" />
+
+                </LinearLayout>
+
+                <View style="@style/Divider"
+                    android:layout_marginTop="5dp"/>
+
+                <LinearLayout android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView android:id="@+id/tvVoucherDiscountLabel"
+                        style="@style/BillOtherTotal"
+                        android:text="@string/voucher_discount" />
+
+                    <TextView android:id="@+id/tvVoucherDiscount"
+                        style="@style/BillOtherTotal"
+                        android:text="0"
+                        android:gravity="right" />
+
+                </LinearLayout>
+
+                <LinearLayout android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView style="@style/BillOtherTotal"
+                        android:text="@string/advanced_pay" />
+
+                    <TextView android:id="@+id/tvAdvancedPay"
+                        style="@style/BillOtherTotal"
+                        android:text="0"
+                        android:gravity="right" />
+
+                </LinearLayout>
+
+                <View style="@style/Divider"
+                    android:layout_marginTop="5dp"/>
+
+                <LinearLayout android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView style="@style/BillGrandTotal"
+                        android:text="@string/grandtotal" />
+
+                    <TextView android:id="@+id/tvGrandTotal"
+                        style="@style/BillGrandTotal"
+                        android:text="MMK 6,300"
+                        android:gravity="right" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <TextView android:id="@+id/tvMessage1"
+                style="@style/BillMessage"
+                android:text="Thank You!"
+                android:layout_marginTop="20dp" />
+
+            <TextView android:id="@+id/tvMessage2"
+                style="@style/BillMessage"
+                android:text="See you Again!" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

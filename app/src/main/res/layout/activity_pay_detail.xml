@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PayDetailActivity"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:background="@drawable/bd_gray_1r_white">
+
+                <TextView style="@style/SmallTextView"
+                    android:text="@string/customer"/>
+
+                <Spinner android:id="@+id/spCustomer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"/>
+
+                <TextView style="@style/SmallTextView"
+                    android:text="@string/location"
+                    android:layout_marginTop="15dp"/>
+
+                <Spinner android:id="@+id/spLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"/>
+
+                <TextView style="@style/SmallTextView"
+                    android:text="@string/payment"
+                    android:layout_marginTop="15dp"/>
+
+                <Spinner android:id="@+id/spPayment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"/>
+
+                <LinearLayout android:id="@+id/layoutPaymentDebt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/gray_soft"
+                    android:padding="10dp"
+                    android:layout_marginTop="5dp">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
+                        <EditText android:id="@+id/etLimitDay"
+                            style="@style/DefaultEditText"
+                            android:hint="@string/limit_day"
+                            android:inputType="number"
+                            android:imeOptions="actionDone"
+                            android:background="@android:color/transparent"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:layout_marginLeft="10dp">
+                        <EditText android:id="@+id/etAdvancedPay"
+                            style="@style/DefaultEditText"
+                            android:hint="@string/advanced_pay"
+                            android:inputType="number"
+                            android:imeOptions="actionDone"
+                            android:background="@android:color/transparent"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <Button android:id="@+id/btnLimitDayAdvancedPayOk"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ok"
+                        android:textSize="@dimen/text_regular"
+                        android:layout_gravity="bottom"
+                        android:layout_marginLeft="10dp"/>
+
+                </LinearLayout>
+
+                <TextView style="@style/SmallTextView"
+                    android:text="@string/voucher_discount"
+                    android:layout_marginTop="15dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText android:id="@+id/etVoucherDiscount"
+                        style="@style/DefaultEditText"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:hint="@string/zero"
+                        android:inputType="number"
+                        android:imeOptions="actionDone"/>
+
+                    <androidx.appcompat.widget.AppCompatButton android:id="@+id/btnDollar"
+                        android:layout_width="0dp"
+                        android:layout_weight="0.3"
+                        android:layout_height="30dp"
+                        android:text="@string/dollar_sign"
+                        android:textSize="@dimen/text_regular"
+                        android:background="@drawable/btn_gray"
+                        android:layout_marginLeft="10dp"
+                        android:textColor="@color/black_soft"/>
+
+                    <androidx.appcompat.widget.AppCompatButton android:id="@+id/btnPercent"
+                        android:layout_width="0dp"
+                        android:layout_weight="0.3"
+                        android:layout_height="30dp"
+                        android:text="@string/percent_sign"
+                        android:textSize="@dimen/text_regular"
+                        android:background="@drawable/btn_primary"
+                        android:textColor="@color/white"/>
+
+                </LinearLayout>
+
+                <RadioButton android:id="@+id/rdoNoDiscount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/no_discount"
+                    android:textSize="@dimen/text_small"
+                    android:textColor="@color/black_soft"
+                    android:checked="true"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@color/primary_soft">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:padding="10dp">
+
+                    <TextView
+                        style="@style/SmallTextView"
+                        android:text="Advanced Pay: 0"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        style="@style/SmallTextView"
+                        android:text="Voucher Discount: 0"
+                        android:textStyle="bold"
+                        android:layout_marginTop="5dp"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:padding="10dp">
+
+                    <TextView
+                        style="@style/SmallTextView"
+                        android:text="Total: 2,200"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        style="@style/SmallTextView"
+                        android:text="Grandtotal: 2,200"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:layout_marginTop="5dp"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/layoutPaymentMethod"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:background="@drawable/bd_gray_1r_white"
+                android:layout_marginTop="10dp">
+
+                <TextView style="@style/SmallTextView"
+                    android:text="@string/payment_method" />
+
+                <Spinner android:id="@+id/spPaymentMethod"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"/>
+
+                <LinearLayout android:id="@+id/layoutPaidChange"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/gray_soft"
+                    android:padding="10dp"
+                    android:orientation="vertical"
+                    android:layout_marginTop="5dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1">
+                            <EditText android:id="@+id/etPaid"
+                                style="@style/DefaultEditText"
+                                android:hint="@string/paid"
+                                android:inputType="number"
+                                android:imeOptions="actionDone"
+                                android:background="@android:color/transparent"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <Button android:id="@+id/btnPaidOk"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/ok"
+                            android:textSize="@dimen/text_regular"
+                            android:layout_gravity="bottom"
+                            android:layout_marginLeft="10dp"/>
+
+                    </LinearLayout>
+
+                    <TextView style="@style/SmallTextView"
+                        android:text="Change: 0"
+                        android:textStyle="bold"
+                        android:layout_marginTop="10dp"/>
+
+                </LinearLayout>
+
+                <LinearLayout android:id="@+id/layoutOnlinePayment"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/gray_soft"
+                    android:padding="10dp"
+                    android:orientation="vertical"
+                    android:layout_marginTop="5dp">
+
+                    <TextView style="@style/SmallTextView"
+                        android:text="@string/choose_online_payment" />
+
+                    <Spinner android:id="@+id/spBankPayment"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1">
+                            <EditText android:id="@+id/etPaymentPercent"
+                                style="@style/DefaultEditText"
+                                android:hint="@string/percent"
+                                android:inputType="number"
+                                android:imeOptions="actionDone"
+                                android:background="@android:color/transparent"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <Button android:id="@+id/btnPaymentPercentOk"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/ok"
+                            android:textSize="@dimen/text_regular"
+                            android:layout_gravity="bottom"
+                            android:layout_marginLeft="10dp"/>
+
+                    </LinearLayout>
+
+                    <LinearLayout android:id="@+id/layoutAdvancedPay"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp">
+                        <TextView style="@style/DefaultTextView"
+                            android:text="Advanced Pay: 1,000"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <EditText android:id="@+id/etRemark"
+                    style="@style/DefaultEditText"
+                    android:hint="@string/remark"
+                    android:gravity="top"
+                    android:minHeight="50dp"
+                    android:inputType="textMultiLine"
+                    android:imeOptions="actionDone"
+                    android:background="@color/white"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/black">
+
+        <TextView android:layout_width="0dp"
+            android:layout_weight="2"
+            android:layout_height="match_parent"
+            android:text="Grandtotal: MMK 2,200"
+            android:gravity="center"
+            android:textSize="@dimen/text_regular"
+            android:textStyle="bold"
+            android:textColor="@color/primary_soft"/>
+
+        <Button android:id="@+id/btnConfirm"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:text="@string/confirm"
+            android:textSize="@dimen/text_regular"
+            android:textAllCaps="true"
+            android:background="@drawable/btn_primary"/>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -5,62 +5,129 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".RegisterActivity"
-    android:background="@color/purple_700">
+    android:background="@color/gray_soft">
 
     <LinearLayout android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="20dp"
-        android:gravity="center"
-        android:focusable="false"
-        android:focusableInTouchMode="true"
-        android:layout_gravity="center">
+        android:orientation="vertical">
 
-        <TextView android:id="@+id/tvTitle"
-            android:text="@string/register"
-            style="@style/TitleTextView" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:background="@color/primary_500">
 
-        <EditText android:id="@+id/etUserName"
-            style="@style/DefaultEditText"
-            android:hint="@string/user_name"
-            android:inputType="text"
-            android:imeOptions="actionNext"
-            android:layout_marginTop="50dp"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/ic_launcher"
+                android:paddingTop="100dp"
+                android:layout_marginBottom="15dp"/>
 
-        <EditText android:id="@+id/etBusinessName"
-            style="@style/DefaultEditText"
-            android:hint="@string/business_name"
-            android:inputType="text"
-            android:imeOptions="actionNext"
-            android:layout_marginTop="10dp"/>
+        </LinearLayout>
 
-        <EditText android:id="@+id/etPhone"
-            style="@style/DefaultEditText"
-            android:hint="@string/phone"
-            android:inputType="number"
-            android:imeOptions="actionNext"
-            android:layout_marginTop="10dp"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="20dp"
+            android:focusable="false"
+            android:focusableInTouchMode="true"
+            android:layout_marginTop="-40dp"
+            android:background="@drawable/bd_register">
 
-        <EditText android:id="@+id/etTownship"
-            style="@style/DefaultEditText"
-            android:hint="@string/township"
-            android:inputType="text"
-            android:imeOptions="actionNext"
-            android:layout_marginTop="10dp"/>
+            <TextView android:id="@+id/tvTitle"
+                android:text="@string/register"
+                style="@style/TitleTextView" />
 
-        <EditText android:id="@+id/etAddress"
-            style="@style/DefaultEditText"
-            android:hint="@string/address"
-            android:inputType="textMultiLine"
-            android:imeOptions="actionDone"
-            android:layout_marginTop="10dp"
-            android:minHeight="100dp"
-            android:gravity="top"/>
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:boxBackgroundMode="none">
+                <EditText android:id="@+id/etUserName"
+                    style="@style/ColorEditText"
+                    android:hint="@string/user_name"
+                    android:inputType="text"
+                    android:imeOptions="actionNext"
+                    android:layout_marginTop="20dp" />
+            </com.google.android.material.textfield.TextInputLayout>
 
-        <Button android:id="@+id/btnRegister"
-            android:text="@string/register"
-            style="@style/DefaultButton"
-            android:layout_marginTop="20dp"/>
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:boxBackgroundMode="none">
+                <EditText android:id="@+id/etBusinessName"
+                    style="@style/ColorEditText"
+                    android:hint="@string/business_name"
+                    android:inputType="text"
+                    android:imeOptions="actionNext"
+                    android:layout_marginTop="10dp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:boxBackgroundMode="none">
+                <EditText android:id="@+id/etPhone"
+                    style="@style/ColorEditText"
+                    android:hint="@string/phone"
+                    android:inputType="number"
+                    android:imeOptions="actionNext"
+                    android:layout_marginTop="10dp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:boxBackgroundMode="none">
+                <EditText android:id="@+id/etTownship"
+                    style="@style/ColorEditText"
+                    android:hint="@string/township"
+                    android:inputType="text"
+                    android:imeOptions="actionNext"
+                    android:layout_marginTop="10dp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:boxBackgroundMode="none">
+                <EditText android:id="@+id/etAddress"
+                    style="@style/ColorEditText"
+                    android:hint="@string/address"
+                    android:inputType="textMultiLine"
+                    android:imeOptions="actionDone"
+                    android:layout_marginTop="10dp"
+                    android:minHeight="100dp"
+                    android:gravity="top" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button android:id="@+id/btnRegister"
+                android:text="@string/register"
+                style="@style/DefaultButton"
+                android:layout_marginTop="20dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginTop="30dp">
+
+                <TextView style="@style/SmallTextView"
+                    android:layout_width="wrap_content"
+                    android:text="@string/already_have_account"/>
+
+                <TextView style="@style/SmallTextView"
+                    android:layout_width="wrap_content"
+                    android:textColor="@color/primary_500"
+                    android:text="@string/sign_in"
+                    android:textStyle="bold"
+                    android:layout_marginLeft="5dp"
+                    android:background="@drawable/btn_transparent"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
 
     </LinearLayout>
 

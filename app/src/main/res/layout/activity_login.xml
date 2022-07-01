@@ -1,9 +1,147 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity">
+    tools:context=".LoginActivity"
+    android:orientation="vertical">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_launcher"/>
+
+        <TextView style="@style/TitleTextView"
+            android:text="@string/app_name"
+            android:layout_marginTop="10dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginBottom="20dp">
+
+        <TextView style="@style/DefaultTextView"
+            android:layout_width="wrap_content"
+            android:text="Demo User"
+            android:gravity="center"
+            android:drawableLeft="@drawable/ic_person_outline_40"
+            android:drawableTint="@color/primary_500"/>
+
+        <TextView android:id="@+id/tvEnterPasscode"
+            style="@style/DefaultTextView"
+            android:text="@string/enter_passcode"
+            android:gravity="center"
+            android:layout_marginTop="20dp"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
+
+            <TextView android:id="@+id/tvCode1"
+                style="@style/CodeTextView"/>
+            <TextView android:id="@+id/tvCode2"
+                style="@style/CodeTextView"/>
+            <TextView android:id="@+id/tvCode3"
+                style="@style/CodeTextView"/>
+            <TextView android:id="@+id/tvCode4"
+                style="@style/CodeTextView"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button android:id="@+id/btnOne"
+                android:text="@string/one"
+                style="@style/LoginNumberButton"/>
+
+            <Button android:id="@+id/btnTwo"
+                android:text="@string/two"
+                style="@style/LoginNumberButton"/>
+
+            <Button android:id="@+id/btnThree"
+                android:text="@string/three"
+                style="@style/LoginNumberButton"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button android:id="@+id/btnFour"
+                android:text="@string/four"
+                style="@style/LoginNumberButton"/>
+
+            <Button android:id="@+id/btnFive"
+                android:text="@string/five"
+                style="@style/LoginNumberButton"/>
+
+            <Button android:id="@+id/btnSix"
+                android:text="@string/six"
+                style="@style/LoginNumberButton"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button android:id="@+id/btnSeven"
+                android:text="@string/seven"
+                style="@style/LoginNumberButton"/>
+
+            <Button android:id="@+id/btnEight"
+                android:text="@string/eight"
+                style="@style/LoginNumberButton"/>
+
+            <Button android:id="@+id/btnNine"
+                android:text="@string/nine"
+                style="@style/LoginNumberButton"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button android:id="@+id/btnClear"
+                android:text="@string/c"
+                style="@style/LoginNumberButton"
+                android:textColor="@color/red"/>
+
+            <Button android:id="@+id/btnZero"
+                android:text="@string/zero"
+                style="@style/LoginNumberButton"/>
+
+            <Button android:id="@+id/btnDel"
+                android:text="@string/del"
+                style="@style/LoginNumberButton"
+                android:textColor="@color/black"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

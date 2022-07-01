@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SaleOrderDetailActivity"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:background="@color/primary_soft">
+
+        <TextView style="@style/DefaultTextView"
+            android:text="Order#: SO0001"
+            android:textStyle="bold"
+            android:textSize="@dimen/text_large"/>
+
+        <TextView style="@style/DefaultTextView"
+            android:text="Order Date: 27/06/2022"
+            android:layout_marginTop="5dp"/>
+
+        <TextView style="@style/DefaultTextView"
+            android:text="Payment: KPay"
+            android:layout_marginTop="5dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp">
+
+            <TextView style="@style/SmallTextView"
+                android:layout_width="0dp"
+                android:layout_weight="0.5"
+                android:text="@string/hash"/>
+            <TextView style="@style/SmallTextView"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="@string/description"/>
+            <TextView style="@style/SmallTextView"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="@string/amount"
+                android:gravity="right"/>
+            <LinearLayout android:layout_width="0dp"
+                android:layout_weight="0.5"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <View style="@style/Divider"></View>
+
+        <ListView android:id="@+id/lvItemSaleOrder"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            tools:listitem="@layout/list_item_sale"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/gray_soft"
+            android:orientation="vertical"
+            android:padding="5dp"
+            android:layout_marginTop="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="5dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView style="@style/AmountGroupTextView"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:text="Tax :  " />
+
+                    <TextView style="@style/AmountGroupTextView"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:text="300" />
+
+                    <TextView style="@style/AmountGroupTextView"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:text="Subtotal :  " />
+
+                    <TextView style="@style/AmountGroupTextView"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:text="6,000" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView style="@style/AmountGroupTextView"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:text="Charges :  " />
+
+                    <TextView style="@style/AmountGroupTextView"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:text="0" />
+
+                    <TextView style="@style/AmountGroupTextView"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:text="Total :  "
+                        android:textColor="@color/primary_500"
+                        android:textSize="@dimen/text_large" />
+
+                    <TextView style="@style/AmountGroupTextView"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:text="6,300"
+                        android:textColor="@color/primary_500"
+                        android:textSize="@dimen/text_large" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:orientation="vertical"
+            android:background="@drawable/bd_gray_1r_white"
+            android:layout_marginTop="10dp">
+
+            <TextView style="@style/DefaultTextView"
+                android:text="Delivery Address: 495 Grove Street, Apartment #20, Yangon" />
+
+            <TextView style="@style/DefaultTextView"
+                android:text="Remark: We’ll share what each component of an address means so you know why you need it and where to find it."
+                android:layout_marginTop="5dp"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

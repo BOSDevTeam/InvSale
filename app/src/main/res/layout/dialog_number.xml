@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+    <LinearLayout style="@style/DialogLayout"
+        android:gravity="center">
+
+        <TextView
+            style="@style/DialogTitle" />
+
+        <ImageButton android:id="@+id/btnClose"
+            style="@style/DialogClose"/>
+
+    </LinearLayout>
+
+    <View style="@style/Divider"/>
+
+    <LinearLayout style="@style/DialogLayout"
+        android:orientation="vertical"
+        android:background="@color/gray_soft">
+
+        <TextView android:text="1"
+            style="@style/DefaultTextView"
+            android:background="@color/white"
+            android:padding="10dp"
+            android:gravity="center"
+            android:textColor="@color/primary_500"
+            android:textSize="@dimen/text_extra_large"
+            android:textStyle="bold"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button android:id="@+id/btnOne"
+                    android:text="@string/one"
+                    style="@style/NumberButton"/>
+
+                <Button android:id="@+id/btnTwo"
+                    android:text="@string/two"
+                    style="@style/NumberButton"/>
+
+                <Button android:id="@+id/btnThree"
+                    android:text="@string/three"
+                    style="@style/NumberButton"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button android:id="@+id/btnFour"
+                    android:text="@string/four"
+                    style="@style/NumberButton"/>
+
+                <Button android:id="@+id/btnFive"
+                    android:text="@string/five"
+                    style="@style/NumberButton"/>
+
+                <Button android:id="@+id/btnSix"
+                    android:text="@string/six"
+                    style="@style/NumberButton"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button android:id="@+id/btnSeven"
+                    android:text="@string/seven"
+                    style="@style/NumberButton"/>
+
+                <Button android:id="@+id/btnEight"
+                    android:text="@string/eight"
+                    style="@style/NumberButton"/>
+
+                <Button android:id="@+id/btnNine"
+                    android:text="@string/nine"
+                    style="@style/NumberButton"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <Button android:id="@+id/btnZero"
+                    android:text="@string/zero"
+                    style="@style/NumberButton"/>
+
+                <Button android:id="@+id/btnClear"
+                    android:text="@string/c"
+                    style="@style/NumberButton"
+                    android:textColor="@color/red"/>
+
+                <Button android:id="@+id/btnOK"
+                    android:text="@string/ok"
+                    style="@style/NumberButton"
+                    android:textColor="@color/black"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

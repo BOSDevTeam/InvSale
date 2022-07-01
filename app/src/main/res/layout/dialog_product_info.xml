@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+    <LinearLayout style="@style/DialogLayout"
+        android:gravity="center">
+
+        <TextView android:text="@string/product"
+            style="@style/DialogTitle" />
+
+        <ImageButton android:id="@+id/btnClose"
+            style="@style/DialogClose"/>
+
+    </LinearLayout>
+
+    <View style="@style/Divider"/>
+
+    <LinearLayout style="@style/DialogLayout"
+        android:orientation="vertical">
+
+        <TextView android:text="Start Keyword: 10"
+            style="@style/DefaultTextView" />
+
+        <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvProduct"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:listitem="@layout/list_item_product_info"
+            android:layout_marginTop="10dp"/>
+
+    </LinearLayout>
+
+</LinearLayout>
