@@ -43,12 +43,21 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_marginLeft="20dp">
-                <TextView style="@style/DefaultTextView"
-                    android:text="@string/order"/>
-                <TextView android:id="@+id/tvOrderNumber"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView style="@style/DefaultTextView"
+                        android:layout_width="wrap_content"
+                        android:text="@string/order"/>
+                    <TextView android:id="@+id/tvOrderNumber"
+                        style="@style/DefaultTextView"
+                        tools:text=" #SO0001"
+                        android:textStyle="bold"/>
+                </LinearLayout>
+                <TextView android:id="@+id/tvCustomer"
                     style="@style/DefaultTextView"
-                    tools:text="#SO0001"
-                    android:textStyle="bold"/>
+                    tools:text="CustomerA"
+                    android:layout_marginTop="10dp"/>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="0dp"

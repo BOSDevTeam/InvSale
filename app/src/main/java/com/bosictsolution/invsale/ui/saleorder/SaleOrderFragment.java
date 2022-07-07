@@ -67,6 +67,7 @@ public class SaleOrderFragment extends Fragment {
         data.setMonth("Jun");
         data.setOrderNumber("SO0001");
         data.setGrandTotal(6600);
+        data.setCustomerName("CustomerA");
         lstSaleOrder.add(data);
 
         data=new SaleOrderMasterData();
@@ -75,6 +76,7 @@ public class SaleOrderFragment extends Fragment {
         data.setMonth("Jun");
         data.setOrderNumber("SO0001");
         data.setGrandTotal(6600);
+        data.setCustomerName("CustomerA");
         lstSaleOrder.add(data);
 
         data=new SaleOrderMasterData();
@@ -83,6 +85,7 @@ public class SaleOrderFragment extends Fragment {
         data.setMonth("Jun");
         data.setOrderNumber("SO0001");
         data.setGrandTotal(6600);
+        data.setCustomerName("CustomerB");
         lstSaleOrder.add(data);
 
         listItemSaleOrderAdapter=new ListItemSaleOrderAdapter(lstSaleOrder,getContext());

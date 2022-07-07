@@ -25,7 +25,7 @@
             android:layout_marginTop="5dp"/>
 
         <TextView style="@style/DefaultTextView"
-            android:text="Payment: KPay"
+            android:text="Customer: CustomerA"
             android:layout_marginTop="5dp"/>
 
     </LinearLayout>
@@ -149,10 +149,7 @@
             android:background="@drawable/bd_gray_1r_white"
             android:layout_marginTop="10dp">
 
-            <TextView style="@style/DefaultTextView"
-                android:text="Delivery Address: 495 Grove Street, Apartment #20, Yangon" />
-
-            <TextView style="@style/DefaultTextView"
+            <TextView style="@style/SmallTextView"
                 android:text="Remark: We’ll share what each component of an address means so you know why you need it and where to find it."
                 android:layout_marginTop="5dp"/>
 

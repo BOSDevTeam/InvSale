@@ -2,7 +2,7 @@ package com.bosictsolution.invsale.data;
 
 public class SaleOrderMasterData {
 
-    private String year,month,day,orderNumber;
+    private String year,month,day,orderNumber,customerName;
     private int grandTotal;
 
     public String getYear() {
@@ -43,5 +43,13 @@ public class SaleOrderMasterData {
 
     public void setGrandTotal(int grandTotal) {
         this.grandTotal = grandTotal;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
     }
 }

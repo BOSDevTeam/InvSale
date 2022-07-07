@@ -53,53 +53,12 @@
             android:layout_margin="10dp">
 
             <TextView style="@style/SmallTextView"
-                android:text="@string/delivery_address" />
+                android:text="@string/customer" />
 
-            <EditText android:id="@+id/etDeliveryAddress"
-                style="@style/DefaultEditText"
-                android:hint="@string/address"
-                android:inputType="textMultiLine"
-                android:imeOptions="actionDone"
-                android:layout_marginTop="10dp"
-                android:minHeight="50dp"
-                android:gravity="top"
-                android:background="@color/white"
-                android:text="No.112,.........., Yangon"/>
-
-        </LinearLayout>
-
-        <LinearLayout android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="10dp"
-            android:background="@drawable/bd_gray_1r_white"
-            android:layout_margin="10dp">
-
-            <TextView style="@style/SmallTextView"
-                android:text="@string/payment_method" />
-
-            <Spinner android:id="@+id/spPaymentMethod"
+            <Spinner android:id="@+id/spCustomer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"/>
-
-            <LinearLayout android:id="@+id/layoutOnlinePayment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/gray_soft"
-                android:padding="10dp"
-                android:orientation="vertical"
-                android:layout_marginTop="5dp">
-
-                <TextView style="@style/SmallTextView"
-                    android:text="@string/choose_online_payment" />
-
-                <Spinner android:id="@+id/spBankPayment"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"/>
-
-            </LinearLayout>
 
         </LinearLayout>
 
@@ -189,10 +148,10 @@
 
         </LinearLayout>
 
-        <Button android:id="@+id/btnSendOrder"
+        <Button android:id="@+id/btnContinue"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="@string/send_order"
+            android:text="@string/pay_continue"
             android:textSize="@dimen/text_regular"
             android:textAllCaps="true"
             android:background="@drawable/btn_primary"/>

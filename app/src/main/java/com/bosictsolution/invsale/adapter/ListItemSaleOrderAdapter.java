@@ -40,7 +40,8 @@ public class ListItemSaleOrderAdapter extends RecyclerView.Adapter<ListItemSaleO
         holder.tvYear.setText(list.get(position).getYear());
         holder.tvDay.setText(list.get(position).getDay());
         holder.tvMonth.setText(list.get(position).getMonth());
-        holder.tvOrderNumber.setText(context.getResources().getString(R.string.hash)+list.get(position).getOrderNumber());
+        holder.tvCustomer.setText(list.get(position).getCustomerName());
+        holder.tvOrderNumber.setText(context.getResources().getString(R.string.space)+context.getResources().getString(R.string.hash)+list.get(position).getOrderNumber());
         holder.tvGrandTotal.setText("MMK"+context.getResources().getString(R.string.space)+appSetting.df.format(list.get(position).getGrandTotal()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -59,7 +60,7 @@ public class ListItemSaleOrderAdapter extends RecyclerView.Adapter<ListItemSaleO
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvYear,tvDay,tvMonth,tvOrderNumber,tvGrandTotal;
+        TextView tvYear,tvDay,tvMonth,tvOrderNumber,tvGrandTotal,tvCustomer;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -68,6 +69,7 @@ public class ListItemSaleOrderAdapter extends RecyclerView.Adapter<ListItemSaleO
             tvMonth =  itemView.findViewById(R.id.tvMonth);
             tvOrderNumber =  itemView.findViewById(R.id.tvOrderNumber);
             tvGrandTotal =  itemView.findViewById(R.id.tvGrandTotal);
+            tvCustomer =  itemView.findViewById(R.id.tvCustomer);
         }
     }
 }

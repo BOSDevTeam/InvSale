@@ -32,7 +32,7 @@ public class SaleBillActivity extends AppCompatActivity {
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setDisplayShowTitleEnabled(true);
-        setTitle(getResources().getString(R.string.bill));
+        setTitle(getResources().getString(R.string.sale_completed));
 
         createBillItem();
     }

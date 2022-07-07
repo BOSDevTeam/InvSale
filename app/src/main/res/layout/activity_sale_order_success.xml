@@ -86,18 +86,6 @@
                         android:padding="10dp">
 
                         <TextView style="@style/TableLabelTextView"
-                            android:text="@string/payment"/>
-
-                        <TextView style="@style/TableValueTextView"
-                            android:text="KPay"/>
-
-                    </TableRow>
-
-                    <TableRow android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:padding="10dp">
-
-                        <TextView style="@style/TableLabelTextView"
                             android:text="@string/total_amount"/>
 
                         <TextView style="@style/TableValueTextView"

@@ -7,15 +7,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.bosictsolution.invsale.adapter.ListItemSaleAdapter;
+import com.bosictsolution.invsale.common.AppConstant;
 import com.bosictsolution.invsale.data.SaleTranData;
 import com.bosictsolution.invsale.listener.ListItemSaleListener;
 
@@ -24,15 +23,13 @@ import java.util.List;
 
 public class SaleOrderSummaryActivity extends AppCompatActivity implements ListItemSaleListener {
 
-    Button btnSendOrder;
+    Button btnContinue;
     ListView lvItemSaleOrder;
-    Spinner spPaymentMethod,spBankPayment;
-    LinearLayout layoutOnlinePayment;
+    Spinner spCustomer;
     ListItemSaleAdapter listItemSaleAdapter;
     List<SaleTranData> lstSaleTran=new ArrayList<>();
 
-    String[] paymentMethods={"Cash in Hand", "Online Payment"};
-    String[] bankPayments={"KBZ Pay", "CB Pay"};
+    String[] customers={"Walk in Client", "CustomerA", "CustomerB"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,44 +43,21 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
 
         fillData();
         setAdapter();
-        setLayoutOnlinePayment();
 
-        btnSendOrder.setOnClickListener(new View.OnClickListener() {
+        btnContinue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i=new Intent(SaleOrderSummaryActivity.this,SaleOrderSuccessActivity.class);
+                Intent i=new Intent(SaleOrderSummaryActivity.this,CustomerActivity.class);
+                i.putExtra(AppConstant.extra_module_type,AppConstant.sale_order_module_type);
                 startActivity(i);
-                finish();
             }
         });
-        spPaymentMethod.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                setLayoutOnlinePayment();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-    }
-
-    private void setLayoutOnlinePayment(){
-        if(spPaymentMethod.getSelectedItemPosition()==0)  // if payment method is cashInHand
-            layoutOnlinePayment.setVisibility(View.GONE);
-        else if(spPaymentMethod.getSelectedItemPosition()==1)  // if payment method is onlinePayment
-            layoutOnlinePayment.setVisibility(View.VISIBLE);
     }
 
     private void fillData(){
-        ArrayAdapter adapter=new ArrayAdapter(this, android.R.layout.simple_spinner_item,paymentMethods);
+        ArrayAdapter adapter=new ArrayAdapter(this, android.R.layout.simple_spinner_item,customers);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spPaymentMethod.setAdapter(adapter);
-
-        adapter=new ArrayAdapter(this, android.R.layout.simple_spinner_item,bankPayments);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spBankPayment.setAdapter(adapter);
+        spCustomer.setAdapter(adapter);
     }
 
     private void setAdapter(){
@@ -128,11 +102,9 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
     }
 
     private void setLayoutResource(){
-        btnSendOrder=findViewById(R.id.btnSendOrder);
+        btnContinue=findViewById(R.id.btnContinue);
         lvItemSaleOrder=findViewById(R.id.lvItemSaleOrder);
-        layoutOnlinePayment=findViewById(R.id.layoutOnlinePayment);
-        spPaymentMethod=findViewById(R.id.spPaymentMethod);
-        spBankPayment=findViewById(R.id.spBankPayment);
+        spCustomer=findViewById(R.id.spCustomer);
     }
 
     @Override

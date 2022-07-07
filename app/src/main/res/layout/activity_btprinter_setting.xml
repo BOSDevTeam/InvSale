@@ -46,11 +46,11 @@
             android:layout_height="wrap_content">
 
             <RadioButton android:id="@+id/rdo58"
-                style="@style/PaperWidthRadioButton"
+                style="@style/DefaultRadioButton"
                 android:text="@string/paper_width_58" />
 
             <RadioButton android:id="@+id/rdo80"
-                style="@style/PaperWidthRadioButton"
+                style="@style/DefaultRadioButton"
                 android:text="@string/paper_width_80"
                 android:layout_marginLeft="20dp"/>
 

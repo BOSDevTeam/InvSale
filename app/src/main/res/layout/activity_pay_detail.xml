@@ -40,7 +40,7 @@
                 <Spinner android:id="@+id/spLocation"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"/>
+                    android:layout_marginTop="5dp" />
 
                 <TextView style="@style/SmallTextView"
                     android:text="@string/payment"
@@ -332,11 +332,11 @@
             android:textStyle="bold"
             android:textColor="@color/primary_soft"/>
 
-        <Button android:id="@+id/btnConfirm"
+        <Button android:id="@+id/btnContinue"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="match_parent"
-            android:text="@string/confirm"
+            android:text="@string/pay_continue"
             android:textSize="@dimen/text_regular"
             android:textAllCaps="true"
             android:background="@drawable/btn_primary"/>

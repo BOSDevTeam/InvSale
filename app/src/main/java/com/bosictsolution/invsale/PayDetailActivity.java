@@ -15,10 +15,12 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 
+import com.bosictsolution.invsale.common.AppConstant;
+
 public class PayDetailActivity extends AppCompatActivity {
 
     Spinner spCustomer,spLocation,spPayment,spPaymentMethod,spBankPayment;
-    Button btnLimitDayAdvancedPayOk,btnDollar,btnPercent,btnPaidOk,btnPaymentPercentOk,btnConfirm;
+    Button btnLimitDayAdvancedPayOk,btnDollar,btnPercent,btnPaidOk,btnPaymentPercentOk,btnContinue;
     RadioButton rdoNoDiscount;
     LinearLayout layoutPaymentDebt,layoutPaymentMethod,layoutPaidChange,layoutOnlinePayment,layoutAdvancedPay;
     EditText etAdvancedPay;
@@ -79,12 +81,12 @@ public class PayDetailActivity extends AppCompatActivity {
         });
 //        etAdvancedPay.setOn  // don't allow to start with zero input
 
-        btnConfirm.setOnClickListener(new View.OnClickListener() {
+        btnContinue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i=new Intent(PayDetailActivity.this,SaleBillActivity.class);
+                Intent i=new Intent(PayDetailActivity.this,CustomerActivity.class);
+                i.putExtra(AppConstant.extra_module_type,AppConstant.sale_module_type);
                 startActivity(i);
-                finish();
             }
         });
     }
@@ -139,6 +141,7 @@ public class PayDetailActivity extends AppCompatActivity {
         adapter=new ArrayAdapter(this, android.R.layout.simple_spinner_item,locations);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spLocation.setAdapter(adapter);
+        spLocation.setEnabled(false);
 
         adapter=new ArrayAdapter(this, android.R.layout.simple_spinner_item,payments);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -164,7 +167,7 @@ public class PayDetailActivity extends AppCompatActivity {
         btnPercent=findViewById(R.id.btnPercent);
         btnPaidOk=findViewById(R.id.btnPaidOk);
         btnPaymentPercentOk=findViewById(R.id.btnPaymentPercentOk);
-        btnConfirm=findViewById(R.id.btnConfirm);
+        btnContinue=findViewById(R.id.btnContinue);
         rdoNoDiscount=findViewById(R.id.rdoNoDiscount);
         layoutPaymentDebt=findViewById(R.id.layoutPaymentDebt);
         layoutPaymentMethod=findViewById(R.id.layoutPaymentMethod);

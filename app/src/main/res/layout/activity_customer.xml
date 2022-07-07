@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.profile.ProfileFragment">
+    tools:context=".CustomerActivity">
 
     <LinearLayout android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -14,75 +14,66 @@
         android:focusableInTouchMode="true"
         android:layout_gravity="center">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView android:id="@+id/tvTitle"
-                android:text="@string/profile_detail"
-                style="@style/TitleTextView"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_gravity="center"/>
-
-            <ImageButton android:id="@+id/btnEdit"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_edit_24"
-                android:background="@drawable/btn_transparent"
-                app:tint="@color/black_soft"
-                android:padding="10dp"/>
-
-        </LinearLayout>
-
-       <com.google.android.material.textfield.TextInputLayout
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content"
-           app:boxBackgroundMode="none"
-           android:layout_marginTop="20dp">
-           <EditText android:id="@+id/etUserName"
-               style="@style/DefaultEditText"
-               android:hint="@string/user_name"
-               android:inputType="text"
-               android:imeOptions="actionNext"
-               android:layout_marginTop="30dp"
-               android:text="Demo User"
-               android:background="@color/white"
-               android:drawableLeft="@drawable/ic_person_24"
-               android:drawablePadding="10dp"
-               android:drawableTint="@color/primary_500"/>
-       </com.google.android.material.textfield.TextInputLayout>
+        <TextView android:id="@+id/tvTitle"
+            android:text="@string/fill_customer_information"
+            style="@style/TitleTextView" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:boxBackgroundMode="none">
-            <EditText android:id="@+id/etBusinessName"
+            android:layout_height="wrap_content">
+            <EditText android:id="@+id/etName"
                 style="@style/DefaultEditText"
-                android:hint="@string/business_name"
+                android:hint="@string/name"
                 android:inputType="text"
                 android:imeOptions="actionNext"
-                android:layout_marginTop="10dp"
-                android:text="Demo Shop"
+                android:layout_marginTop="30dp"
                 android:background="@color/white"
-                android:drawableLeft="@drawable/ic_home_work_24"
+                android:drawableLeft="@drawable/ic_person_24"
                 android:drawablePadding="10dp"
                 android:drawableTint="@color/primary_500"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:boxBackgroundMode="none">
+            android:layout_height="wrap_content">
             <EditText android:id="@+id/etPhone"
                 style="@style/DefaultEditText"
                 android:hint="@string/phone"
                 android:inputType="number"
                 android:imeOptions="actionNext"
                 android:layout_marginTop="10dp"
-                android:text="09987886790"
                 android:background="@color/white"
                 android:drawableLeft="@drawable/ic_phone_24"
+                android:drawablePadding="10dp"
+                android:drawableTint="@color/primary_500"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText android:id="@+id/etEmail"
+                style="@style/DefaultEditText"
+                android:hint="@string/email"
+                android:inputType="text"
+                android:imeOptions="actionNext"
+                android:layout_marginTop="10dp"
+                android:background="@color/white"
+                android:drawableLeft="@drawable/ic_email_24"
+                android:drawablePadding="10dp"
+                android:drawableTint="@color/primary_500"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <EditText android:id="@+id/etContactPerson"
+                style="@style/DefaultEditText"
+                android:hint="@string/contact_person"
+                android:inputType="text"
+                android:imeOptions="actionNext"
+                android:layout_marginTop="10dp"
+                android:background="@color/white"
+                android:drawableLeft="@drawable/ic_contact_emergency_24"
                 android:drawablePadding="10dp"
                 android:drawableTint="@color/primary_500"/>
         </com.google.android.material.textfield.TextInputLayout>
@@ -102,7 +93,7 @@
             <Spinner android:id="@+id/spDivision"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"/>
+                android:layout_marginTop="5dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -116,7 +107,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/township"
-                style="@style/SmallTextView" />
+                style="@style/SmallTextView"/>
             <Spinner android:id="@+id/spTownship"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -134,16 +125,14 @@
                 android:imeOptions="actionDone"
                 android:layout_marginTop="10dp"
                 android:minHeight="100dp"
-                android:text="495 Grove Street, Apartment #20, Yangon"
                 android:background="@color/white"
                 android:gravity="top"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Button android:id="@+id/btnUpdateProfile"
-            android:text="@string/update_profile"
+        <Button android:id="@+id/btnConfirm"
+            android:text="@string/pay_confirm"
             style="@style/DefaultButton"
-            android:layout_marginTop="20dp"
-            android:enabled="false"/>
+            android:layout_marginTop="20dp" />
 
     </LinearLayout>
 

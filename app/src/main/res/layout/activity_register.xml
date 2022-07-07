@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layoutRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".RegisterActivity"
@@ -76,17 +77,41 @@
                     android:layout_marginTop="10dp" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:boxBackgroundMode="none">
-                <EditText android:id="@+id/etTownship"
-                    style="@style/ColorEditText"
-                    android:hint="@string/township"
-                    android:inputType="text"
-                    android:imeOptions="actionNext"
-                    android:layout_marginTop="10dp" />
-            </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:background="@color/primary_extra_soft"
+                android:padding="10dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/division"
+                    style="@style/SmallTextView"/>
+                <Spinner android:id="@+id/spDivision"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical"
+                android:background="@color/primary_extra_soft"
+                android:padding="10dp">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/township"
+                    style="@style/SmallTextView"/>
+                <Spinner android:id="@+id/spTownship"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"/>
+            </LinearLayout>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"

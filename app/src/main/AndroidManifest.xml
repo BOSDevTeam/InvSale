@@ -10,8 +10,17 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.InvSale">
         <activity
+            android:name=".CustomerActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".NoInternetActivity"
+            android:exported="true"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".NotificationSettingActivity"
-            android:exported="true" />
+            android:exported="true"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".BTPrinterSettingActivity"
             android:exported="true"
@@ -73,6 +82,8 @@
             </intent-filter>
         </activity>
     </application>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <uses-permission android:name="android.permission.INTERNET" />
 
