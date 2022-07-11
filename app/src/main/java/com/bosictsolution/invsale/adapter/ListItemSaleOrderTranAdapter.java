@@ -5,35 +5,30 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bosictsolution.invsale.R;
 import com.bosictsolution.invsale.common.AppSetting;
-import com.bosictsolution.invsale.data.ProductData;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.bosictsolution.invsale.data.SaleOrderTranData;
 
 import java.util.List;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-public class ListItemProductAdapter extends RecyclerView.Adapter<ListItemProductAdapter.ViewHolder> {
+public class ListItemSaleOrderTranAdapter extends RecyclerView.Adapter<ListItemSaleOrderTranAdapter.ViewHolder> {
     private Context context;
-    List<ProductData> list;
+    List<SaleOrderTranData> list;
     AppSetting appSetting=new AppSetting();
-    BottomSheetBehavior sheetBehavior;
 
-    public ListItemProductAdapter(List<ProductData> list, Context context, LinearLayout bottom_sheet) {
+    public ListItemSaleOrderTranAdapter(List<SaleOrderTranData> list, Context context) {
         this.list = list;
         this.context = context;
-        this.sheetBehavior=BottomSheetBehavior.from(bottom_sheet);
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         //Inflate the layout, initialize the View Holder
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_product, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_sale_order_tran, parent, false);
         ViewHolder holder = new ViewHolder(v);
         return holder;
     }
@@ -41,14 +36,7 @@ public class ListItemProductAdapter extends RecyclerView.Adapter<ListItemProduct
     @Override
     public void onBindViewHolder(ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         holder.tvProductName.setText(list.get(position).getProductName());
-        holder.tvPrice.setText("MMK "+appSetting.df.format(list.get(position).getSalePrice()));
-
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-            }
-        });
+        holder.tvQuantity.setText(String.valueOf(list.get(position).getQuantity()));
     }
 
     @Override
@@ -58,14 +46,12 @@ public class ListItemProductAdapter extends RecyclerView.Adapter<ListItemProduct
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvProductName,tvPrice;
-        ImageView imgPhoto;
+        TextView tvProductName,tvQuantity;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            tvProductName =itemView.findViewById(R.id.tvProductName);
-            tvPrice =  itemView.findViewById(R.id.tvPrice);
-            imgPhoto =  itemView.findViewById(R.id.imgPhoto);
+            tvProductName =  itemView.findViewById(R.id.tvProductName);
+            tvQuantity =  itemView.findViewById(R.id.tvQuantity);
         }
     }
 }

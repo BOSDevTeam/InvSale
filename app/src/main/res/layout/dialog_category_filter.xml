@@ -8,7 +8,7 @@
     <LinearLayout style="@style/DialogLayout"
         android:gravity="center">
 
-        <TextView android:text="@string/product"
+        <TextView android:text="@string/category_filter"
             style="@style/DialogTitle" />
 
         <ImageButton android:id="@+id/btnClose"
@@ -18,17 +18,13 @@
 
     <View style="@style/Divider"/>
 
-    <LinearLayout style="@style/DialogLayout"
-        android:orientation="vertical">
+    <LinearLayout style="@style/DialogLayout">
 
-        <TextView android:text="Start Keyword: 10"
-            style="@style/DefaultTextView" />
-
-        <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvProduct"
+        <ExpandableListView android:id="@+id/list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:listitem="@layout/item_product_info"
-            android:layout_marginTop="10dp"/>
+            android:layout_height="match_parent"
+            tools:listitem="@layout/exp_list_general_group">
+        </ExpandableListView>
 
     </LinearLayout>
 

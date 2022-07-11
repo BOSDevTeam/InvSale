@@ -7,12 +7,12 @@
     android:gravity="center">
 
     <TextView
-        android:id="@+id/tvProduct"
+        android:id="@+id/tvChild"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
         android:textSize="@dimen/text_regular"
-        tools:text="Product"
+        tools:text="Child"
         android:layout_marginLeft="40dp"/>
 
 </LinearLayout>

@@ -9,7 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ExpandableListView;
 
-import com.bosictsolution.invsale.adapter.MenuExpandableListAdapter;
+import com.bosictsolution.invsale.adapter.ExpandableListAdapter;
 import com.bosictsolution.invsale.data.MainMenuData;
 import com.bosictsolution.invsale.data.SubMenuData;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
@@ -24,7 +24,7 @@ public class CategoryActivity extends AppCompatActivity {
     ExtendedFloatingActionButton fab;
     List<String> listDataHeader;
     HashMap<String,List<String>> listDataChild;
-    MenuExpandableListAdapter expListAdapter;
+    ExpandableListAdapter expListAdapter;
     List<MainMenuData> lstMainMenu=new ArrayList<>();
     List<SubMenuData> lstSubMenu=new ArrayList<>();
 
@@ -40,7 +40,7 @@ public class CategoryActivity extends AppCompatActivity {
 
         createMainMenu();
         createSubMenu();
-        setMenuToExpList();
+        setDataToExpList();
 
         expList.setOnChildClickListener(new ExpandableListView.OnChildClickListener(){
             @Override
@@ -182,7 +182,7 @@ public class CategoryActivity extends AppCompatActivity {
         lstSubMenu.add(data);
     }
 
-    private void setMenuToExpList(){
+    private void setDataToExpList(){
         listDataHeader=new ArrayList<>();
         listDataChild=new HashMap<>();
         for(int i=0;i<lstMainMenu.size();i++){
@@ -200,7 +200,7 @@ public class CategoryActivity extends AppCompatActivity {
                 listDataHeader.add(mainMenuName);
             }
         }
-        expListAdapter=new MenuExpandableListAdapter(this,listDataHeader,listDataChild);
+        expListAdapter=new ExpandableListAdapter(this,listDataHeader,listDataChild);
         expList.setAdapter(expListAdapter);
     }
 

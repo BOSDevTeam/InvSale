@@ -1,4 +1,4 @@
-package com.bosictsolution.invsale;
+package com.bosictsolution.invsale.fragment;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;

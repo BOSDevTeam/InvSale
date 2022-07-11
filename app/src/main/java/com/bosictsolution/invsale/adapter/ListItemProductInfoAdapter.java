@@ -26,7 +26,7 @@ public class ListItemProductInfoAdapter extends RecyclerView.Adapter<ListItemPro
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         //Inflate the layout, initialize the View Holder
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_product_info, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_product_info, parent, false);
         ViewHolder holder = new ViewHolder(v);
         return holder;
     }

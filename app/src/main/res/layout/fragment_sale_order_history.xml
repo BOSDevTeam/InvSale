@@ -3,12 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.SaleSummaryFragment">
+    tools:context=".fragment.SaleOrderHistoryFragment">
 
-    <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvSaleSummary"
+    <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvSaleOrder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:listitem="@layout/item_sale_summary"
-        android:padding="5dp"/>
+        tools:listitem="@layout/item_sale_order"
+        android:padding="10dp"
+        tools:ignore="MissingConstraints" />
 
 </FrameLayout>

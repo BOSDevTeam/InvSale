@@ -3,34 +3,32 @@ package com.bosictsolution.invsale.ui.saleorder;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SearchView;
+import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
 import com.bosictsolution.invsale.CategoryActivity;
-import com.bosictsolution.invsale.adapter.ListItemSaleAdapter;
-import com.bosictsolution.invsale.adapter.ListItemSaleOrderAdapter;
-import com.bosictsolution.invsale.data.SaleOrderMasterData;
-import com.bosictsolution.invsale.data.SaleTranData;
+import com.bosictsolution.invsale.R;
+import com.bosictsolution.invsale.adapter.SaleOrderTabAdapter;
 import com.bosictsolution.invsale.databinding.FragmentSaleOrderBinding;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.google.android.material.tabs.TabLayout;
 
 public class SaleOrderFragment extends Fragment {
 
+    TextView tvDate;
     private SaleOrderViewModel saleOrderViewModel;
     private FragmentSaleOrderBinding binding;
-    ListItemSaleOrderAdapter listItemSaleOrderAdapter;
-    List<SaleOrderMasterData> lstSaleOrder=new ArrayList<>();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -39,17 +37,37 @@ public class SaleOrderFragment extends Fragment {
 
         binding = FragmentSaleOrderBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+        setHasOptionsMenu(true);
 
-        final RecyclerView rvSaleOrder = binding.rvSaleOrder;
+        final TabLayout tabLayout = binding.tabLayout;
+        final ViewPager viewPager=binding.viewPager;
         final FloatingActionButton fab=binding.fab;
+        tvDate=binding.tvDate;
+        tabLayout.addTab(tabLayout.newTab().setText(getResources().getString(R.string.current_order)));
+        tabLayout.addTab(tabLayout.newTab().setText(getResources().getString(R.string.order_history)));
 
-        setAdapter();
-        saleOrderViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        SaleOrderTabAdapter adapter=new SaleOrderTabAdapter(getContext(),getChildFragmentManager(),tabLayout.getTabCount());
+        viewPager.setAdapter(adapter);
+
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+
+        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
-            public void onChanged(@Nullable String s) {
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
 
             }
         });
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -60,42 +78,42 @@ public class SaleOrderFragment extends Fragment {
         return root;
     }
 
-    private void setAdapter(){
-        SaleOrderMasterData data=new SaleOrderMasterData();
-        data.setYear("2022");
-        data.setDay("27");
-        data.setMonth("Jun");
-        data.setOrderNumber("SO0001");
-        data.setGrandTotal(6600);
-        data.setCustomerName("CustomerA");
-        lstSaleOrder.add(data);
-
-        data=new SaleOrderMasterData();
-        data.setYear("2022");
-        data.setDay("26");
-        data.setMonth("Jun");
-        data.setOrderNumber("SO0001");
-        data.setGrandTotal(6600);
-        data.setCustomerName("CustomerA");
-        lstSaleOrder.add(data);
-
-        data=new SaleOrderMasterData();
-        data.setYear("2022");
-        data.setDay("26");
-        data.setMonth("Jun");
-        data.setOrderNumber("SO0001");
-        data.setGrandTotal(6600);
-        data.setCustomerName("CustomerB");
-        lstSaleOrder.add(data);
-
-        listItemSaleOrderAdapter=new ListItemSaleOrderAdapter(lstSaleOrder,getContext());
-        binding.rvSaleOrder.setAdapter(listItemSaleOrderAdapter);
-        binding.rvSaleOrder.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
-    }
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.search, menu);
+        MenuItem item=menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+        item.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem menuItem) {
+                return true;
+            }
+
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem menuItem) {
+                return true;
+            }
+        });
+
+        super.onCreateOptionsMenu(menu, inflater);
     }
 }

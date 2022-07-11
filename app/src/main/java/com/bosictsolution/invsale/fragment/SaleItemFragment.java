@@ -1,12 +1,21 @@
-package com.bosictsolution.invsale;
+package com.bosictsolution.invsale.fragment;
 
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.bosictsolution.invsale.R;
+import com.bosictsolution.invsale.adapter.ListItemSaleTranAdapter;
+import com.bosictsolution.invsale.data.SaleTranData;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,6 +32,10 @@ public class SaleItemFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    RecyclerView rvSaleItem;
+    ListItemSaleTranAdapter listItemSaleTranAdapter;
+    List<SaleTranData> lstSale=new ArrayList<>();
 
     public SaleItemFragment() {
         // Required empty public constructor
@@ -59,6 +72,42 @@ public class SaleItemFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_sale_item, container, false);
+        View root = inflater.inflate(R.layout.fragment_sale_item, container, false);
+
+        rvSaleItem=root.findViewById(R.id.rvSaleItem);
+
+        setAdapter();
+
+        return root;
+    }
+
+    private void setAdapter(){
+        SaleTranData data=new SaleTranData();
+        data.setProductName("ProductABC");
+        data.setQuantity(20);
+        data.setAmount(6600);
+        lstSale.add(data);
+
+        data=new SaleTranData();
+        data.setProductName("ProductABC");
+        data.setQuantity(20);
+        data.setAmount(6600);
+        lstSale.add(data);
+
+        data=new SaleTranData();
+        data.setProductName("ProductABC");
+        data.setQuantity(20);
+        data.setAmount(6600);
+        lstSale.add(data);
+
+        data=new SaleTranData();
+        data.setProductName("ProductABC");
+        data.setQuantity(20);
+        data.setAmount(6600);
+        lstSale.add(data);
+
+        listItemSaleTranAdapter=new ListItemSaleTranAdapter(lstSale,getContext());
+        rvSaleItem.setAdapter(listItemSaleTranAdapter);
+        rvSaleItem.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
     }
 }

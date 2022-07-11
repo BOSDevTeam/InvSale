@@ -87,7 +87,7 @@
         <ListView android:id="@+id/lvItemSale"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:listitem="@layout/list_item_sale"/>
+            tools:listitem="@layout/item_sale"/>
 
     </LinearLayout>
 

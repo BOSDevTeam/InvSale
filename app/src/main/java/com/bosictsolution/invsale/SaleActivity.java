@@ -25,8 +25,7 @@ import android.widget.TextView;
 
 import com.bosictsolution.invsale.adapter.ListItemProductInfoAdapter;
 import com.bosictsolution.invsale.adapter.ListItemSaleAdapter;
-import com.bosictsolution.invsale.adapter.MenuExpandableListAdapter;
-import com.bosictsolution.invsale.adapter.ProductExpandableListAdapter;
+import com.bosictsolution.invsale.adapter.GeneralExpandableListAdapter;
 import com.bosictsolution.invsale.data.ProductData;
 import com.bosictsolution.invsale.data.SaleTranData;
 import com.bosictsolution.invsale.data.SubMenuData;
@@ -196,7 +195,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
 
         createSubMenu();
         createProduct();
-        setProductToExpList(expList);
+        setDataToExpList(expList);
 
         dialog.setCancelable(true);
         final android.app.AlertDialog alertDialog = dialog.create();
@@ -210,8 +209,8 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         });
     }
 
-    private void setProductToExpList(ExpandableListView expList){
-        ProductExpandableListAdapter expListAdapter;
+    private void setDataToExpList(ExpandableListView expList){
+        GeneralExpandableListAdapter expListAdapter;
         listDataHeader=new ArrayList<>();
         listDataChild=new HashMap<>();
         for(int i=0;i<lstSubMenu.size();i++){
@@ -229,7 +228,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
                 listDataHeader.add(subMenuName);
             }
         }
-        expListAdapter=new ProductExpandableListAdapter(this,listDataHeader,listDataChild);
+        expListAdapter=new GeneralExpandableListAdapter(this,listDataHeader,listDataChild);
         expList.setAdapter(expListAdapter);
     }
 

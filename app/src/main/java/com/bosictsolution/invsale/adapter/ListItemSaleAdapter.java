@@ -58,7 +58,7 @@ public class ListItemSaleAdapter extends BaseAdapter {
         final ViewHolder holder;
         if(convertView==null){
             LayoutInflater layoutInflater=(LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            row=layoutInflater.inflate(R.layout.list_item_sale, parent,false);
+            row=layoutInflater.inflate(R.layout.item_sale, parent,false);
             holder=new ViewHolder();
             holder.tvProductName=row.findViewById(R.id.tvProductName);
             holder.tvPrice=row.findViewById(R.id.tvPrice);

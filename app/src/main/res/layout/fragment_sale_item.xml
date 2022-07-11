@@ -1,14 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SaleItemFragment">
+    tools:context=".fragment.SaleItemFragment"
+    android:orientation="vertical">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:gravity="center">
 
-</FrameLayout>
+        <TextView android:id="@+id/tvProductName"
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            style="@style/SmallTextView"
+            android:text="@string/product" />
+        <TextView android:id="@+id/tvQuantity"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            style="@style/SmallTextView"
+            android:text="@string/quantity"
+            android:gravity="right"/>
+        <TextView android:id="@+id/tvAmount"
+            android:layout_width="0dp"
+            android:layout_weight="1.5"
+            style="@style/SmallTextView"
+            android:text="@string/amount"
+            android:gravity="right"/>
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvSaleItem"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        tools:listitem="@layout/item_sale_tran"
+        android:padding="5dp"/>
+
+    <View style="@style/Divider"/>
+
+    <TextView android:id="@+id/tvTotal"
+        style="@style/DefaultTextView"
+        android:text="MMK 200,000"
+        android:textColor="@color/primary_500"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:padding="5dp"/>
+
+</LinearLayout>

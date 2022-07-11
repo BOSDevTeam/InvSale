@@ -28,7 +28,7 @@
         <ExpandableListView android:id="@+id/list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:listitem="@layout/exp_list_sub_menu">
+            tools:listitem="@layout/exp_list_general_group">
         </ExpandableListView>
 
     </LinearLayout>

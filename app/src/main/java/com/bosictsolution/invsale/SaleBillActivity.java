@@ -64,7 +64,7 @@ public class SaleBillActivity extends AppCompatActivity {
 
         for (int i = 0; i< lstSaleTran.size(); i++) {
             LayoutInflater layoutInflater=(LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View row = layoutInflater.inflate(R.layout.list_item_sale, null);
+            View row = layoutInflater.inflate(R.layout.item_sale, null);
             TextView tvProductName=row.findViewById(R.id.tvProductName);
             TextView tvPrice=row.findViewById(R.id.tvPrice);
             TextView tvQuantity=row.findViewById(R.id.tvQuantity);

@@ -15,13 +15,13 @@ import java.util.List;
 /**
  * Created by NweYiAung on 14-02-2017.
  */
-public class MenuExpandableListAdapter extends BaseExpandableListAdapter {
+public class GeneralExpandableListAdapter extends BaseExpandableListAdapter {
 
     private Context _context;
     private List<String> _listDataHeader;
     private HashMap<String,List<String>> _listDataChild;
 
-    public MenuExpandableListAdapter(Context context, List<String> listDataHeader, HashMap<String,List<String>> listDataChild){
+    public GeneralExpandableListAdapter(Context context, List<String> listDataHeader, HashMap<String,List<String>> listDataChild){
         this._context=context;
         this._listDataHeader=listDataHeader;
         this._listDataChild=listDataChild;
@@ -42,10 +42,10 @@ public class MenuExpandableListAdapter extends BaseExpandableListAdapter {
         final String childText=(String)getChild(groupPosition,childPosition);
         if(convertView==null){
             LayoutInflater inflater=(LayoutInflater)this._context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView=inflater.inflate(R.layout.exp_list_child, null);
+            convertView=inflater.inflate(R.layout.exp_list_general_child, null);
         }
-        TextView tvSubMenu=(TextView) convertView.findViewById(R.id.tvSubMenu);
-        tvSubMenu.setText(childText);
+        TextView tvChild=(TextView) convertView.findViewById(R.id.tvChild);
+        tvChild.setText(childText);
         return convertView;
     }
 
@@ -69,10 +69,10 @@ public class MenuExpandableListAdapter extends BaseExpandableListAdapter {
         String headerTitle=(String)getGroup(groupPosition);
         if(convertView==null){
             LayoutInflater inflater=(LayoutInflater) this._context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView=inflater.inflate(R.layout.exp_list_group, null);
+            convertView=inflater.inflate(R.layout.exp_list_general_group, null);
         }
-        TextView tvMainMenu=(TextView)convertView.findViewById(R.id.tvMainMenu);
-        tvMainMenu.setText(headerTitle);
+        TextView tvGroup=(TextView)convertView.findViewById(R.id.tvGroup);
+        tvGroup.setText(headerTitle);
 
         return convertView;
     }

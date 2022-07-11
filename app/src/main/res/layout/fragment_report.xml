@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.report.ReportFragment"
+    android:orientation="vertical">
+
+    <TextView android:id="@+id/tvSaleOrderItem"
+        style="@style/DefaultTextView"
+        android:text="@string/report_sale_order_item"
+        android:drawableLeft="@drawable/ic_flag_24"
+        android:drawablePadding="10dp"
+        android:drawableTint="@color/primary_700"
+        android:background="@drawable/btn_transparent"
+        android:padding="20dp"/>
+
+    <View style="@style/Divider" />
+
+</LinearLayout>

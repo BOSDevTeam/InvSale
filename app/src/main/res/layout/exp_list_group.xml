@@ -13,13 +13,13 @@
         android:src="@mipmap/ic_launcher"/>
 
     <TextView
-        android:id="@+id/tvMainMenu"
+        android:id="@+id/tvGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
         android:textStyle="bold"
         android:textSize="@dimen/text_regular"
-        tools:text="Main Menu"
+        tools:text="Group"
         android:layout_marginLeft="10dp"/>
 
 </LinearLayout>
