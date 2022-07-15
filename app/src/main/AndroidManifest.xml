@@ -8,7 +8,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.InvSale">
+        android:theme="@style/Theme.InvSale"
+        android:usesCleartextTraffic="true">
         <activity
             android:name=".SaleOrderItemReportActivity"
             android:exported="true"

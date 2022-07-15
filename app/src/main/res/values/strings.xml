@@ -125,5 +125,6 @@
     <string name="current_order">Current Order</string>
     <string name="order_history">Order History</string>
     <string name="category_filter">Category Filter</string>
+    <string name="loading">Loading</string>
 
 </resources>

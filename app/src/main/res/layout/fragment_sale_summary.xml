@@ -1,14 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.SaleSummaryFragment">
+    tools:context=".fragment.SaleSummaryFragment"
+    android:orientation="vertical">
 
     <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvSaleSummary"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         tools:listitem="@layout/item_sale_summary"
         android:padding="5dp"/>
 
-</FrameLayout>
+    <View style="@style/Divider"/>
+
+    <TextView android:id="@+id/tvTotal"
+        style="@style/DefaultTextView"
+        android:text="MMK 200,000"
+        android:textColor="@color/primary_500"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:padding="5dp"/>
+
+</LinearLayout>
