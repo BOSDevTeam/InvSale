@@ -32,16 +32,17 @@
         android:gravity="center"
         android:layout_marginBottom="20dp">
 
-        <TextView style="@style/DefaultTextView"
+        <TextView android:id="@+id/tvUser"
+            style="@style/DefaultTextView"
             android:layout_width="wrap_content"
-            android:text="Demo User"
+            tools:text="Demo User"
             android:gravity="center"
             android:drawableLeft="@drawable/ic_person_outline_40"
             android:drawableTint="@color/primary_500"/>
 
-        <TextView android:id="@+id/tvEnterPasscode"
+        <TextView android:id="@+id/tvEnterPassword"
             style="@style/DefaultTextView"
-            android:text="@string/enter_passcode"
+            tools:text="@string/enter_password"
             android:gravity="center"
             android:layout_marginTop="20dp"/>
 

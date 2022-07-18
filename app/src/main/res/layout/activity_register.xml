@@ -41,7 +41,7 @@
                 android:text="@string/register"
                 style="@style/TitleTextView" />
 
-            <com.google.android.material.textfield.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout android:id="@+id/inputUserName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:boxBackgroundMode="none">
@@ -53,19 +53,19 @@
                     android:layout_marginTop="20dp" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout android:id="@+id/inputShopName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:boxBackgroundMode="none">
-                <EditText android:id="@+id/etBusinessName"
+                <EditText android:id="@+id/etShopName"
                     style="@style/ColorEditText"
-                    android:hint="@string/business_name"
+                    android:hint="@string/shop_name"
                     android:inputType="text"
                     android:imeOptions="actionNext"
                     android:layout_marginTop="10dp" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout android:id="@+id/inputPhone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:boxBackgroundMode="none">
@@ -113,7 +113,7 @@
                     android:layout_marginTop="10dp"/>
             </LinearLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout android:id="@+id/inputAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:boxBackgroundMode="none">

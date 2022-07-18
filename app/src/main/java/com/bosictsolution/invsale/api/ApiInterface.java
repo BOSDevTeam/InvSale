@@ -22,7 +22,11 @@ public interface ApiInterface {
     Call<List<TownshipData>> getTownshipByDivision(@Query("divisionId") int divisionId);
 
     @Headers("Content-type: application/json")
-    @POST("client")
-    Call<Boolean> addClient(@Body ClientData clientData);
+    @POST("client/InsertClient")
+    Call<Integer> insertClient(@Body ClientData clientData);
+
+    @Headers("Content-type: application/json")
+    @POST("client/UpdateClientPassword")
+    Call<Void> updateClientPassword(@Query("clientId") int clientId, @Query("password") String password);
 
 }
