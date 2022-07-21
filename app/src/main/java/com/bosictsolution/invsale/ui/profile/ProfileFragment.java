@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -68,9 +69,9 @@ public class ProfileFragment extends Fragment {
         setLayoutResource();
         sharedpreferences = getContext().getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
 
-        //fillData();
+        fillData();
 
-        /*spDivision.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spDivision.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if(lstDivision.size()!=0){
@@ -83,17 +84,17 @@ public class ProfileFragment extends Fragment {
             public void onNothingSelected(AdapterView<?> adapterView) {
 
             }
-        });*/
+        });
         btnEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //editData();
+                editData();
             }
         });
         btnUpdateProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*if(validateControl()){
+                if(validateControl()){
                     ClientData clientData = new ClientData();
                     clientData.setClientName(etUserName.getText().toString());
                     clientData.setShopName(etShopName.getText().toString());
@@ -109,7 +110,7 @@ public class ProfileFragment extends Fragment {
                     clientData.setTownshipID(townshipId);
                     clientData.setTownshipName(townshipName);
                     updateClient(clientData);  // update client to database
-                }*/
+                }
             }
         });
 

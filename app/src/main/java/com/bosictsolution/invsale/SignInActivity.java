@@ -61,6 +61,13 @@ public class SignInActivity extends AppCompatActivity {
                     editor.putInt(AppConstant.ClientID, data.getClientID());
                     editor.putString(AppConstant.ClientName, data.getClientName());
                     editor.putString(AppConstant.ClientPassword, data.getClientPassword());
+                    editor.putString(AppConstant.ClientShopName, data.getShopName());
+                    editor.putString(AppConstant.ClientPhone, phone);
+                    editor.putInt(AppConstant.ClientDivisionID, data.getDivisionID());
+                    editor.putString(AppConstant.ClientDivisionName, data.getDivisionName());
+                    editor.putInt(AppConstant.ClientTownshipID, data.getTownshipID());
+                    editor.putString(AppConstant.ClientTownshipName, data.getTownshipName());
+                    editor.putString(AppConstant.ClientAddress, data.getAddress());
                     editor.commit();
                     Intent i = new Intent(SignInActivity.this, LoginActivity.class);
                     startActivity(i);
