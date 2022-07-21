@@ -18,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bosictsolution.invsale.api.Api;
@@ -39,14 +40,16 @@ public class RegisterActivity extends AppCompatActivity {
     Spinner spDivision,spTownship;
     TextInputLayout inputUserName,inputShopName,inputPhone,inputAddress;
     EditText etUserName,etShopName,etPhone,etAddress;
+    TextView tvSignIn;
     AppSetting appSetting=new AppSetting();
     List<DivisionData> lstDivision=new ArrayList<>();
     List<TownshipData> lstTownship=new ArrayList<>();
     private Context context=this;
     private ProgressDialog progressDialog;
-    boolean divisionResult,townshipResult;
     int clientId;
     SharedPreferences sharedpreferences;
+    String[] divisions={"Yangon","Mandalay"};
+    String[] townships={"Kamaryut","Hlaing","Sanchaung"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,58 +59,71 @@ public class RegisterActivity extends AppCompatActivity {
         setLayoutResource();
         sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
 
-        ConnectionLiveData connectionLiveData=new ConnectionLiveData(this);
+        ConnectionLiveData connectionLiveData = new ConnectionLiveData(this);
         connectionLiveData.observe(this, new Observer<ConnectionData>() {
             @Override
             public void onChanged(ConnectionData connectionData) {
-                if(!connectionData.getIsConnected())appSetting.showSnackBar(findViewById(R.id.layoutRoot));
+                if (!connectionData.getIsConnected())
+                    appSetting.showSnackBar(findViewById(R.id.layoutRoot));
             }
         });
 
-        fillData();
+        //fillData();
+        ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.simple_spinner_item, divisions);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spDivision.setAdapter(adapter);
 
-        spDivision.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        adapter = new ArrayAdapter(context, android.R.layout.simple_spinner_item, townships);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spTownship.setAdapter(adapter);
+
+        /*spDivision.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                int divisionId=lstDivision.get(i).getDivisionID();
-                getTownshipByDivision(divisionId);
-                setTownship();
+                if(lstDivision.size()!=0) {
+                    int divisionId = lstDivision.get(i).getDivisionID();
+                    getTownshipByDivision(divisionId);
+                }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
 
             }
-        });
-
+        });*/
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(validateControl()){
-                    ClientData clientData=new ClientData();
+                Intent i = new Intent(RegisterActivity.this, LoginActivity.class);
+                startActivity(i);
+                finish();
+                /*if (validateControl()) {
+                    ClientData clientData = new ClientData();
                     clientData.setClientName(etUserName.getText().toString());
                     clientData.setShopName(etShopName.getText().toString());
                     clientData.setPhone(etPhone.getText().toString());
                     clientData.setAddress(etAddress.getText().toString());
-                    int position=spDivision.getSelectedItemPosition();
-                    int divisionId=lstDivision.get(position).getDivisionID();
+                    int position = spDivision.getSelectedItemPosition();
+                    int divisionId = lstDivision.get(position).getDivisionID();
+                    String divisionName=lstDivision.get(position).getDivisionName();
                     clientData.setDivisionID(divisionId);
-                    position=spTownship.getSelectedItemPosition();
-                    int townshipId=lstTownship.get(position).getTownshipID();
+                    clientData.setDivisionName(divisionName);
+                    position = spTownship.getSelectedItemPosition();
+                    int townshipId = lstTownship.get(position).getTownshipID();
+                    String townshipName=lstTownship.get(position).getTownshipName();
                     clientData.setTownshipID(townshipId);
-                    if(insertClient(clientData)){
-                        Toast.makeText(context,getResources().getString(R.string.register_success),Toast.LENGTH_LONG).show();
-                        SharedPreferences.Editor editor = sharedpreferences.edit();
-                        editor.putInt(AppConstant.ClientID, clientId);
-                        editor.putString(AppConstant.ClientName, etUserName.getText().toString());
-                        editor.commit();
-                        Intent i=new Intent(RegisterActivity.this,LoginActivity.class);
-                        startActivity(i);
-                        finish();
-                    }else{
-                        Toast.makeText(context,getResources().getString(R.string.already_register_phone),Toast.LENGTH_LONG).show();
-                    }
-                }
+                    clientData.setTownshipName(townshipName);
+                    clientData.setSalePerson(true);
+                    insertClient(clientData);  // insert client to database
+                }*/
+            }
+        });
+        tvSignIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(RegisterActivity.this, SignInActivity.class);
+                startActivity(i);
+                finish();
             }
         });
     }
@@ -139,67 +155,76 @@ public class RegisterActivity extends AppCompatActivity {
     private void fillData(){
         progressDialog.show();
         progressDialog.setMessage(getResources().getString(R.string.loading));
-        if(getDivision()){
-            if(getTownshipByDivision(lstDivision.get(0).getDivisionID())){
-                progressDialog.dismiss();
-                setDivision();
-                setTownship();
-            }
-        }
+        getDivision();
     }
 
-    private boolean getDivision() {
+    private void getDivision() {
         Api.getClient().getDivision().enqueue(new Callback<List<DivisionData>>() {
             @Override
             public void onResponse(Call<List<DivisionData>> call, Response<List<DivisionData>> response) {
                 lstDivision = response.body();
-                if (lstDivision.size() != 0) divisionResult =true;
+                setDivision();
             }
 
             @Override
             public void onFailure(Call<List<DivisionData>> call, Throwable t) {
-                Log.e("RegisterActivity", t.getMessage());
                 progressDialog.dismiss();
+                Log.e("RegisterActivity", t.getMessage());
             }
         });
-        return divisionResult;
     }
 
-    private boolean getTownshipByDivision(int divisionId) {
+    private void getTownshipByDivision(int divisionId) {
         Api.getClient().getTownshipByDivision(divisionId).enqueue(new Callback<List<TownshipData>>() {
             @Override
             public void onResponse(Call<List<TownshipData>> call, Response<List<TownshipData>> response) {
+                progressDialog.dismiss();
                 lstTownship = response.body();
-                townshipResult=true;
+                setTownship();
             }
 
             @Override
             public void onFailure(Call<List<TownshipData>> call, Throwable t) {
-                Log.e("RegisterActivity", t.getMessage());
                 progressDialog.dismiss();
+                Log.e("RegisterActivity", t.getMessage());
             }
         });
-        return townshipResult;
     }
 
-    private boolean insertClient(ClientData clientData) {
+    private void insertClient(ClientData clientData) {
         progressDialog.show();
         progressDialog.setMessage(getResources().getString(R.string.loading));
         Api.getClient().insertClient(clientData).enqueue(new Callback<Integer>() {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
-                clientId = response.body();
                 progressDialog.dismiss();
+                clientId = response.body();
+                if (clientId != 0) {
+                    Toast.makeText(context, getResources().getString(R.string.register_success), Toast.LENGTH_LONG).show();
+                    SharedPreferences.Editor editor = sharedpreferences.edit();
+                    editor.putInt(AppConstant.ClientID, clientId);
+                    editor.putString(AppConstant.ClientName, clientData.getClientName());
+                    editor.putString(AppConstant.ClientShopName, clientData.getShopName());
+                    editor.putString(AppConstant.ClientPhone, clientData.getPhone());
+                    editor.putInt(AppConstant.ClientDivisionID, clientData.getDivisionID());
+                    editor.putString(AppConstant.ClientDivisionName, clientData.getDivisionName());
+                    editor.putInt(AppConstant.ClientTownshipID, clientData.getTownshipID());
+                    editor.putString(AppConstant.ClientTownshipName, clientData.getTownshipName());
+                    editor.putString(AppConstant.ClientAddress, clientData.getAddress());
+                    editor.commit();
+                    Intent i = new Intent(RegisterActivity.this, LoginActivity.class);
+                    startActivity(i);
+                    finish();
+                } else
+                    Toast.makeText(context, getResources().getString(R.string.already_register_phone), Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void onFailure(Call<Integer> call, Throwable t) {
-                Log.e("RegisterActivity", t.getMessage());
                 progressDialog.dismiss();
+                Log.e("RegisterActivity", t.getMessage());
             }
         });
-        if (clientId != 0) return true;
-        else return false;
     }
 
     private void setDivision(){
@@ -207,7 +232,7 @@ public class RegisterActivity extends AppCompatActivity {
         for (int i = 0; i < lstDivision.size(); i++) {
             divisions[i] = lstDivision.get(i).getDivisionName();
         }
-        ArrayAdapter adapter = new ArrayAdapter(getBaseContext(), android.R.layout.simple_spinner_item, divisions);
+        ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.simple_spinner_item, divisions);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spDivision.setAdapter(adapter);
     }
@@ -217,7 +242,7 @@ public class RegisterActivity extends AppCompatActivity {
         for (int i = 0; i < lstTownship.size(); i++) {
             townships[i] = lstTownship.get(i).getTownshipName();
         }
-        ArrayAdapter adapter = new ArrayAdapter(getBaseContext(), android.R.layout.simple_spinner_item, townships);
+        ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.simple_spinner_item, townships);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spTownship.setAdapter(adapter);
     }
@@ -234,6 +259,7 @@ public class RegisterActivity extends AppCompatActivity {
         inputShopName=findViewById(R.id.inputShopName);
         inputPhone=findViewById(R.id.inputPhone);
         inputAddress=findViewById(R.id.inputAddress);
+        tvSignIn=findViewById(R.id.tvSignIn);
 
         progressDialog =new ProgressDialog(context);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);

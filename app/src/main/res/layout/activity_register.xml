@@ -142,7 +142,8 @@
                     android:layout_width="wrap_content"
                     android:text="@string/already_have_account"/>
 
-                <TextView style="@style/SmallTextView"
+                <TextView android:id="@+id/tvSignIn"
+                    style="@style/SmallTextView"
                     android:layout_width="wrap_content"
                     android:textColor="@color/primary_500"
                     android:text="@string/sign_in"

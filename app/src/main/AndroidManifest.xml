@@ -11,6 +11,10 @@
         android:theme="@style/Theme.InvSale"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".SignInActivity"
+            android:exported="true"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".SaleOrderItemReportActivity"
             android:exported="true"
             android:screenOrientation="portrait" />
@@ -87,9 +91,9 @@
             </intent-filter>
         </activity>
     </application>
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
 </manifest>
