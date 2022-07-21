@@ -119,7 +119,7 @@ public class ProfileFragment extends Fragment {
     private void updateClient(ClientData clientData){
         progressDialog.show();
         progressDialog.setMessage(getResources().getString(R.string.loading));
-        /*Api.getClient().updateClient(clientId,clientData).enqueue(new Callback<Void>() {
+        Api.getClient().updateClient(clientId,clientData).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 progressDialog.dismiss();
@@ -140,7 +140,7 @@ public class ProfileFragment extends Fragment {
                 progressDialog.dismiss();
                 Log.e("ProfileFragment", t.getMessage());
             }
-        });*/
+        });
     }
 
     private boolean validateControl(){

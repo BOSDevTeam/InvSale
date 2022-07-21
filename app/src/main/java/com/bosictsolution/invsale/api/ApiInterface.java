@@ -29,4 +29,11 @@ public interface ApiInterface {
     @POST("client/UpdateClientPassword")
     Call<Void> updateClientPassword(@Query("clientId") int clientId, @Query("password") String password);
 
+    @GET("client")  // API's endpoint
+    Call<ClientData> checkClient(@Query("phone") String phone);
+
+    @Headers("Content-type: application/json")
+    @POST("client/UpdateClient")
+    Call<Void> updateClient(@Query("clientId") int clientId,@Body ClientData clientData);
+
 }
