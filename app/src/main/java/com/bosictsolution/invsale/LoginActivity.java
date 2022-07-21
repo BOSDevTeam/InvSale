@@ -28,7 +28,6 @@ public class LoginActivity extends AppCompatActivity {
     String clientPassword,newPassword;
     private Context context=this;
     private ProgressDialog progressDialog;
-    boolean passwordResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +37,7 @@ public class LoginActivity extends AppCompatActivity {
         setLayoutResource();
         sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
 
-        fillData();
+        //fillData();
 
         btnClear.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,7 +48,10 @@ public class LoginActivity extends AppCompatActivity {
         btnDel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                deleteValue();
+                //deleteValue();
+                Intent i = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(i);
+                finish();
             }
         });
         btnZero.setOnClickListener(new View.OnClickListener() {
@@ -120,59 +122,54 @@ public class LoginActivity extends AppCompatActivity {
         else if (tvCode3.getText().toString().length() == 0) tvCode3.setText(String.valueOf(val));
         else if (tvCode4.getText().toString().length() == 0) {
             tvCode4.setText(String.valueOf(val));
-            if(status==status_new){
-                newPassword=tvCode1.getText().toString()+tvCode2.getText().toString()+tvCode3.getText().toString()+tvCode4.getText().toString();
-                status=status_confirm;
+            if (status == status_new) {
+                newPassword = tvCode1.getText().toString() + tvCode2.getText().toString() + tvCode3.getText().toString() + tvCode4.getText().toString();
+                status = status_confirm;
                 tvEnterPassword.setText(getResources().getString(R.string.enter_confirm_password));
                 clearValue();
-            }else if(status==status_confirm){
-                String confirmPassword=tvCode1.getText().toString()+tvCode2.getText().toString()+tvCode3.getText().toString()+tvCode4.getText().toString();
-                if(newPassword.equals(confirmPassword)){
-                    Toast.makeText(context,getResources().getString(R.string.success),Toast.LENGTH_LONG).show();
+            } else if (status == status_confirm) {
+                String confirmPassword = tvCode1.getText().toString() + tvCode2.getText().toString() + tvCode3.getText().toString() + tvCode4.getText().toString();
+                if (newPassword.equals(confirmPassword)) {
+                    Toast.makeText(context, getResources().getString(R.string.success), Toast.LENGTH_LONG).show();
                     int clientId = sharedpreferences.getInt(AppConstant.ClientID, 0);
-                    if(updateClientPassword(clientId,confirmPassword)){  // insert password to database
-                        SharedPreferences.Editor editor = sharedpreferences.edit();
-                        editor.putString(AppConstant.ClientPassword, confirmPassword);
-                        editor.commit();
-                        Intent i=new Intent(LoginActivity.this,MainActivity.class);
-                        startActivity(i);
-                        finish();
-                    }else{
-                        Toast.makeText(context,getResources().getString(R.string.something_wrong),Toast.LENGTH_LONG).show();
-                    }
-                }else{
-                    Toast.makeText(context,getResources().getString(R.string.incorrect_confirm_password),Toast.LENGTH_LONG).show();
+                    updateClientPassword(clientId, newPassword);  // update password to database
+                } else {
+                    Toast.makeText(context, getResources().getString(R.string.incorrect_confirm_password), Toast.LENGTH_LONG).show();
                 }
-            }else if(status==status_existing){
-                String inputPassword=tvCode1.getText().toString()+tvCode2.getText().toString()+tvCode3.getText().toString()+tvCode4.getText().toString();
-                if(clientPassword.equals(inputPassword)){
-                    Intent i=new Intent(LoginActivity.this,MainActivity.class);
+            } else if (status == status_existing) {
+                String inputPassword = tvCode1.getText().toString() + tvCode2.getText().toString() + tvCode3.getText().toString() + tvCode4.getText().toString();
+                if (clientPassword.equals(inputPassword)) {
+                    Intent i = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(i);
                     finish();
-                }else{
-                    Toast.makeText(context,getResources().getString(R.string.incorrect_password),Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(context, getResources().getString(R.string.incorrect_password), Toast.LENGTH_LONG).show();
                 }
             }
         }
     }
 
-    private boolean updateClientPassword(int clientId, String clientPassword){
+    private void updateClientPassword(int clientId, String clientPassword) {
         progressDialog.show();
         progressDialog.setMessage(getResources().getString(R.string.loading));
-        Api.getClient().updateClientPassword(clientId,clientPassword).enqueue(new Callback<Void>() {
+        Api.getClient().updateClientPassword(clientId, clientPassword).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                passwordResult=true;
                 progressDialog.dismiss();
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+                editor.putString(AppConstant.ClientPassword, newPassword);
+                editor.commit();
+                Intent i = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(i);
+                finish();
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Log.e("LoginActivity", t.getMessage());
                 progressDialog.dismiss();
+                Log.e("LoginActivity", t.getMessage());
             }
         });
-        return passwordResult;
     }
 
     private void deleteValue(){
