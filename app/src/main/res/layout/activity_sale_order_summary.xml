@@ -151,7 +151,7 @@
         <Button android:id="@+id/btnContinue"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="@string/pay_continue"
+            android:text="@string/str_continue"
             android:textSize="@dimen/text_regular"
             android:textAllCaps="true"
             android:background="@drawable/btn_primary"/>

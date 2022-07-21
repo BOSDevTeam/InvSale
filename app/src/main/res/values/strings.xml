@@ -111,7 +111,7 @@
     <string name="email">Email</string>
     <string name="contact_person">Contact Person</string>
     <string name="customer_detail">Customer Detail</string>
-    <string name="pay_continue">Continue</string>
+    <string name="str_continue">Continue</string>
     <string name="order_confirm">Order Confirm</string>
     <string name="sale_summary">Sale Summary</string>
     <string name="sale_item">Sale Item</string>
