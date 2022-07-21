@@ -86,7 +86,7 @@ public class ListItemSaleAdapter extends BaseAdapter {
         holder.tvPrice.setText(appSetting.df.format(list.get(position).getSalePrice()));
         holder.tvQuantity.setText(String.valueOf(list.get(position).getQuantity()));
         holder.tvNumber.setText(String.valueOf(list.get(position).getNumber()));
-        holder.tvAmount.setText(appSetting.df.format(list.get(position).getAmount()));
+        holder.tvAmount.setText(appSetting.df.format(list.get(position).getTotalAmount()));
 
         holder.tvQuantity.setOnClickListener(new View.OnClickListener() {
 

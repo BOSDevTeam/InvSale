@@ -34,7 +34,7 @@ public class ListItemProductInfoAdapter extends RecyclerView.Adapter<ListItemPro
     @Override
     public void onBindViewHolder(ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         holder.tvProductName.setText(list.get(position).getProductName());
-        holder.tvCode.setText(list.get(position).getProductCode());
+        holder.tvCode.setText(list.get(position).getCode());
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

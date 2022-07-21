@@ -1,31 +1,31 @@
 package com.bosictsolution.invsale.data;
 
 public class ProductData {
-    private String productName,productCode;
-    private int salePrice,SubMenuID;
+    private String ProductName, Code;
+    private int ProductID,SalePrice,SubMenuID;
 
     public String getProductName() {
-        return productName;
+        return ProductName;
     }
 
     public void setProductName(String productName) {
-        this.productName = productName;
+        this.ProductName = productName;
     }
 
     public int getSalePrice() {
-        return salePrice;
+        return SalePrice;
     }
 
     public void setSalePrice(int salePrice) {
-        this.salePrice = salePrice;
+        this.SalePrice = salePrice;
     }
 
-    public String getProductCode() {
-        return productCode;
+    public String getCode() {
+        return Code;
     }
 
-    public void setProductCode(String productCode) {
-        this.productCode = productCode;
+    public void setCode(String code) {
+        this.Code = code;
     }
 
     public int getSubMenuID() {
@@ -34,5 +34,13 @@ public class ProductData {
 
     public void setSubMenuID(int subMenuID) {
         SubMenuID = subMenuID;
+    }
+
+    public int getProductID() {
+        return ProductID;
+    }
+
+    public void setProductID(int productID) {
+        ProductID = productID;
     }
 }

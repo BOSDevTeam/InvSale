@@ -40,7 +40,7 @@ public class SaleOrderDetailActivity extends AppCompatActivity implements ListIt
         data.setProductName("Product ABC");
         data.setQuantity(1);
         data.setSalePrice(2000);
-        data.setAmount(2000);
+        data.setTotalAmount(2000);
         lstSaleTran.add(data);
 
         data=new SaleTranData();
@@ -48,7 +48,7 @@ public class SaleOrderDetailActivity extends AppCompatActivity implements ListIt
         data.setProductName("Product ABC");
         data.setQuantity(1);
         data.setSalePrice(2000);
-        data.setAmount(2000);
+        data.setTotalAmount(2000);
         lstSaleTran.add(data);
 
         data=new SaleTranData();
@@ -56,7 +56,7 @@ public class SaleOrderDetailActivity extends AppCompatActivity implements ListIt
         data.setProductName("Product ABC");
         data.setQuantity(1);
         data.setSalePrice(2000);
-        data.setAmount(2000);
+        data.setTotalAmount(2000);
         lstSaleTran.add(data);
 
         listItemSaleAdapter=new ListItemSaleAdapter(this,lstSaleTran,false);

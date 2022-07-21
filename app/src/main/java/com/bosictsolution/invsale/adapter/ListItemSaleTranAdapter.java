@@ -37,7 +37,7 @@ public class ListItemSaleTranAdapter extends RecyclerView.Adapter<ListItemSaleTr
     public void onBindViewHolder(ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         holder.tvProductName.setText(list.get(position).getProductName());
         holder.tvQuantity.setText(String.valueOf(list.get(position).getQuantity()));
-        holder.tvAmount.setText(appSetting.df.format(list.get(position).getAmount()));
+        holder.tvAmount.setText(appSetting.df.format(list.get(position).getTotalAmount()));
     }
 
     @Override

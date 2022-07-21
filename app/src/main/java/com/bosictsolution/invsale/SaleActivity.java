@@ -4,6 +4,9 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import android.content.Context;
 import android.content.Intent;
@@ -22,10 +25,12 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bosictsolution.invsale.adapter.ListItemProductInfoAdapter;
 import com.bosictsolution.invsale.adapter.ListItemSaleAdapter;
 import com.bosictsolution.invsale.adapter.GeneralExpandableListAdapter;
+import com.bosictsolution.invsale.api.Api;
 import com.bosictsolution.invsale.data.ProductData;
 import com.bosictsolution.invsale.data.SaleTranData;
 import com.bosictsolution.invsale.data.SubMenuData;
@@ -59,8 +64,6 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         actionbar.setDisplayShowTitleEnabled(true);
         setTitle(getResources().getString(R.string.menu_sale));
 
-        setAdapter();
-
         btnPay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -75,7 +78,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
                 if(event.getAction()==MotionEvent.ACTION_DOWN){
                     if(event.getRawX() >= (etSearch.getRight() - etSearch.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
                         if(etSearch.getText().toString().length()!=0){
-                            showProductInfoDialog(etSearch.getText().toString());
+                            searchProductByValue(etSearch.getText().toString());
                         }
                     }
                 }
@@ -86,7 +89,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    if(etSearch.getText().toString().length()!=0) showProductInfoDialog(etSearch.getText().toString());
+                    if(etSearch.getText().toString().length()!=0) searchProductByValue(etSearch.getText().toString());
                 }
                 return false;
             }
@@ -99,32 +102,8 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         });
     }
 
-    private void setAdapter(){
-        SaleTranData data=new SaleTranData();
-        data.setNumber(1);
-        data.setProductName("Product ABC");
-        data.setQuantity(1);
-        data.setSalePrice(2000);
-        data.setAmount(2000);
-        lstSaleTran.add(data);
-
-        data=new SaleTranData();
-        data.setNumber(2);
-        data.setProductName("Product ABC");
-        data.setQuantity(1);
-        data.setSalePrice(2000);
-        data.setAmount(2000);
-        lstSaleTran.add(data);
-
-        data=new SaleTranData();
-        data.setNumber(3);
-        data.setProductName("Product ABC");
-        data.setQuantity(1);
-        data.setSalePrice(2000);
-        data.setAmount(2000);
-        lstSaleTran.add(data);
-
-        listItemSaleAdapter=new ListItemSaleAdapter(this,lstSaleTran,true);
+    private void setSaleTranAdapter() {
+        listItemSaleAdapter = new ListItemSaleAdapter(this, lstSaleTran, true);
         lvItemSale.setAdapter(listItemSaleAdapter);
         listItemSaleAdapter.setOnListener(this);
     }
@@ -138,6 +117,35 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void searchProductByValue(String value) {
+        Api.getClient().searchProductByValue(value).enqueue(new Callback<List<ProductData>>() {
+            @Override
+            public void onResponse(Call<List<ProductData>> call, Response<List<ProductData>> response) {
+                List<ProductData> list = response.body();
+                if (list.size() == 0)
+                    Toast.makeText(context, getResources().getString(R.string.product_not_found), Toast.LENGTH_LONG).show();
+                else if (list.size() > 1)
+                    showProductInfoDialog(value);
+                else if (list.size() == 1) {
+                    SaleTranData data = new SaleTranData();
+                    data.setNumber(lstSaleTran.size() + 1);
+                    data.setProductID(list.get(0).getProductID());
+                    data.setProductName(list.get(0).getProductName());
+                    data.setSalePrice(list.get(0).getSalePrice());
+                    data.setQuantity(1);
+                    data.setTotalAmount(list.get(0).getSalePrice());
+                    lstSaleTran.add(data);
+                    setSaleTranAdapter();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<ProductData>> call, Throwable t) {
+
+            }
+        });
     }
 
     private void setLayoutResource(){
@@ -235,91 +243,91 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
     private void createProduct(){
         ProductData data=new ProductData();
         data.setSubMenuID(1);
-        data.setProductCode("1001");
+        data.setCode("1001");
         data.setProductName("Product ABC");
         lstProduct.add(data);
 
         data=new ProductData();
         data.setSubMenuID(1);
-        data.setProductCode("1002");
+        data.setCode("1002");
         data.setProductName("Product ABC");
         lstProduct.add(data);
 
         data=new ProductData();
         data.setSubMenuID(1);
-        data.setProductCode("1003");
+        data.setCode("1003");
         data.setProductName("Product ABC");
         lstProduct.add(data);
 
         data=new ProductData();
         data.setSubMenuID(1);
-        data.setProductCode("1004");
+        data.setCode("1004");
         data.setProductName("Product ABC");
         lstProduct.add(data);
 
         data=new ProductData();
         data.setSubMenuID(1);
-        data.setProductCode("1005");
+        data.setCode("1005");
         data.setProductName("Product ABC");
         lstProduct.add(data);
 
         data=new ProductData();
         data.setSubMenuID(1);
-        data.setProductCode("1006");
+        data.setCode("1006");
         data.setProductName("Product ABC");
         lstProduct.add(data);
 
         data=new ProductData();
         data.setSubMenuID(1);
-        data.setProductCode("1007");
+        data.setCode("1007");
         data.setProductName("Product ABC");
         lstProduct.add(data);
 
         data=new ProductData();
         data.setSubMenuID(1);
-        data.setProductCode("1008");
+        data.setCode("1008");
         data.setProductName("Product ABC");
         lstProduct.add(data);
 
         data=new ProductData();
         data.setSubMenuID(1);
-        data.setProductCode("1009");
+        data.setCode("1009");
         data.setProductName("Product ABC");
         lstProduct.add(data);
 
         data=new ProductData();
         data.setSubMenuID(1);
-        data.setProductCode("1010");
+        data.setCode("1010");
         data.setProductName("Product ABC");
         lstProduct.add(data);
 
         data=new ProductData();
         data.setSubMenuID(2);
-        data.setProductCode("1011");
+        data.setCode("1011");
         data.setProductName("Product ABC");
         lstProduct.add(data);
 
         data=new ProductData();
         data.setSubMenuID(3);
-        data.setProductCode("1012");
+        data.setCode("1012");
         data.setProductName("Product ABC");
         lstProduct.add(data);
 
         data=new ProductData();
         data.setSubMenuID(4);
-        data.setProductCode("1013");
+        data.setCode("1013");
         data.setProductName("Product ABC");
         lstProduct.add(data);
 
         data=new ProductData();
         data.setSubMenuID(5);
-        data.setProductCode("1014");
+        data.setCode("1014");
         data.setProductName("Product ABC");
         lstProduct.add(data);
 
         data=new ProductData();
         data.setSubMenuID(6);
-        data.setProductCode("1015");
+        data.setCode("1015");
         data.setProductName("Product ABC");
         lstProduct.add(data);
     }
@@ -368,52 +376,52 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         final RecyclerView rvProduct = v.findViewById(R.id.rvProduct);
 
         ProductData data=new ProductData();
-        data.setProductCode("1001");
+        data.setCode("1001");
         data.setProductName("Product ABC");
         lstProduct.add(data);
 
         data=new ProductData();
-        data.setProductCode("1002");
+        data.setCode("1002");
         data.setProductName("Product ABC");
         lstProduct.add(data);
 
         data=new ProductData();
-        data.setProductCode("1003");
+        data.setCode("1003");
         data.setProductName("Product ABC");
         lstProduct.add(data);
 
         data=new ProductData();
-        data.setProductCode("1004");
+        data.setCode("1004");
         data.setProductName("Product ABC");
         lstProduct.add(data);
 
         data=new ProductData();
-        data.setProductCode("1005");
+        data.setCode("1005");
         data.setProductName("Product ABC");
         lstProduct.add(data);
 
         data=new ProductData();
-        data.setProductCode("1006");
+        data.setCode("1006");
         data.setProductName("Product ABC");
         lstProduct.add(data);
 
         data=new ProductData();
-        data.setProductCode("1007");
+        data.setCode("1007");
         data.setProductName("Product ABC");
         lstProduct.add(data);
 
         data=new ProductData();
-        data.setProductCode("1008");
+        data.setCode("1008");
         data.setProductName("Product ABC");
         lstProduct.add(data);
 
         data=new ProductData();
-        data.setProductCode("1009");
+        data.setCode("1009");
         data.setProductName("Product ABC");
         lstProduct.add(data);
 
         data=new ProductData();
-        data.setProductCode("1010");
+        data.setCode("1010");
         data.setProductName("Product ABC");
         lstProduct.add(data);
 

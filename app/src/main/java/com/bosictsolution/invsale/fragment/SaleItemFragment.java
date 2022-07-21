@@ -85,25 +85,25 @@ public class SaleItemFragment extends Fragment {
         SaleTranData data=new SaleTranData();
         data.setProductName("ProductABC");
         data.setQuantity(20);
-        data.setAmount(6600);
+        data.setTotalAmount(6600);
         lstSale.add(data);
 
         data=new SaleTranData();
         data.setProductName("ProductABC");
         data.setQuantity(20);
-        data.setAmount(6600);
+        data.setTotalAmount(6600);
         lstSale.add(data);
 
         data=new SaleTranData();
         data.setProductName("ProductABC");
         data.setQuantity(20);
-        data.setAmount(6600);
+        data.setTotalAmount(6600);
         lstSale.add(data);
 
         data=new SaleTranData();
         data.setProductName("ProductABC");
         data.setQuantity(20);
-        data.setAmount(6600);
+        data.setTotalAmount(6600);
         lstSale.add(data);
 
         listItemSaleTranAdapter=new ListItemSaleTranAdapter(lstSale,getContext());

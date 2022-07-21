@@ -43,7 +43,7 @@ public class SaleBillActivity extends AppCompatActivity {
         data.setProductName("Product ABC");
         data.setQuantity(1);
         data.setSalePrice(2000);
-        data.setAmount(2000);
+        data.setTotalAmount(2000);
         lstSaleTran.add(data);
 
         data=new SaleTranData();
@@ -51,7 +51,7 @@ public class SaleBillActivity extends AppCompatActivity {
         data.setProductName("Product ABC");
         data.setQuantity(1);
         data.setSalePrice(2000);
-        data.setAmount(2000);
+        data.setTotalAmount(2000);
         lstSaleTran.add(data);
 
         data=new SaleTranData();
@@ -59,7 +59,7 @@ public class SaleBillActivity extends AppCompatActivity {
         data.setProductName("Product ABC");
         data.setQuantity(1);
         data.setSalePrice(2000);
-        data.setAmount(2000);
+        data.setTotalAmount(2000);
         lstSaleTran.add(data);
 
         for (int i = 0; i< lstSaleTran.size(); i++) {
@@ -79,7 +79,7 @@ public class SaleBillActivity extends AppCompatActivity {
             tvPrice.setText(appSetting.df.format(lstSaleTran.get(i).getSalePrice()));
             tvQuantity.setText(String.valueOf(lstSaleTran.get(i).getQuantity()));
             tvNumber.setText(String.valueOf(lstSaleTran.get(i).getNumber()));
-            tvAmount.setText(appSetting.df.format(lstSaleTran.get(i).getAmount()));
+            tvAmount.setText(appSetting.df.format(lstSaleTran.get(i).getTotalAmount()));
 
             layoutList.addView(row);
         }

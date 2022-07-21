@@ -2,6 +2,7 @@ package com.bosictsolution.invsale.api;
 
 import com.bosictsolution.invsale.data.ClientData;
 import com.bosictsolution.invsale.data.DivisionData;
+import com.bosictsolution.invsale.data.ProductData;
 import com.bosictsolution.invsale.data.TownshipData;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public interface ApiInterface {
     @GET("division")  // API's endpoint
     Call<List<DivisionData>> getDivision();
 
-    @GET("township")  // API's endpoint
+    @GET("township")
     Call<List<TownshipData>> getTownshipByDivision(@Query("divisionId") int divisionId);
 
     @Headers("Content-type: application/json")
@@ -29,11 +30,14 @@ public interface ApiInterface {
     @POST("client/UpdateClientPassword")
     Call<Void> updateClientPassword(@Query("clientId") int clientId, @Query("password") String password);
 
-    @GET("client")  // API's endpoint
+    @GET("client")
     Call<ClientData> checkClient(@Query("phone") String phone);
 
     @Headers("Content-type: application/json")
     @POST("client/UpdateClient")
     Call<Void> updateClient(@Query("clientId") int clientId,@Body ClientData clientData);
+
+    @GET("product")
+    Call<List<ProductData>> searchProductByValue(@Query("value") String value);
 
 }
