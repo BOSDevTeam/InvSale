@@ -37,7 +37,7 @@ public class LoginActivity extends AppCompatActivity {
         setLayoutResource();
         sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
 
-        //fillData();
+        fillData();
 
         btnClear.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,10 +48,7 @@ public class LoginActivity extends AppCompatActivity {
         btnDel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //deleteValue();
-                Intent i = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(i);
-                finish();
+                deleteValue();
             }
         });
         btnZero.setOnClickListener(new View.OnClickListener() {

@@ -134,7 +134,6 @@
     <string name="success">Success</string>
     <string name="incorrect_confirm_password">Incorrect confirm password!</string>
     <string name="incorrect_password">Incorrect password!</string>
-    <string name="something_wrong">Something wrong!</string>
     <string name="enter_your_phone">Enter your phone number</string>
     <string name="registration_not_found">Not found registration data with this phone number.Check your number and try again!</string>
 

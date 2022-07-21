@@ -43,8 +43,8 @@ public class MainActivity extends AppCompatActivity {
         View headerView = binding.navView.getHeaderView(0);
         tvUserName = headerView.findViewById(R.id.tvUserName);
         tvPhone = headerView.findViewById(R.id.tvPhone);
-       /* tvUserName.setText(sharedpreferences.getString(AppConstant.ClientName, ""));
-        tvPhone.setText(sharedpreferences.getString(AppConstant.ClientPhone, ""));*/
+        tvUserName.setText(sharedpreferences.getString(AppConstant.ClientName, ""));
+        tvPhone.setText(sharedpreferences.getString(AppConstant.ClientPhone, ""));
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(

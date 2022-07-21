@@ -48,8 +48,6 @@ public class RegisterActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     int clientId;
     SharedPreferences sharedpreferences;
-    String[] divisions={"Yangon","Mandalay"};
-    String[] townships={"Kamaryut","Hlaing","Sanchaung"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,16 +66,9 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
 
-        //fillData();
-        ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.simple_spinner_item, divisions);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spDivision.setAdapter(adapter);
+        fillData();
 
-        adapter = new ArrayAdapter(context, android.R.layout.simple_spinner_item, townships);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spTownship.setAdapter(adapter);
-
-        /*spDivision.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spDivision.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 if(lstDivision.size()!=0) {
@@ -90,14 +81,11 @@ public class RegisterActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> adapterView) {
 
             }
-        });*/
+        });
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(RegisterActivity.this, LoginActivity.class);
-                startActivity(i);
-                finish();
-                /*if (validateControl()) {
+                if (validateControl()) {
                     ClientData clientData = new ClientData();
                     clientData.setClientName(etUserName.getText().toString());
                     clientData.setShopName(etShopName.getText().toString());
@@ -115,7 +103,7 @@ public class RegisterActivity extends AppCompatActivity {
                     clientData.setTownshipName(townshipName);
                     clientData.setSalePerson(true);
                     insertClient(clientData);  // insert client to database
-                }*/
+                }
             }
         });
         tvSignIn.setOnClickListener(new View.OnClickListener() {

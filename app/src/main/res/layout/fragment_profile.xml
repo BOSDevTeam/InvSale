@@ -27,7 +27,7 @@
                 <TextView android:text="@string/profile_detail"
                     style="@style/TitleTextView" />
                 <TextView android:id="@+id/tvPhone"
-                    android:text="09978776570"
+                    tools:text="09978776570"
                     style="@style/SmallTextView"
                     android:layout_marginTop="5dp"
                     android:textColor="@color/primary_500"/>
@@ -56,7 +56,7 @@
                 android:inputType="text"
                 android:imeOptions="actionNext"
                 android:layout_marginTop="30dp"
-                android:text="Demo User"
+                tools:text="Demo User"
                 android:background="@color/white"
                 android:drawableLeft="@drawable/ic_person_24"
                 android:drawablePadding="10dp"
@@ -74,7 +74,7 @@
                 android:inputType="text"
                 android:imeOptions="actionNext"
                 android:layout_marginTop="10dp"
-                android:text="Demo Shop"
+                tools:text="Demo Shop"
                 android:background="@color/white"
                 android:drawableLeft="@drawable/ic_home_work_24"
                 android:drawablePadding="10dp"
@@ -97,7 +97,7 @@
             <TextView android:id="@+id/tvDivision"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Yangon"
+                tools:text="Yangon"
                 style="@style/DefaultTextView"
                 android:layout_marginTop="10dp"/>
             <Spinner android:id="@+id/spDivision"
@@ -123,7 +123,7 @@
             <TextView android:id="@+id/tvTownship"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Kamaryut"
+                tools:text="Kamaryut"
                 style="@style/DefaultTextView"
                 android:layout_marginTop="10dp"/>
             <Spinner android:id="@+id/spTownship"
@@ -145,7 +145,7 @@
                 android:imeOptions="actionDone"
                 android:layout_marginTop="10dp"
                 android:minHeight="100dp"
-                android:text="495 Grove Street, Apartment #20, Yangon"
+                tools:text="495 Grove Street, Apartment #20, Yangon"
                 android:background="@color/white"
                 android:gravity="top"
                 android:enabled="false"/>
