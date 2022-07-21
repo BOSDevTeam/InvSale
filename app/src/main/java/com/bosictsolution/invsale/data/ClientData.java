@@ -2,7 +2,7 @@ package com.bosictsolution.invsale.data;
 
 public class ClientData {
     private int ClientID,DivisionID,TownshipID;
-    private String ClientName,ClientPassword,ShopName,Phone,Address;
+    private String ClientName,ClientPassword,ShopName,Phone,Address,DivisionName,TownshipName;
     private boolean IsSalePerson;
 
     public int getClientID() {
@@ -75,5 +75,21 @@ public class ClientData {
 
     public void setSalePerson(boolean salePerson) {
         IsSalePerson = salePerson;
+    }
+
+    public String getDivisionName() {
+        return DivisionName;
+    }
+
+    public void setDivisionName(String divisionName) {
+        DivisionName = divisionName;
+    }
+
+    public String getTownshipName() {
+        return TownshipName;
+    }
+
+    public void setTownshipName(String townshipName) {
+        TownshipName = townshipName;
     }
 }
