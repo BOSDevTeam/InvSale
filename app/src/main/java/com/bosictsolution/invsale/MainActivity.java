@@ -1,8 +1,13 @@
 package com.bosictsolution.invsale;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
+import com.bosictsolution.invsale.common.AppConstant;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.NonNull;
@@ -20,6 +25,8 @@ public class MainActivity extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
+    TextView tvUserName, tvPhone;
+    SharedPreferences sharedpreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,11 +34,17 @@ public class MainActivity extends AppCompatActivity {
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+        sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
 
         setSupportActionBar(binding.appBarMain.toolbar);
         /*binding.appBarMain.toolbar.setTitleTextColor(Color.WHITE);*/
         DrawerLayout drawer = binding.drawerLayout;
         NavigationView navigationView = binding.navView;
+        View headerView = binding.navView.getHeaderView(0);
+        tvUserName = headerView.findViewById(R.id.tvUserName);
+        tvPhone = headerView.findViewById(R.id.tvPhone);
+       /* tvUserName.setText(sharedpreferences.getString(AppConstant.ClientName, ""));
+        tvPhone.setText(sharedpreferences.getString(AppConstant.ClientPhone, ""));*/
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
