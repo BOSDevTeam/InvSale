@@ -8,7 +8,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.bosictsolution.invsale.R;
+import com.bosictsolution.invsale.common.AppSetting;
 import com.bosictsolution.invsale.data.ProductData;
+import com.bosictsolution.invsale.listener.ListItemProductInfoListener;
 
 import java.util.List;
 
@@ -17,10 +19,16 @@ import androidx.recyclerview.widget.RecyclerView;
 public class ListItemProductInfoAdapter extends RecyclerView.Adapter<ListItemProductInfoAdapter.ViewHolder> {
     private Context context;
     List<ProductData> list;
+    ListItemProductInfoListener listItemProductInfoListener;
+    AppSetting appSetting=new AppSetting();
 
     public ListItemProductInfoAdapter(List<ProductData> list, Context context) {
         this.list = list;
         this.context = context;
+    }
+
+    public void setOnListener(ListItemProductInfoListener listItemProductInfoListener){
+        this.listItemProductInfoListener=listItemProductInfoListener;
     }
 
     @Override
@@ -34,12 +42,15 @@ public class ListItemProductInfoAdapter extends RecyclerView.Adapter<ListItemPro
     @Override
     public void onBindViewHolder(ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         holder.tvProductName.setText(list.get(position).getProductName());
+        holder.tvPrice.setText(appSetting.df.format(list.get(position).getSalePrice()));
         holder.tvCode.setText(list.get(position).getCode());
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if(listItemProductInfoListener!=null){
+                    listItemProductInfoListener.onItemClickListener(position,list);
+                }
             }
         });
     }
@@ -51,11 +62,12 @@ public class ListItemProductInfoAdapter extends RecyclerView.Adapter<ListItemPro
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvProductName,tvCode;
+        TextView tvProductName,tvPrice,tvCode;
 
         public ViewHolder(View itemView) {
             super(itemView);
             tvProductName =itemView.findViewById(R.id.tvProductName);
+            tvPrice =  itemView.findViewById(R.id.tvPrice);
             tvCode =  itemView.findViewById(R.id.tvCode);
         }
     }

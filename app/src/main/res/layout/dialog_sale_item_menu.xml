@@ -8,7 +8,7 @@
     <LinearLayout style="@style/DialogLayout"
         android:gravity="center">
 
-        <TextView android:text="@string/product"
+        <TextView android:id="@+id/tvTitle"
             style="@style/DialogTitle" />
 
         <ImageButton android:id="@+id/btnClose"
@@ -21,15 +21,12 @@
     <LinearLayout style="@style/DialogLayout"
         android:orientation="vertical">
 
-        <TextView android:id="@+id/tvKeyword"
-            tools:text="Start Keyword: 10"
-            style="@style/DefaultTextView" />
-
-        <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvProduct"
+        <CheckBox android:id="@+id/chkFOC"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:listitem="@layout/item_product_info"
-            android:layout_marginTop="10dp"/>
+            android:text="@string/foc_item"
+            android:textColor="@color/black" android:drawableRight="@drawable/ic_giftcard_24"
+            android:drawableTint="@color/gray"/>
 
     </LinearLayout>
 

@@ -1,6 +1,7 @@
 package com.bosictsolution.invsale.api;
 
 import com.bosictsolution.invsale.data.ClientData;
+import com.bosictsolution.invsale.data.CompanySettingData;
 import com.bosictsolution.invsale.data.DivisionData;
 import com.bosictsolution.invsale.data.ProductData;
 import com.bosictsolution.invsale.data.TownshipData;
@@ -39,5 +40,8 @@ public interface ApiInterface {
 
     @GET("product")
     Call<List<ProductData>> searchProductByValue(@Query("value") String value);
+
+    @GET("companysetting")
+    Call<CompanySettingData> getCompanySetting();
 
 }

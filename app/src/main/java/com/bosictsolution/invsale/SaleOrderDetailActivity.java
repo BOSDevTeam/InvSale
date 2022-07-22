@@ -88,4 +88,9 @@ public class SaleOrderDetailActivity extends AppCompatActivity implements ListIt
     public void onRemoveClickListener(int position) {
 
     }
+
+    @Override
+    public void onItemLongClickListener(int position, TextView tvPrice, TextView tvAmount) {
+
+    }
 }

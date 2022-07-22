@@ -27,6 +27,7 @@
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/dialog_number.xml" value="0.1703125" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/dialog_product_info.xml" value="0.1703125" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/dialog_product_menu.xml" value="0.1703125" />
+        <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/dialog_sale_item_menu.xml" value="0.33" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/exp_list_child.xml" value="0.18854166666666666" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/exp_list_general_child.xml" value="0.18854166666666666" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/exp_list_general_group.xml" value="0.18854166666666666" />
@@ -43,6 +44,7 @@
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/fragment_sale_order_history.xml" value="0.18854166666666666" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/fragment_sale_summary.xml" value="0.25" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/fragment_setting.xml" value="0.1578125" />
+        <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/item_product_info.xml" value="0.33" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/item_sale_order_tran.xml" value="0.1578125" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/item_sale_tran.xml" value="0.1578125" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/list_item_product.xml" value="0.18854166666666666" />

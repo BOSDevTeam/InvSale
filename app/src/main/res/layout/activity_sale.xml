@@ -84,7 +84,7 @@
 
         <View style="@style/Divider"></View>
 
-        <ListView android:id="@+id/lvItemSale"
+        <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvItemSale"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:listitem="@layout/item_sale"/>
@@ -112,20 +112,22 @@
                     android:layout_weight="2"
                     android:text="Tax :  " />
 
-                <TextView style="@style/AmountGroupTextView"
+                <TextView android:id="@+id/tvTax"
+                    style="@style/AmountGroupTextView"
                     android:layout_width="0dp"
                     android:layout_weight="1"
-                    android:text="300" />
+                    android:text="0" />
 
                 <TextView style="@style/AmountGroupTextView"
                     android:layout_width="0dp"
                     android:layout_weight="2"
                     android:text="Subtotal :  " />
 
-                <TextView style="@style/AmountGroupTextView"
+                <TextView android:id="@+id/tvSubtotal"
+                    style="@style/AmountGroupTextView"
                     android:layout_width="0dp"
                     android:layout_weight="2"
-                    android:text="6,000" />
+                    android:text="0" />
 
             </LinearLayout>
 
@@ -138,7 +140,8 @@
                     android:layout_weight="2"
                     android:text="Charges :  " />
 
-                <TextView style="@style/AmountGroupTextView"
+                <TextView android:id="@+id/tvCharges"
+                    style="@style/AmountGroupTextView"
                     android:layout_width="0dp"
                     android:layout_weight="1"
                     android:text="0" />
@@ -150,10 +153,11 @@
                     android:textColor="@color/primary_500"
                     android:textSize="@dimen/text_large" />
 
-                <TextView style="@style/AmountGroupTextView"
+                <TextView android:id="@+id/tvTotal"
+                    style="@style/AmountGroupTextView"
                     android:layout_width="0dp"
                     android:layout_weight="2"
-                    android:text="6,300"
+                    android:text="0"
                     android:textColor="@color/primary_500"
                     android:textSize="@dimen/text_large" />
 
