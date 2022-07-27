@@ -3,7 +3,8 @@ package com.bosictsolution.invsale.data;
 public class SaleTranData {
 
     private String ProductName;
-    private int ProductID,Number,Quantity, SalePrice, TotalAmount;
+    private int ProductID,Number,Quantity, SalePrice, TotalAmount, DefaultSalePrice;
+    private boolean IsFOC;
 
     public String getProductName() {
         return ProductName;
@@ -51,5 +52,21 @@ public class SaleTranData {
 
     public void setProductID(int productID) {
         ProductID = productID;
+    }
+
+    public boolean isFOC() {
+        return IsFOC;
+    }
+
+    public void setFOC(boolean FOC) {
+        IsFOC = FOC;
+    }
+
+    public int getDefaultSalePrice() {
+        return DefaultSalePrice;
+    }
+
+    public void setDefaultSalePrice(int defaultSalePrice) {
+        DefaultSalePrice = defaultSalePrice;
     }
 }

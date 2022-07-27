@@ -1,9 +1,17 @@
 package com.bosictsolution.invsale.api;
 
+import com.bosictsolution.invsale.data.BankPaymentData;
 import com.bosictsolution.invsale.data.ClientData;
 import com.bosictsolution.invsale.data.CompanySettingData;
+import com.bosictsolution.invsale.data.CustomerData;
 import com.bosictsolution.invsale.data.DivisionData;
+import com.bosictsolution.invsale.data.LimitedDayData;
+import com.bosictsolution.invsale.data.LocationData;
+import com.bosictsolution.invsale.data.MainMenuData;
+import com.bosictsolution.invsale.data.PaymentData;
+import com.bosictsolution.invsale.data.PaymentMethodData;
 import com.bosictsolution.invsale.data.ProductData;
+import com.bosictsolution.invsale.data.SubMenuData;
 import com.bosictsolution.invsale.data.TownshipData;
 
 import java.util.List;
@@ -38,10 +46,37 @@ public interface ApiInterface {
     @POST("client/UpdateClient")
     Call<Void> updateClient(@Query("clientId") int clientId,@Body ClientData clientData);
 
-    @GET("product")
+    @GET("product/SearchProductByValue")
     Call<List<ProductData>> searchProductByValue(@Query("value") String value);
 
     @GET("companysetting")
     Call<CompanySettingData> getCompanySetting();
+
+    @GET("mainmenu")
+    Call<List<MainMenuData>> getMainMenu();
+
+    @GET("submenu")
+    Call<List<SubMenuData>> getSubMenuByMainMenu(@Query("mainMenuId") int mainMenuId);
+
+    @GET("product/GetProductBySubMenuList")
+    Call<List<ProductData>> getProductBySubMenuList(@Query("subMenuIdList") String subMenuIdList);
+
+    @GET("customer")
+    Call<List<CustomerData>> getCustomer();
+
+    @GET("location")
+    Call<List<LocationData>> getLocation();
+
+    @GET("payment")
+    Call<List<PaymentData>> getPayment();
+
+    @GET("paymentmethod")
+    Call<List<PaymentMethodData>> getPaymentMethod();
+
+    @GET("bankpayment")
+    Call<List<BankPaymentData>> getBankPayment();
+
+    @GET("limitedday")
+    Call<List<LimitedDayData>> getLimitedDay();
 
 }

@@ -56,40 +56,41 @@
                     android:layout_height="wrap_content"
                     android:background="@color/gray_soft"
                     android:padding="10dp"
-                    android:layout_marginTop="5dp">
+                    android:layout_marginTop="5dp"
+                    android:orientation="vertical">
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1">
-                        <EditText android:id="@+id/etLimitDay"
-                            style="@style/DefaultEditText"
-                            android:hint="@string/limit_day"
-                            android:inputType="number"
-                            android:imeOptions="actionDone"
-                            android:background="@android:color/transparent"/>
-                    </com.google.android.material.textfield.TextInputLayout>
+                    <TextView style="@style/SmallTextView"
+                        android:text="@string/limited_day"
+                        android:layout_marginTop="15dp"/>
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="0dp"
+                    <Spinner android:id="@+id/spLimitedDay"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
-                        android:layout_marginLeft="10dp">
-                        <EditText android:id="@+id/etAdvancedPay"
-                            style="@style/DefaultEditText"
-                            android:hint="@string/advanced_pay"
-                            android:inputType="number"
-                            android:imeOptions="actionDone"
-                            android:background="@android:color/transparent"/>
-                    </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_marginTop="5dp" />
 
-                    <Button android:id="@+id/btnLimitDayAdvancedPayOk"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/ok"
-                        android:textSize="@dimen/text_regular"
-                        android:layout_gravity="bottom"
-                        android:layout_marginLeft="10dp"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2">
+                            <EditText android:id="@+id/etAdvancedPay"
+                                style="@style/DefaultEditText"
+                                android:hint="@string/advanced_pay"
+                                android:inputType="number"
+                                android:imeOptions="actionDone"
+                                android:background="@android:color/transparent"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <Button android:id="@+id/btnLimitDayAdvancedPayOk"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/ok"
+                            android:textSize="@dimen/text_regular"
+                            android:layout_gravity="bottom"
+                            android:layout_marginLeft="10dp"/>
+                    </LinearLayout>
 
                 </LinearLayout>
 
@@ -143,47 +144,68 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:background="@color/primary_soft">
+                android:orientation="vertical"
+                android:padding="5dp"
+                android:background="@color/primary_soft"
+                android:layout_marginTop="10dp">
 
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:padding="10dp">
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-                    <TextView
-                        style="@style/SmallTextView"
-                        android:text="Advanced Pay: 0"
-                        android:textStyle="bold"/>
+                    <TextView style="@style/AmountGroupTextView"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:text="@string/advanced_pay" />
 
-                    <TextView
-                        style="@style/SmallTextView"
-                        android:text="Voucher Discount: 0"
-                        android:textStyle="bold"
-                        android:layout_marginTop="5dp"/>
+                    <TextView android:id="@+id/tvAdvancedPay"
+                        style="@style/AmountGroupTextView"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:text="0" />
+
+                    <TextView style="@style/AmountGroupTextView"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:text="@string/total" />
+
+                    <TextView android:id="@+id/tvTotal"
+                        style="@style/AmountGroupTextView"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:text="0" />
 
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:padding="10dp">
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-                    <TextView
-                        style="@style/SmallTextView"
-                        android:text="Total: 2,200"
-                        android:textStyle="bold"/>
+                    <TextView style="@style/AmountGroupTextView"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:text="@string/voucher_discount" />
 
-                    <TextView
-                        style="@style/SmallTextView"
-                        android:text="Grandtotal: 2,200"
-                        android:textStyle="bold"
-                        android:textColor="@color/black"
-                        android:layout_marginTop="5dp"/>
+                    <TextView android:id="@+id/tvVoucherDiscount"
+                        style="@style/AmountGroupTextView"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:text="0" />
+
+                    <TextView style="@style/AmountGroupTextView"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:text="@string/grandtotal"
+                        android:textColor="@color/primary_500"
+                        android:textSize="@dimen/text_large" />
+
+                    <TextView android:id="@+id/tvGrandTotal"
+                        style="@style/AmountGroupTextView"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:text="0"
+                        android:textColor="@color/primary_500"
+                        android:textSize="@dimen/text_large" />
 
                 </LinearLayout>
 
@@ -323,14 +345,26 @@
         android:layout_height="wrap_content"
         android:background="@color/black">
 
-        <TextView android:layout_width="0dp"
-            android:layout_weight="2"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:text="Grandtotal: MMK 2,200"
-            android:gravity="center"
-            android:textSize="@dimen/text_regular"
-            android:textStyle="bold"
-            android:textColor="@color/primary_soft"/>
+            android:layout_weight="2"
+            android:gravity="center">
+            <TextView android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Grandtotal: MMK "
+                android:gravity="center"
+                android:textSize="@dimen/text_regular"
+                android:textColor="@color/primary_soft"/>
+            <TextView android:id="@+id/tvGrandTotalBottom"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                tools:text="0"
+                android:gravity="center"
+                android:textSize="@dimen/text_regular"
+                android:textStyle="bold"
+                android:textColor="@color/primary_soft"/>
+        </LinearLayout>
 
         <Button android:id="@+id/btnContinue"
             android:layout_width="0dp"

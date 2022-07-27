@@ -59,7 +59,7 @@
             android:src="@drawable/ic_clear_24"
             android:background="@drawable/btn_transparent"
             android:padding="5dp"
-            app:tint="@color/gray"/>
+            app:tint="@color/black"/>
     </LinearLayout>
 
 </LinearLayout>

@@ -228,6 +228,24 @@
         <item name="android:padding">5dp</item>
     </style>
 
+    <style name="DialogOk">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:text">@string/ok</item>
+        <item name="android:textColor">@color/primary_500</item>
+        <item name="android:background">@drawable/btn_transparent</item>
+        <item name="android:padding">10dp</item>
+    </style>
+
+    <style name="DialogCancel">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:text">@string/cancel</item>
+        <item name="android:textColor">@color/primary_500</item>
+        <item name="android:background">@drawable/btn_transparent</item>
+        <item name="android:padding">10dp</item>
+    </style>
+
     <style name="NumberButton">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>

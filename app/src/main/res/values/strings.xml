@@ -53,7 +53,6 @@
     <string name="customer">Customer</string>
     <string name="location">Location</string>
     <string name="payment">Payment</string>
-    <string name="limit_day">Limit Day</string>
     <string name="advanced_pay">Advanced Pay</string>
     <string name="ok">OK</string>
     <string name="voucher_discount">Voucher Discount</string>
@@ -136,7 +135,17 @@
     <string name="incorrect_password">Incorrect password!</string>
     <string name="enter_your_phone">Enter your phone number</string>
     <string name="registration_not_found">Not found registration data with this phone number.Check your number and try again!</string>
-    <string name="product_not_found">Not found product for this search value!</string>
+    <string name="product_not_found_by_value">Not found product for this search value!</string>
     <string name="foc_item">FOC Item</string>
+    <string name="confirm">Confirm</string>
+    <string name="delete_confirm_message">Are you sure you want to delete?</string>
+    <string name="product_not_found_by_menu">Not found product for this menu!</string>
+    <string name="product_not_found">Not found product!</string>
+    <string name="advenced_pay">Advanced Pay</string>
+    <string name="invalid_percent_value">Invalid Percent Value!</string>
+    <string name="invalid_discount_amount">Invalid! Voucher discount is greater than grand total.</string>
+    <string name="limited_day">Limited Day</string>
+    <string name="enter_valid_value">Enter valid value!</string>
+    <string name="invalid_advanced_pay">Invalid! Advanced pay is greater than grand total.</string>
 
 </resources>
