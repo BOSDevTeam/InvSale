@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+    <LinearLayout style="@style/DialogLayout"
+        android:gravity="center">
+
+        <TextView android:id="@+id/tvTitle"
+            style="@style/DialogTitle" />
+
+        <ImageButton android:id="@+id/btnClose"
+            style="@style/DialogClose"/>
+
+    </LinearLayout>
+
+    <View style="@style/Divider"/>
+
+    <LinearLayout style="@style/DialogLayout"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:background="@color/primary_soft"
+            android:layout_marginTop="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView style="@style/AmountGroupTextView"
+                    android:layout_width="0dp"
+                    android:layout_weight="2"
+                    android:text="@string/total"
+                    android:gravity="left"/>
+
+                <TextView android:id="@+id/tvTotal"
+                    style="@style/AmountGroupTextView"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="0" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView style="@style/AmountGroupTextView"
+                    android:layout_width="0dp"
+                    android:layout_weight="2"
+                    android:text="@string/advanced_pay"
+                    android:gravity="left"/>
+
+                <TextView android:id="@+id/tvAdvancedPay"
+                    style="@style/AmountGroupTextView"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="0" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView style="@style/AmountGroupTextView"
+                    android:layout_width="0dp"
+                    android:layout_weight="2"
+                    android:text="@string/voucher_discount"
+                    android:gravity="left"/>
+
+                <TextView android:id="@+id/tvVoucherDiscount"
+                    style="@style/AmountGroupTextView"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="0" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView style="@style/AmountGroupTextView"
+                    android:layout_width="0dp"
+                    android:layout_weight="2"
+                    android:text="@string/grandtotal"
+                    android:textColor="@color/primary_500"
+                    android:textSize="@dimen/text_large"
+                    android:gravity="left"/>
+
+                <TextView android:id="@+id/tvGrandTotal"
+                    style="@style/AmountGroupTextView"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:text="0"
+                    android:textColor="@color/primary_500"
+                    android:textSize="@dimen/text_large" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <View style="@style/Divider"/>
+
+    <LinearLayout style="@style/DialogLayout"
+        android:gravity="right">
+
+        <Button android:id="@+id/btnOK"
+            style="@style/DialogOk"/>
+
+    </LinearLayout>
+
+</LinearLayout>

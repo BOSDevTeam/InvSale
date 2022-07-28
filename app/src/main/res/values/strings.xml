@@ -147,5 +147,7 @@
     <string name="limited_day">Limited Day</string>
     <string name="enter_valid_value">Enter valid value!</string>
     <string name="invalid_advanced_pay">Invalid! Advanced pay is greater than grand total.</string>
+    <string name="invalid_paid_grand_total">Invalid! Paid amount is less than grand total.</string>
+    <string name="invalid_paid_advanced_pay">Invalid! Paid amount is less than advanced pay.</string>
 
 </resources>

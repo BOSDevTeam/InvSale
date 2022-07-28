@@ -11,19 +11,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bosictsolution.invsale.api.Api;
@@ -35,30 +32,29 @@ import com.bosictsolution.invsale.data.LimitedDayData;
 import com.bosictsolution.invsale.data.LocationData;
 import com.bosictsolution.invsale.data.PaymentData;
 import com.bosictsolution.invsale.data.PaymentMethodData;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PayDetailActivity extends AppCompatActivity {
 
-    Spinner spCustomer,spLocation,spPayment,spPaymentMethod,spBankPayment,spLimitedDay;
-    Button btnLimitDayAdvancedPayOk,btnDollar,btnPercent,btnPaidOk,btnPaymentPercentOk,btnContinue;
-    RadioButton rdoNoDiscount;
-    LinearLayout layoutPaymentDebt,layoutPaymentMethod,layoutPaidChange,layoutOnlinePayment,layoutAdvancedPay;
-    EditText etAdvancedPay,etVoucherDiscount;
-    TextView tvAdvancedPay,tvTotal,tvVoucherDiscount,tvGrandTotal,tvGrandTotalBottom;
-
-    List<CustomerData> lstCustomer=new ArrayList<>();
-    List<LocationData> lstLocation=new ArrayList<>();
-    List<PaymentData> lstPayment=new ArrayList<>();
-    List<PaymentMethodData> lstPaymentMethod=new ArrayList<>();
-    List<BankPaymentData> lstBankPayment=new ArrayList<>();
-    List<LimitedDayData> lstLimitedDay=new ArrayList<>();
+    Spinner spCustomer, spLocation, spPayment, spPaymentMethod, spBankPayment, spLimitedDay;
+    Button btnDollar, btnPercent, btnOK;
+    LinearLayout layoutPaymentCredit, layoutPaymentMethod, layoutOnlinePayment;
+    EditText etAdvancedPay, etVoucherDiscount, etPaymentPercent;
+    CheckBox chkAdvancedPay;
+    TextInputLayout inputAdvancedPay,inputVoucherDiscount;
+    List<CustomerData> lstCustomer = new ArrayList<>();
+    List<LocationData> lstLocation = new ArrayList<>();
+    List<PaymentData> lstPayment = new ArrayList<>();
+    List<PaymentMethodData> lstPaymentMethod = new ArrayList<>();
+    List<BankPaymentData> lstBankPayment = new ArrayList<>();
+    List<LimitedDayData> lstLimitedDay = new ArrayList<>();
     private ProgressDialog progressDialog;
-    private Context context=this;
-    int voucherDiscountType,discountPercentType=1,discountAmountType=2,
-            total,grandTotal, voucherDiscountAmount,advancedPay;
-    AppSetting appSetting=new AppSetting();
+    private Context context = this;
+    int voucherDiscountType, discountPercentType = 1, discountAmountType = 2, total;
+    AppSetting appSetting = new AppSetting();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,20 +66,18 @@ public class PayDetailActivity extends AppCompatActivity {
         actionbar.setDisplayShowTitleEnabled(true);
         setTitle("#S0001");
 
-        Intent i=getIntent();
-        total=i.getIntExtra("Total",0);
+        Intent i = getIntent();
+        total = i.getIntExtra("Total", 0);
 
         fillData();
-        setLayoutPaymentDebt();
+        setLayoutPaymentCredit();
         setLayoutPaymentMethod();
-        setLayoutPaidChange();
         setLayoutOnlinePayment();
-        setLayoutAdvancedPay();
 
         spPayment.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                setLayoutPaymentDebt();
+                setLayoutPaymentCredit();
                 setLayoutPaymentMethod();
             }
 
@@ -95,9 +89,7 @@ public class PayDetailActivity extends AppCompatActivity {
         spPaymentMethod.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                setLayoutPaidChange();
                 setLayoutOnlinePayment();
-                setLayoutAdvancedPay();
             }
 
             @Override
@@ -105,28 +97,17 @@ public class PayDetailActivity extends AppCompatActivity {
 
             }
         });
-        btnLimitDayAdvancedPayOk.setOnClickListener(new View.OnClickListener() {
+        chkAdvancedPay.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick(View view) {
-                if(etAdvancedPay.getText().toString().length()==0)return;
-                if (Integer.parseInt(etAdvancedPay.getText().toString()) != 0) {
-                    if (Integer.parseInt(etAdvancedPay.getText().toString()) <= grandTotal) {
-                        advancedPay = Integer.parseInt(etAdvancedPay.getText().toString());
-                        tvAdvancedPay.setText(appSetting.df.format(Integer.parseInt(etAdvancedPay.getText().toString())));
-                        calculateGrandTotal();
-                        setLayoutPaymentMethod();
-                    } else
-                        Toast.makeText(context, getResources().getString(R.string.invalid_advanced_pay), Toast.LENGTH_LONG).show();
-                } else
-                    Toast.makeText(context, getResources().getString(R.string.enter_valid_value), Toast.LENGTH_LONG).show();
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                checkAdvancedPay(b);
             }
         });
-
-        btnContinue.setOnClickListener(new View.OnClickListener() {
+        btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i=new Intent(PayDetailActivity.this,CustomerActivity.class);
-                i.putExtra(AppConstant.extra_module_type,AppConstant.sale_module_type);
+                Intent i = new Intent(PayDetailActivity.this, CustomerActivity.class);
+                i.putExtra(AppConstant.extra_module_type, AppConstant.sale_module_type);
                 startActivity(i);
             }
         });
@@ -142,7 +123,7 @@ public class PayDetailActivity extends AppCompatActivity {
                 changeVoucherDiscountType(discountPercentType);
             }
         });
-        etVoucherDiscount.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        /*etVoucherDiscount.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -153,7 +134,6 @@ public class PayDetailActivity extends AppCompatActivity {
                                 Toast.makeText(context, getResources().getString(R.string.invalid_percent_value), Toast.LENGTH_LONG).show();
                             } else {
                                 voucherDiscountAmount = (total * voucherDiscountValue) / 100;
-                                rdoNoDiscount.setChecked(false);
                                 tvVoucherDiscount.setText(appSetting.df.format(voucherDiscountAmount));
                                 calculateGrandTotal();
                             }
@@ -162,7 +142,6 @@ public class PayDetailActivity extends AppCompatActivity {
                                 Toast.makeText(context, getResources().getString(R.string.invalid_discount_amount), Toast.LENGTH_LONG).show();
                             } else {
                                 voucherDiscountAmount = voucherDiscountValue;
-                                rdoNoDiscount.setChecked(false);
                                 tvVoucherDiscount.setText(appSetting.df.format(voucherDiscountAmount));
                                 calculateGrandTotal();
                             }
@@ -171,13 +150,7 @@ public class PayDetailActivity extends AppCompatActivity {
                 }
                 return false;
             }
-        });
-        rdoNoDiscount.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if(rdoNoDiscount.isChecked())clearVoucherDiscount();
-            }
-        });
+        });*/
     }
 
     @Override
@@ -191,27 +164,36 @@ public class PayDetailActivity extends AppCompatActivity {
         }
     }
 
-    private void clearVoucherDiscount(){
-        voucherDiscountAmount=0;
-        voucherDiscountType=discountPercentType;
-        btnPercent.setBackground(getResources().getDrawable(R.drawable.btn_primary));
-        btnPercent.setTextColor(getResources().getColor(R.color.white));
-        btnDollar.setBackground(getResources().getDrawable(R.drawable.btn_gray));
-        btnDollar.setTextColor(getResources().getColor(R.color.black_soft));
-        etVoucherDiscount.setText("");
-        etVoucherDiscount.setHint(getResources().getString(R.string.zero));
-        tvVoucherDiscount.setText("0");
-        calculateGrandTotal();
+    private boolean validateControl(){
+        if(discountAmountType==discountPercentType){
+            if(etVoucherDiscount.getText().toString().length()!=0){
+                if(Integer.parseInt(etVoucherDiscount.getText().toString())>100){
+                    inputVoucherDiscount.setError(getResources().getString(R.string.invalid_percent_value));
+                    return false;
+                }
+            }
+        }
+        if(spPayment.getSelectedItemPosition()==1 && chkAdvancedPay.isChecked()){
+            if(etAdvancedPay.getText().toString().length()==0){
+                inputAdvancedPay.setError(getResources().getString(R.string.enter_value));
+                return false;
+            }else if(Integer.parseInt(etAdvancedPay.getText().toString())==0){
+                inputAdvancedPay.setError(getResources().getString(R.string.enter_valid_value));
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void clearPaymentCredit() {
+        chkAdvancedPay.setChecked(false);
+        etAdvancedPay.setEnabled(false);
+        etAdvancedPay.setText("");
     }
 
     private void changeVoucherDiscountType(int type) {
         voucherDiscountType = type;
-        rdoNoDiscount.setChecked(true);
-        voucherDiscountAmount = 0;
         etVoucherDiscount.setText("");
-        tvVoucherDiscount.setText("0");
-        calculateGrandTotal();
-
         if (type == discountPercentType) {
             btnPercent.setBackground(getResources().getDrawable(R.drawable.btn_primary));
             btnPercent.setTextColor(getResources().getColor(R.color.white));
@@ -227,53 +209,65 @@ public class PayDetailActivity extends AppCompatActivity {
         }
     }
 
-    private void setLayoutAdvancedPay(){
-        if(etAdvancedPay.getText().toString().length()==0)  // if not have advanced pay
-            layoutAdvancedPay.setVisibility(View.GONE);
-        else layoutAdvancedPay.setVisibility(View.VISIBLE);
+    private void checkAdvancedPay(boolean checked) {
+        if (checked) {
+            etAdvancedPay.setEnabled(true);
+            layoutPaymentMethod.setVisibility(View.VISIBLE);
+        } else {
+            etAdvancedPay.setText("");
+            etAdvancedPay.setEnabled(false);
+            layoutPaymentMethod.setVisibility(View.GONE);
+        }
     }
 
-    private void setLayoutOnlinePayment(){
-        if(spPaymentMethod.getSelectedItemPosition()==0)  // if payment method is cashInHand
+    /*private void setAdvancedPay(){
+        if(etAdvancedPay.getText().toString().length()==0)return;
+        if (Integer.parseInt(etAdvancedPay.getText().toString()) != 0) {
+            if (Integer.parseInt(etAdvancedPay.getText().toString()) <= grandTotal) {
+                advancedPay = Integer.parseInt(etAdvancedPay.getText().toString());
+                tvAdvancedPay.setText(appSetting.df.format(Integer.parseInt(etAdvancedPay.getText().toString())));
+                calculateGrandTotal();
+                setLayoutPaymentMethod();
+            } else
+                Toast.makeText(context, getResources().getString(R.string.invalid_advanced_pay), Toast.LENGTH_LONG).show();
+        } else
+            Toast.makeText(context, getResources().getString(R.string.enter_valid_value), Toast.LENGTH_LONG).show();
+    }*/
+
+    private void setLayoutOnlinePayment() {
+        if (spPaymentMethod.getSelectedItemPosition() == 0)  // if payment method is cashInHand
             layoutOnlinePayment.setVisibility(View.GONE);
-        else if(spPaymentMethod.getSelectedItemPosition()==1)  // if payment method is onlinePayment
+        else if (spPaymentMethod.getSelectedItemPosition() == 1){  // if payment method is onlinePayment
             layoutOnlinePayment.setVisibility(View.VISIBLE);
+            etPaymentPercent.setText("");
+        }
     }
 
-    private void setLayoutPaidChange(){
-        if(spPaymentMethod.getSelectedItemPosition()==0)  // if payment method is cashInHand
-            layoutPaidChange.setVisibility(View.VISIBLE);
-        else if(spPaymentMethod.getSelectedItemPosition()==1)  // if payment method is onlinePayment
-            layoutPaidChange.setVisibility(View.GONE);
+    private void setLayoutPaymentMethod() {
+        if (spPayment.getSelectedItemPosition() == 0) {  // cash
+            layoutPaymentMethod.setVisibility(View.VISIBLE);
+            etPaymentPercent.setText("");
+        } else if (spPayment.getSelectedItemPosition() == 1) {  // credit
+            layoutPaymentMethod.setVisibility(View.GONE);
+        }
     }
 
-    private void setLayoutPaymentMethod(){
-        if(spPayment.getSelectedItemPosition()==1 && etAdvancedPay.getText().toString().length()==0)
-            layoutPaymentMethod.setVisibility(View.GONE);  // if payment is debt, if not have advanced pay
-        else layoutPaymentMethod.setVisibility(View.VISIBLE);
+    private void setLayoutPaymentCredit() {
+        if (spPayment.getSelectedItemPosition() == 0) {  // cash
+            layoutPaymentCredit.setVisibility(View.GONE);
+            clearPaymentCredit();
+        } else if (spPayment.getSelectedItemPosition() == 1)  // credit
+            layoutPaymentCredit.setVisibility(View.VISIBLE);
     }
 
-    private void setLayoutPaymentDebt(){
-        if(spPayment.getSelectedItemPosition()==0)layoutPaymentDebt.setVisibility(View.GONE);
-        else if(spPayment.getSelectedItemPosition()==1)layoutPaymentDebt.setVisibility(View.VISIBLE);
-    }
-
-    private void fillData(){
-        voucherDiscountType=discountPercentType;
-        tvTotal.setText(appSetting.df.format(total));
-        calculateGrandTotal();
+    private void fillData() {
+        voucherDiscountType = discountPercentType;
         progressDialog.show();
         progressDialog.setMessage(getResources().getString(R.string.loading));
         getCustomer();
     }
 
-    private void calculateGrandTotal(){
-        grandTotal=total-(advancedPay+voucherDiscountAmount);
-        tvGrandTotal.setText(appSetting.df.format(grandTotal));
-        tvGrandTotalBottom.setText(appSetting.df.format(grandTotal));
-    }
-
-    private void setCustomer(){
+    private void setCustomer() {
         String[] customers = new String[lstCustomer.size()];
         for (int i = 0; i < lstCustomer.size(); i++) {
             customers[i] = lstCustomer.get(i).getCustomerName();
@@ -283,7 +277,7 @@ public class PayDetailActivity extends AppCompatActivity {
         spCustomer.setAdapter(adapter);
     }
 
-    private void setLocation(){
+    private void setLocation() {
         String[] locations = new String[lstLocation.size()];
         for (int i = 0; i < lstLocation.size(); i++) {
             locations[i] = lstLocation.get(i).getShortName();
@@ -294,7 +288,7 @@ public class PayDetailActivity extends AppCompatActivity {
         spLocation.setEnabled(false);
     }
 
-    private void setPayment(){
+    private void setPayment() {
         String[] payments = new String[lstPayment.size()];
         for (int i = 0; i < lstPayment.size(); i++) {
             payments[i] = lstPayment.get(i).getKeyword();
@@ -304,7 +298,7 @@ public class PayDetailActivity extends AppCompatActivity {
         spPayment.setAdapter(adapter);
     }
 
-    private void setPaymentMethod(){
+    private void setPaymentMethod() {
         String[] paymentMethods = new String[lstPaymentMethod.size()];
         for (int i = 0; i < lstPaymentMethod.size(); i++) {
             paymentMethods[i] = lstPaymentMethod.get(i).getPayMethodName();
@@ -314,7 +308,7 @@ public class PayDetailActivity extends AppCompatActivity {
         spPaymentMethod.setAdapter(adapter);
     }
 
-    private void setBankPayment(){
+    private void setBankPayment() {
         String[] bankPayments = new String[lstBankPayment.size()];
         for (int i = 0; i < lstBankPayment.size(); i++) {
             bankPayments[i] = lstBankPayment.get(i).getBankPaymentName();
@@ -324,7 +318,7 @@ public class PayDetailActivity extends AppCompatActivity {
         spBankPayment.setAdapter(adapter);
     }
 
-    private void setLimitedDay(){
+    private void setLimitedDay() {
         String[] limitedDays = new String[lstLimitedDay.size()];
         for (int i = 0; i < lstLimitedDay.size(); i++) {
             limitedDays[i] = lstLimitedDay.get(i).getLimitedDayName();
@@ -334,11 +328,11 @@ public class PayDetailActivity extends AppCompatActivity {
         spLimitedDay.setAdapter(adapter);
     }
 
-    private void getCustomer(){
+    private void getCustomer() {
         Api.getClient().getCustomer().enqueue(new Callback<List<CustomerData>>() {
             @Override
             public void onResponse(Call<List<CustomerData>> call, Response<List<CustomerData>> response) {
-                lstCustomer=response.body();
+                lstCustomer = response.body();
                 setCustomer();
                 getLocation();
             }
@@ -351,11 +345,11 @@ public class PayDetailActivity extends AppCompatActivity {
         });
     }
 
-    private void getLocation(){
+    private void getLocation() {
         Api.getClient().getLocation().enqueue(new Callback<List<LocationData>>() {
             @Override
             public void onResponse(Call<List<LocationData>> call, Response<List<LocationData>> response) {
-                lstLocation=response.body();
+                lstLocation = response.body();
                 setLocation();
                 getPayment();
             }
@@ -368,11 +362,11 @@ public class PayDetailActivity extends AppCompatActivity {
         });
     }
 
-    private void getPayment(){
+    private void getPayment() {
         Api.getClient().getPayment().enqueue(new Callback<List<PaymentData>>() {
             @Override
             public void onResponse(Call<List<PaymentData>> call, Response<List<PaymentData>> response) {
-                lstPayment=response.body();
+                lstPayment = response.body();
                 setPayment();
                 getPaymentMethod();
             }
@@ -385,11 +379,11 @@ public class PayDetailActivity extends AppCompatActivity {
         });
     }
 
-    private void getPaymentMethod(){
+    private void getPaymentMethod() {
         Api.getClient().getPaymentMethod().enqueue(new Callback<List<PaymentMethodData>>() {
             @Override
             public void onResponse(Call<List<PaymentMethodData>> call, Response<List<PaymentMethodData>> response) {
-                lstPaymentMethod=response.body();
+                lstPaymentMethod = response.body();
                 setPaymentMethod();
                 getBankPayment();
             }
@@ -402,11 +396,11 @@ public class PayDetailActivity extends AppCompatActivity {
         });
     }
 
-    private void getBankPayment(){
+    private void getBankPayment() {
         Api.getClient().getBankPayment().enqueue(new Callback<List<BankPaymentData>>() {
             @Override
             public void onResponse(Call<List<BankPaymentData>> call, Response<List<BankPaymentData>> response) {
-                lstBankPayment=response.body();
+                lstBankPayment = response.body();
                 setBankPayment();
                 getLimitedDay();
             }
@@ -419,12 +413,12 @@ public class PayDetailActivity extends AppCompatActivity {
         });
     }
 
-    private void getLimitedDay(){
+    private void getLimitedDay() {
         Api.getClient().getLimitedDay().enqueue(new Callback<List<LimitedDayData>>() {
             @Override
             public void onResponse(Call<List<LimitedDayData>> call, Response<List<LimitedDayData>> response) {
                 progressDialog.dismiss();
-                lstLimitedDay=response.body();
+                lstLimitedDay = response.body();
                 setLimitedDay();
             }
 
@@ -436,34 +430,27 @@ public class PayDetailActivity extends AppCompatActivity {
         });
     }
 
-    private void setLayoutResource(){
-        spCustomer=findViewById(R.id.spCustomer);
-        spLocation=findViewById(R.id.spLocation);
-        spPayment=findViewById(R.id.spPayment);
-        spPaymentMethod=findViewById(R.id.spPaymentMethod);
-        spBankPayment=findViewById(R.id.spBankPayment);
-        spLimitedDay=findViewById(R.id.spLimitedDay);
-        btnLimitDayAdvancedPayOk=findViewById(R.id.btnLimitDayAdvancedPayOk);
-        btnDollar=findViewById(R.id.btnDollar);
-        btnPercent=findViewById(R.id.btnPercent);
-        btnPaidOk=findViewById(R.id.btnPaidOk);
-        btnPaymentPercentOk=findViewById(R.id.btnPaymentPercentOk);
-        btnContinue=findViewById(R.id.btnContinue);
-        rdoNoDiscount=findViewById(R.id.rdoNoDiscount);
-        layoutPaymentDebt=findViewById(R.id.layoutPaymentDebt);
-        layoutPaymentMethod=findViewById(R.id.layoutPaymentMethod);
-        layoutPaidChange=findViewById(R.id.layoutPaidChange);
-        layoutOnlinePayment=findViewById(R.id.layoutOnlinePayment);
-        layoutAdvancedPay=findViewById(R.id.layoutAdvancedPay);
-        etAdvancedPay=findViewById(R.id.etAdvancedPay);
-        etVoucherDiscount=findViewById(R.id.etVoucherDiscount);
-        tvAdvancedPay=findViewById(R.id.tvAdvancedPay);
-        tvTotal=findViewById(R.id.tvTotal);
-        tvVoucherDiscount=findViewById(R.id.tvVoucherDiscount);
-        tvGrandTotal=findViewById(R.id.tvGrandTotal);
-        tvGrandTotalBottom=findViewById(R.id.tvGrandTotalBottom);
+    private void setLayoutResource() {
+        spCustomer = findViewById(R.id.spCustomer);
+        spLocation = findViewById(R.id.spLocation);
+        spPayment = findViewById(R.id.spPayment);
+        spPaymentMethod = findViewById(R.id.spPaymentMethod);
+        spBankPayment = findViewById(R.id.spBankPayment);
+        spLimitedDay = findViewById(R.id.spLimitedDay);
+        btnDollar = findViewById(R.id.btnDollar);
+        btnPercent = findViewById(R.id.btnPercent);
+        layoutPaymentCredit = findViewById(R.id.layoutPaymentCredit);
+        layoutPaymentMethod = findViewById(R.id.layoutPaymentMethod);
+        layoutOnlinePayment = findViewById(R.id.layoutOnlinePayment);
+        etAdvancedPay = findViewById(R.id.etAdvancedPay);
+        etVoucherDiscount = findViewById(R.id.etVoucherDiscount);
+        etPaymentPercent = findViewById(R.id.etPaymentPercent);
+        chkAdvancedPay = findViewById(R.id.chkAdvancedPay);
+        btnOK = findViewById(R.id.btnOK);
+        inputAdvancedPay = findViewById(R.id.inputAdvancedPay);
+        inputVoucherDiscount = findViewById(R.id.inputVoucherDiscount);
 
-        progressDialog =new ProgressDialog(context);
+        progressDialog = new ProgressDialog(context);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(false);
