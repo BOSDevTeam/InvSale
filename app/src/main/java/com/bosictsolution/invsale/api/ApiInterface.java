@@ -11,9 +11,12 @@ import com.bosictsolution.invsale.data.MainMenuData;
 import com.bosictsolution.invsale.data.PaymentData;
 import com.bosictsolution.invsale.data.PaymentMethodData;
 import com.bosictsolution.invsale.data.ProductData;
+import com.bosictsolution.invsale.data.SaleMasterData;
 import com.bosictsolution.invsale.data.SubMenuData;
 import com.bosictsolution.invsale.data.TownshipData;
+import com.bosictsolution.invsale.data.VoucherSettingData;
 
+import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -78,5 +81,19 @@ public interface ApiInterface {
 
     @GET("limitedday")
     Call<List<LimitedDayData>> getLimitedDay();
+
+    @Headers("Content-type: application/json")
+    @POST("customer")
+    Call<Integer> insertCustomer(@Body CustomerData customerData);
+
+    @Headers("Content-type: application/json")
+    @POST("sale")
+    Call<Integer> insertSale(@Body SaleMasterData model);
+
+    @GET("vouchersetting")
+    Call<VoucherSettingData> getVoucherSetting(@Query("locationId") int locationId);
+
+    @GET("sale")
+    Call<List<SaleMasterData>> getMasterSaleByDate(@Query("date") String date);
 
 }

@@ -133,10 +133,6 @@ public class RegisterActivity extends AppCompatActivity {
             Toast.makeText(context,getResources().getString(R.string.township_not_found),Toast.LENGTH_LONG).show();
             return false;
         }
-        else if(etAddress.getText().toString().length()==0){
-            inputAddress.setError(getResources().getString(R.string.enter_value));
-            return false;
-        }
         return true;
     }
 

@@ -9,7 +9,7 @@ public class Api {
     public static ApiInterface getClient(){  // this is manual dependency injection
         if(retrofit==null){
             retrofit=new Retrofit.Builder()
-                    .baseUrl("http://192.168.43.187/InventoryWebService/api/")
+                    .baseUrl("http://192.168.100.14/InventoryWebService/api/")
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
         }

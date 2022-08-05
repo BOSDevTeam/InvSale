@@ -37,6 +37,7 @@ import com.bosictsolution.invsale.adapter.ListItemSaleAdapterR;
 import com.bosictsolution.invsale.api.Api;
 import com.bosictsolution.invsale.common.AppSetting;
 import com.bosictsolution.invsale.common.Confirmation;
+import com.bosictsolution.invsale.common.DatabaseAccess;
 import com.bosictsolution.invsale.data.CompanySettingData;
 import com.bosictsolution.invsale.data.MainMenuData;
 import com.bosictsolution.invsale.data.ProductData;
@@ -69,9 +70,11 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
     HashMap<String,List<String>> listDataChild;
     android.app.AlertDialog productInfoDialog,productMenuDialog;
     private ProgressDialog progressDialog;
-    int tax, charges, total;
+    int tax, charges, total, subtotal , taxAmount, chargesAmount;
     AppSetting appSetting=new AppSetting();
     Confirmation confirmation=new Confirmation(this);
+    DatabaseAccess db;
+    public static boolean isSaleCompleted;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +85,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setDisplayShowTitleEnabled(true);
         setTitle(getResources().getString(R.string.menu_sale));
+        db=new DatabaseAccess(context);
 
         getCompanySetting();
 
@@ -89,9 +93,14 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
             @Override
             public void onClick(View view) {
                 if(lstSaleTran.size()!=0) {
-                    Intent i = new Intent(SaleActivity.this, PayDetailActivity.class);
-                    i.putExtra("Total",total);
-                    startActivity(i);
+                    if(db.insertTranSale(lstSaleTran)){
+                        Intent i = new Intent(SaleActivity.this, PayDetailActivity.class);
+                        i.putExtra("Subtotal",subtotal);
+                        i.putExtra("TaxAmount",taxAmount);
+                        i.putExtra("ChargesAmount",chargesAmount);
+                        i.putExtra("Total",total);
+                        startActivity(i);
+                    }
                 }
             }
         });
@@ -131,6 +140,16 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
                     confirmation.showConfirmDialog(context, getResources().getString(R.string.delete_confirm_message));
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(isSaleCompleted){
+            isSaleCompleted=false;
+            lstSaleTran=new ArrayList<>();
+            setSaleTranAdapter();
+        }
     }
 
     @Override
@@ -482,7 +501,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
     }
 
     private void calculateAmount() {
-        int subtotal = 0, taxAmount, chargesAmount;
+        subtotal=0;
         for (int i = 0; i < lstSaleTran.size(); i++) {
             subtotal += lstSaleTran.get(i).getTotalAmount();
         }
@@ -639,4 +658,5 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(false);
     }
+
 }

@@ -2,15 +2,19 @@ package com.bosictsolution.invsale;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -19,19 +23,23 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bosictsolution.invsale.api.Api;
 import com.bosictsolution.invsale.common.AppConstant;
 import com.bosictsolution.invsale.common.AppSetting;
+import com.bosictsolution.invsale.common.DatabaseAccess;
 import com.bosictsolution.invsale.data.BankPaymentData;
 import com.bosictsolution.invsale.data.CustomerData;
 import com.bosictsolution.invsale.data.LimitedDayData;
 import com.bosictsolution.invsale.data.LocationData;
 import com.bosictsolution.invsale.data.PaymentData;
 import com.bosictsolution.invsale.data.PaymentMethodData;
+import com.bosictsolution.invsale.data.SaleMasterData;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
@@ -42,9 +50,9 @@ public class PayDetailActivity extends AppCompatActivity {
     Spinner spCustomer, spLocation, spPayment, spPaymentMethod, spBankPayment, spLimitedDay;
     Button btnDollar, btnPercent, btnOK;
     LinearLayout layoutPaymentCredit, layoutPaymentMethod, layoutOnlinePayment;
-    EditText etAdvancedPay, etVoucherDiscount, etPaymentPercent;
+    EditText etAdvancedPay, etVoucherDiscount, etPaymentPercent,etRemark;
     CheckBox chkAdvancedPay;
-    TextInputLayout inputAdvancedPay,inputVoucherDiscount;
+    TextInputLayout inputAdvancedPay,inputVoucherDiscount,inputPaymentPercent;
     List<CustomerData> lstCustomer = new ArrayList<>();
     List<LocationData> lstLocation = new ArrayList<>();
     List<PaymentData> lstPayment = new ArrayList<>();
@@ -53,8 +61,12 @@ public class PayDetailActivity extends AppCompatActivity {
     List<LimitedDayData> lstLimitedDay = new ArrayList<>();
     private ProgressDialog progressDialog;
     private Context context = this;
-    int voucherDiscountType, discountPercentType = 1, discountAmountType = 2, total;
+    int voucherDiscountType, discountPercentType = 1, discountAmountType = 2, total,
+        subtotal,taxAmount,chargesAmount,clientId;
     AppSetting appSetting = new AppSetting();
+    DatabaseAccess db;
+    SharedPreferences sharedpreferences;
+    public static Activity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,10 +76,18 @@ public class PayDetailActivity extends AppCompatActivity {
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setDisplayShowTitleEnabled(true);
-        setTitle("#S0001");
+        setTitle(getResources().getString(R.string.menu_sale));
+        sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
+        db=new DatabaseAccess(context);
+        activity=this;
 
         Intent i = getIntent();
+        subtotal = i.getIntExtra("Subtotal", 0);
+        taxAmount = i.getIntExtra("TaxAmount", 0);
+        chargesAmount = i.getIntExtra("ChargesAmount", 0);
         total = i.getIntExtra("Total", 0);
+
+        clientId=sharedpreferences.getInt(AppConstant.ClientID,0);
 
         fillData();
         setLayoutPaymentCredit();
@@ -106,9 +126,8 @@ public class PayDetailActivity extends AppCompatActivity {
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(PayDetailActivity.this, CustomerActivity.class);
-                i.putExtra(AppConstant.extra_module_type, AppConstant.sale_module_type);
-                startActivity(i);
+                if (validateControl())
+                    showAmountGroupDialog(prepareSaleMasterData());
             }
         });
         btnDollar.setOnClickListener(new View.OnClickListener() {
@@ -123,34 +142,6 @@ public class PayDetailActivity extends AppCompatActivity {
                 changeVoucherDiscountType(discountPercentType);
             }
         });
-        /*etVoucherDiscount.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    if(etVoucherDiscount.getText().toString().length()!=0) {
-                        int voucherDiscountValue = Integer.parseInt(etVoucherDiscount.getText().toString());
-                        if (voucherDiscountType == discountPercentType) {
-                            if (voucherDiscountValue > 100) {
-                                Toast.makeText(context, getResources().getString(R.string.invalid_percent_value), Toast.LENGTH_LONG).show();
-                            } else {
-                                voucherDiscountAmount = (total * voucherDiscountValue) / 100;
-                                tvVoucherDiscount.setText(appSetting.df.format(voucherDiscountAmount));
-                                calculateGrandTotal();
-                            }
-                        } else if (voucherDiscountType == discountAmountType) {
-                            if (voucherDiscountValue > grandTotal) {
-                                Toast.makeText(context, getResources().getString(R.string.invalid_discount_amount), Toast.LENGTH_LONG).show();
-                            } else {
-                                voucherDiscountAmount = voucherDiscountValue;
-                                tvVoucherDiscount.setText(appSetting.df.format(voucherDiscountAmount));
-                                calculateGrandTotal();
-                            }
-                        }
-                    }
-                }
-                return false;
-            }
-        });*/
     }
 
     @Override
@@ -164,8 +155,198 @@ public class PayDetailActivity extends AppCompatActivity {
         }
     }
 
+    private void showAmountGroupDialog(SaleMasterData saleMasterData) {
+        LayoutInflater reg = LayoutInflater.from(context);
+        View v = reg.inflate(R.layout.dialog_sale_amount_group, null);
+        android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(context);
+        dialog.setView(v);
+
+        final ImageButton btnClose = v.findViewById(R.id.btnClose);
+        final TextView tvTotal = v.findViewById(R.id.tvTotal);
+        final TextView tvAdvancedPay = v.findViewById(R.id.tvAdvancedPay);
+        final TextView tvVoucherDiscount = v.findViewById(R.id.tvVoucherDiscount);
+        final TextView tvLabelVoucherDiscount = v.findViewById(R.id.tvLabelVoucherDiscount);
+        final TextView tvPercentGrandTotal = v.findViewById(R.id.tvPercentGrandTotal);
+        final TextView tvPercentAmount = v.findViewById(R.id.tvPercentAmount);
+        final TextView tvLabelPercent = v.findViewById(R.id.tvLabelPercent);
+        final TextView tvGrandTotal = v.findViewById(R.id.tvGrandTotal);
+        final Button btnContinue = v.findViewById(R.id.btnContinue);
+        final LinearLayout layoutAdvancedPay = v.findViewById(R.id.layoutAdvancedPay);
+        final LinearLayout layoutPercent = v.findViewById(R.id.layoutPercent);
+        final LinearLayout layoutPercentGrandTotal = v.findViewById(R.id.layoutPercentGrandTotal);
+
+        tvTotal.setText(appSetting.df.format(total));
+
+        if (saleMasterData.isAdvancedPay()) {
+            layoutAdvancedPay.setVisibility(View.VISIBLE);
+            tvAdvancedPay.setText(appSetting.df.format(saleMasterData.getAdvancedPayAmt()));
+        } else
+            layoutAdvancedPay.setVisibility(View.GONE);
+
+        if (saleMasterData.getVouDisPercent() != 0)
+            tvLabelVoucherDiscount.setText(getResources().getString(R.string.voucher_discount) + "(" + saleMasterData.getVouDisPercent() + "%)");
+        tvVoucherDiscount.setText(appSetting.df.format(saleMasterData.getVoucherDis()));
+
+        int grandTotal = saleMasterData.getTotalAmt() - (saleMasterData.getAdvancedPayAmt() + saleMasterData.getVoucherDis());
+        tvGrandTotal.setText(appSetting.df.format(grandTotal));
+
+        if (saleMasterData.getPaymentPercent() != 0) {
+            layoutPercent.setVisibility(View.VISIBLE);
+            layoutPercentGrandTotal.setVisibility(View.VISIBLE);
+            tvPercentAmount.setText(appSetting.df.format(saleMasterData.getPayPercentAmt()));
+            tvPercentGrandTotal.setText(appSetting.df.format(saleMasterData.getNetAmt()));
+            tvLabelPercent.setText(getResources().getString(R.string.percent) + "(" + saleMasterData.getPaymentPercent() + "%)");
+        } else {
+            layoutPercent.setVisibility(View.GONE);
+            layoutPercentGrandTotal.setVisibility(View.GONE);
+        }
+
+        if (!saleMasterData.isDefaultCustomer())
+            btnContinue.setText(getResources().getString(R.string.pay_confirm));
+
+        dialog.setCancelable(true);
+        android.app.AlertDialog alertDialog = dialog.create();
+        alertDialog.show();
+
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
+        btnContinue.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (db.insertMasterSale(saleMasterData)) {
+                    if (saleMasterData.isDefaultCustomer()) {
+                        Intent i = new Intent(PayDetailActivity.this, CustomerActivity.class);
+                        i.putExtra(AppConstant.extra_module_type, AppConstant.sale_module_type);
+                        i.putExtra("LocationID", saleMasterData.getLocationID());
+                        startActivity(i);
+                    } else
+                        insertSale();
+                } else
+                    Toast.makeText(context, getResources().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void insertSale() {
+        SaleMasterData data = db.getMasterSale();
+        data.setLstSaleTran(db.getTranSale());
+        data.setClient(true);
+        data.setClientID(clientId);
+        Api.getClient().insertSale(data).enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                progressDialog.dismiss();
+                if (response.isSuccessful()) {
+                    int slipId=response.body();
+                    int position = spCustomer.getSelectedItemPosition();
+                    String customerName = lstCustomer.get(position).getCustomerName();
+                    Intent intent = new Intent(PayDetailActivity.this, SaleBillActivity.class);
+                    intent.putExtra("LocationID", data.getLocationID());
+                    intent.putExtra("CustomerName", customerName);
+                    intent.putExtra("SlipID",slipId);
+                    startActivity(intent);
+                    finish();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Integer> call, Throwable t) {
+                progressDialog.dismiss();
+                Log.e("PayDetailActivity", t.getMessage());
+            }
+        });
+    }
+
+    private SaleMasterData prepareSaleMasterData() {
+        int advancedPay = 0, vouDisPercent = 0, voucherDiscount = 0, payPercent = 0, payPercentAmt = 0, grandTotal,
+                percentGrandTotal = 0, position, paymentId, customerId, locationId, limitedDayId = 0, payMethodId,
+                bankPaymentId = 0;
+        boolean isAdvancedPay = false, isDefaultCustomer;
+        String remark;
+        SaleMasterData saleMasterData = new SaleMasterData();
+
+        position = spCustomer.getSelectedItemPosition();
+        isDefaultCustomer = lstCustomer.get(position).isDefault();
+        if (isDefaultCustomer) customerId = 0;
+        else customerId = lstCustomer.get(position).getCustomerID();
+
+        position = spLocation.getSelectedItemPosition();
+        locationId = lstLocation.get(position).getLocationID();
+
+        position = spPayment.getSelectedItemPosition();
+        paymentId = lstPayment.get(position).getPaymentID();
+        if (spPayment.getSelectedItemPosition() == 1) {  // payment credit
+            position = spLimitedDay.getSelectedItemPosition();
+            limitedDayId = lstLimitedDay.get(position).getLimitedDayID();
+            if (chkAdvancedPay.isChecked()) {
+                isAdvancedPay = true;
+                advancedPay = Integer.parseInt(etAdvancedPay.getText().toString());
+            }
+        }
+
+        if (voucherDiscountType == discountPercentType && etVoucherDiscount.getText().toString().length() != 0)
+            vouDisPercent = Integer.parseInt(etVoucherDiscount.getText().toString());
+        voucherDiscount = calculateVoucherDiscount(vouDisPercent);
+
+        grandTotal = total - (advancedPay + voucherDiscount);
+
+        position = spPaymentMethod.getSelectedItemPosition();
+        payMethodId = lstPaymentMethod.get(position).getPayMethodID();
+        if (spPaymentMethod.getSelectedItemPosition() == 1) {  // pay method online payment
+            position = spBankPayment.getSelectedItemPosition();
+            bankPaymentId = lstBankPayment.get(position).getBankPaymentID();
+            if (etPaymentPercent.getText().toString().length() != 0)
+                payPercent = Integer.parseInt(etPaymentPercent.getText().toString());
+            if (payPercent != 0) {
+                payPercentAmt = (grandTotal * payPercent) / 100;
+                percentGrandTotal = grandTotal + payPercentAmt;
+            }
+        }
+
+        remark = etRemark.getText().toString();
+
+        saleMasterData.setDefaultCustomer(isDefaultCustomer);
+        saleMasterData.setCustomerID(customerId);
+        saleMasterData.setLocationID(locationId);
+        saleMasterData.setPaymentID(paymentId);
+        saleMasterData.setLimitedDayID(limitedDayId);
+        saleMasterData.setAdvancedPay(isAdvancedPay);
+        saleMasterData.setAdvancedPayAmt(advancedPay);
+        saleMasterData.setVouDisPercent(vouDisPercent);
+        saleMasterData.setVouDisAmount(voucherDiscount);
+        saleMasterData.setVoucherDis(voucherDiscount);
+        saleMasterData.setPayMethodID(payMethodId);
+        saleMasterData.setBankPaymentID(bankPaymentId);
+        saleMasterData.setPaymentPercent(payPercent);
+        saleMasterData.setPayPercentAmt(payPercentAmt);
+        saleMasterData.setSubtotal(subtotal);
+        saleMasterData.setTaxAmt(taxAmount);
+        saleMasterData.setChargesAmt(chargesAmount);
+        saleMasterData.setTotalAmt(total);
+        if (payPercent != 0) saleMasterData.setNetAmt(percentGrandTotal);
+        else saleMasterData.setNetAmt(grandTotal);
+        saleMasterData.setRemark(remark);
+
+        return saleMasterData;
+    }
+
+    private int calculateVoucherDiscount(int percent) {
+        int voucherDiscount = 0;
+        if (etVoucherDiscount.getText().toString().length() != 0) {
+            if (voucherDiscountType == discountPercentType)
+                voucherDiscount = (total * percent) / 100;
+            else if (voucherDiscountType == discountAmountType)
+                voucherDiscount = Integer.parseInt(etVoucherDiscount.getText().toString());
+        }
+        return voucherDiscount;
+    }
+
     private boolean validateControl(){
-        if(discountAmountType==discountPercentType){
+        if(voucherDiscountType==discountPercentType){
             if(etVoucherDiscount.getText().toString().length()!=0){
                 if(Integer.parseInt(etVoucherDiscount.getText().toString())>100){
                     inputVoucherDiscount.setError(getResources().getString(R.string.invalid_percent_value));
@@ -180,6 +361,14 @@ public class PayDetailActivity extends AppCompatActivity {
             }else if(Integer.parseInt(etAdvancedPay.getText().toString())==0){
                 inputAdvancedPay.setError(getResources().getString(R.string.enter_valid_value));
                 return false;
+            }
+        }
+        if(layoutOnlinePayment.isShown()){
+            if(etPaymentPercent.getText().toString().length()!=0){
+                if(Integer.parseInt(etPaymentPercent.getText().toString())>100){
+                    inputPaymentPercent.setError(getResources().getString(R.string.invalid_percent_value));
+                    return false;
+                }
             }
         }
         return true;
@@ -217,39 +406,24 @@ public class PayDetailActivity extends AppCompatActivity {
             etAdvancedPay.setText("");
             etAdvancedPay.setEnabled(false);
             layoutPaymentMethod.setVisibility(View.GONE);
+            etPaymentPercent.setText("");
         }
     }
 
-    /*private void setAdvancedPay(){
-        if(etAdvancedPay.getText().toString().length()==0)return;
-        if (Integer.parseInt(etAdvancedPay.getText().toString()) != 0) {
-            if (Integer.parseInt(etAdvancedPay.getText().toString()) <= grandTotal) {
-                advancedPay = Integer.parseInt(etAdvancedPay.getText().toString());
-                tvAdvancedPay.setText(appSetting.df.format(Integer.parseInt(etAdvancedPay.getText().toString())));
-                calculateGrandTotal();
-                setLayoutPaymentMethod();
-            } else
-                Toast.makeText(context, getResources().getString(R.string.invalid_advanced_pay), Toast.LENGTH_LONG).show();
-        } else
-            Toast.makeText(context, getResources().getString(R.string.enter_valid_value), Toast.LENGTH_LONG).show();
-    }*/
-
     private void setLayoutOnlinePayment() {
+        etPaymentPercent.setText("");
         if (spPaymentMethod.getSelectedItemPosition() == 0)  // if payment method is cashInHand
             layoutOnlinePayment.setVisibility(View.GONE);
-        else if (spPaymentMethod.getSelectedItemPosition() == 1){  // if payment method is onlinePayment
+        else if (spPaymentMethod.getSelectedItemPosition() == 1) // if payment method is onlinePayment
             layoutOnlinePayment.setVisibility(View.VISIBLE);
-            etPaymentPercent.setText("");
-        }
     }
 
     private void setLayoutPaymentMethod() {
-        if (spPayment.getSelectedItemPosition() == 0) {  // cash
+        etPaymentPercent.setText("");
+        if (spPayment.getSelectedItemPosition() == 0) // cash
             layoutPaymentMethod.setVisibility(View.VISIBLE);
-            etPaymentPercent.setText("");
-        } else if (spPayment.getSelectedItemPosition() == 1) {  // credit
+        else if (spPayment.getSelectedItemPosition() == 1)  // credit
             layoutPaymentMethod.setVisibility(View.GONE);
-        }
     }
 
     private void setLayoutPaymentCredit() {
@@ -449,6 +623,8 @@ public class PayDetailActivity extends AppCompatActivity {
         btnOK = findViewById(R.id.btnOK);
         inputAdvancedPay = findViewById(R.id.inputAdvancedPay);
         inputVoucherDiscount = findViewById(R.id.inputVoucherDiscount);
+        inputPaymentPercent = findViewById(R.id.inputPaymentPercent);
+        etRemark = findViewById(R.id.etRemark);
 
         progressDialog = new ProgressDialog(context);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);

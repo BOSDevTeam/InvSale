@@ -11,6 +11,8 @@ import com.bosictsolution.invsale.R;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class AppSetting {
     public DecimalFormat df= new DecimalFormat("#,###");
@@ -37,5 +39,11 @@ public class AppSetting {
         TextView textView = view.findViewById(R.id.snackbar_text);
         textView.setTextColor(Color.GREEN);
         snackbar.show();
+    }
+
+    public String getTodayDate(){
+        SimpleDateFormat dateFormat = new SimpleDateFormat(AppConstant.DATE_FORMAT);
+        String date = dateFormat.format(Calendar.getInstance().getTime());
+        return date.trim();
     }
 }

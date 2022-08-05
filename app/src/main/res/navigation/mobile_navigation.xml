@@ -40,4 +40,5 @@
         android:name="com.bosictsolution.invsale.ui.report.ReportFragment"
         android:label="@string/menu_report"
         tools:layout="@layout/fragment_report" />
+
 </navigation>

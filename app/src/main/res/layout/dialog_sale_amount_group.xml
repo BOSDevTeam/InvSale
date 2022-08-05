@@ -24,86 +24,124 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="10dp"
-            android:background="@color/primary_soft"
-            android:layout_marginTop="10dp">
+            android:padding="10dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+            <TextView style="@style/AmountGroupTextView"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="@string/total"
+                android:gravity="left"/>
 
-                <TextView style="@style/AmountGroupTextView"
-                    android:layout_width="0dp"
-                    android:layout_weight="2"
-                    android:text="@string/total"
-                    android:gravity="left"/>
+            <TextView android:id="@+id/tvTotal"
+                style="@style/AmountGroupTextView"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="0" />
 
-                <TextView android:id="@+id/tvTotal"
-                    style="@style/AmountGroupTextView"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:text="0" />
+        </LinearLayout>
 
-            </LinearLayout>
+        <LinearLayout android:id="@+id/layoutAdvancedPay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+            <TextView style="@style/AmountGroupTextView"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="@string/advanced_pay"
+                android:gravity="left"/>
 
-                <TextView style="@style/AmountGroupTextView"
-                    android:layout_width="0dp"
-                    android:layout_weight="2"
-                    android:text="@string/advanced_pay"
-                    android:gravity="left"/>
+            <TextView android:id="@+id/tvAdvancedPay"
+                style="@style/AmountGroupTextView"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="0" />
 
-                <TextView android:id="@+id/tvAdvancedPay"
-                    style="@style/AmountGroupTextView"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:text="0" />
+        </LinearLayout>
 
-            </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+            <TextView android:id="@+id/tvLabelVoucherDiscount"
+                style="@style/AmountGroupTextView"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="@string/voucher_discount"
+                android:gravity="left"/>
 
-                <TextView style="@style/AmountGroupTextView"
-                    android:layout_width="0dp"
-                    android:layout_weight="2"
-                    android:text="@string/voucher_discount"
-                    android:gravity="left"/>
+            <TextView android:id="@+id/tvVoucherDiscount"
+                style="@style/AmountGroupTextView"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="0" />
 
-                <TextView android:id="@+id/tvVoucherDiscount"
-                    style="@style/AmountGroupTextView"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:text="0" />
+        </LinearLayout>
 
-            </LinearLayout>
+        <View style="@style/Divider"/>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp">
 
-                <TextView style="@style/AmountGroupTextView"
-                    android:layout_width="0dp"
-                    android:layout_weight="2"
-                    android:text="@string/grandtotal"
-                    android:textColor="@color/primary_500"
-                    android:textSize="@dimen/text_large"
-                    android:gravity="left"/>
+            <TextView style="@style/AmountGroupTextView"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="@string/grandtotal"
+                android:textColor="@color/primary_500"
+                android:textSize="@dimen/text_large"
+                android:gravity="left"/>
 
-                <TextView android:id="@+id/tvGrandTotal"
-                    style="@style/AmountGroupTextView"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:text="0"
-                    android:textColor="@color/primary_500"
-                    android:textSize="@dimen/text_large" />
+            <TextView android:id="@+id/tvGrandTotal"
+                style="@style/AmountGroupTextView"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="0"
+                android:textColor="@color/primary_500"
+                android:textSize="@dimen/text_large" />
 
-            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/layoutPercent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp">
+
+            <TextView android:id="@+id/tvLabelPercent"
+                style="@style/AmountGroupTextView"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="@string/percent"
+                android:gravity="left"/>
+
+            <TextView android:id="@+id/tvPercentAmount"
+                style="@style/AmountGroupTextView"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="0" />
+
+        </LinearLayout>
+
+        <View style="@style/Divider"/>
+
+        <LinearLayout android:id="@+id/layoutPercentGrandTotal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp">
+
+            <TextView style="@style/AmountGroupTextView"
+                android:layout_width="0dp"
+                android:layout_weight="2" />
+
+            <TextView android:id="@+id/tvPercentGrandTotal"
+                style="@style/AmountGroupTextView"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="0"
+                android:textColor="@color/primary_500"
+                android:textSize="@dimen/text_large" />
 
         </LinearLayout>
 
@@ -114,8 +152,9 @@
     <LinearLayout style="@style/DialogLayout"
         android:gravity="right">
 
-        <Button android:id="@+id/btnOK"
-            style="@style/DialogOk"/>
+        <Button android:id="@+id/btnContinue"
+            style="@style/DialogOk"
+            android:text="@string/str_continue"/>
 
     </LinearLayout>
 
