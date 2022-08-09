@@ -18,6 +18,11 @@ import android.widget.Toast;
 
 import com.bosictsolution.invsale.api.Api;
 import com.bosictsolution.invsale.common.AppConstant;
+import com.bosictsolution.invsale.common.DatabaseAccess;
+import com.bosictsolution.invsale.data.MainMenuData;
+import com.bosictsolution.invsale.data.SubMenuData;
+
+import java.util.List;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -28,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
     String clientPassword,newPassword;
     private Context context=this;
     private ProgressDialog progressDialog;
+    DatabaseAccess db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +41,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         getSupportActionBar().hide();
         setLayoutResource();
-        sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
-
+        init();
         fillData();
 
         btnClear.setOnClickListener(new View.OnClickListener() {
@@ -135,13 +140,9 @@ public class LoginActivity extends AppCompatActivity {
                 }
             } else if (status == status_existing) {
                 String inputPassword = tvCode1.getText().toString() + tvCode2.getText().toString() + tvCode3.getText().toString() + tvCode4.getText().toString();
-                if (clientPassword.equals(inputPassword)) {
-                    Intent i = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(i);
-                    finish();
-                } else {
+                if (clientPassword.equals(inputPassword)) loadData();
+                else
                     Toast.makeText(context, getResources().getString(R.string.incorrect_password), Toast.LENGTH_LONG).show();
-                }
             }
         }
     }
@@ -156,9 +157,7 @@ public class LoginActivity extends AppCompatActivity {
                 SharedPreferences.Editor editor = sharedpreferences.edit();
                 editor.putString(AppConstant.ClientPassword, newPassword);
                 editor.commit();
-                Intent i = new Intent(LoginActivity.this, MainActivity.class);
-                startActivity(i);
-                finish();
+                loadData();
             }
 
             @Override
@@ -183,6 +182,64 @@ public class LoginActivity extends AppCompatActivity {
         tvCode4.setText("");
     }
 
+    private void getPasswordStatus() {
+        clientPassword = sharedpreferences.getString(AppConstant.ClientPassword, "");
+        if (clientPassword.length() != 0) status = status_existing;
+        else status = status_new;
+    }
+
+    private void getMainMenu(){
+        Api.getClient().getMainMenu().enqueue(new Callback<List<MainMenuData>>() {
+            @Override
+            public void onResponse(Call<List<MainMenuData>> call, Response<List<MainMenuData>> response) {
+                if(response.isSuccessful()) {
+                    List<MainMenuData> list = response.body();
+                    db.insertMainMenu(list);
+                    getSubMenu();
+                }else{
+                    progressDialog.dismiss();
+                    Toast.makeText(context, getResources().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<MainMenuData>> call, Throwable t) {
+                progressDialog.dismiss();
+                Log.e("LoginActivity", t.getMessage());
+            }
+        });
+    }
+
+    private void getSubMenu() {
+        Api.getClient().getSubMenu().enqueue(new Callback<List<SubMenuData>>() {
+            @Override
+            public void onResponse(Call<List<SubMenuData>> call, Response<List<SubMenuData>> response) {
+                if (response.isSuccessful()) {
+                    List<SubMenuData> list = response.body();
+                    db.insertSubMenu(list);
+                    Intent i = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(i);
+                    finish();
+                } else {
+                    progressDialog.dismiss();
+                    Toast.makeText(context, getResources().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<SubMenuData>> call, Throwable t) {
+                progressDialog.dismiss();
+                Log.e("LoginActivity", t.getMessage());
+            }
+        });
+    }
+
+    private void loadData(){
+        progressDialog.show();
+        progressDialog.setMessage(getResources().getString(R.string.loading));
+        getMainMenu();
+    }
+
     private void fillData() {
         String clientName = sharedpreferences.getString(AppConstant.ClientName, "");
         tvUser.setText(clientName);
@@ -192,10 +249,13 @@ public class LoginActivity extends AppCompatActivity {
         else tvEnterPassword.setText(getResources().getString(R.string.enter_new_password));
     }
 
-    private void getPasswordStatus() {
-        clientPassword = sharedpreferences.getString(AppConstant.ClientPassword, "");
-        if (clientPassword.length() != 0) status = status_existing;
-        else status = status_new;
+    private void init(){
+        sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
+        db=new DatabaseAccess(context);
+        progressDialog =new ProgressDialog(context);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
     }
 
     private void setLayoutResource(){
@@ -217,10 +277,5 @@ public class LoginActivity extends AppCompatActivity {
         tvCode2=findViewById(R.id.tvCode2);
         tvCode3=findViewById(R.id.tvCode3);
         tvCode4=findViewById(R.id.tvCode4);
-
-        progressDialog =new ProgressDialog(context);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(false);
     }
 }

@@ -153,5 +153,6 @@
     <string name="already_exist_customer_phone">Already exist customer with this phone.</string>
     <string name="slip_no">Slip No.</string>
     <string name="back">Back</string>
+    <string name="all">All</string>
 
 </resources>

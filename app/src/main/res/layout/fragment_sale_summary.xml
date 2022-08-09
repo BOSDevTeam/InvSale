@@ -51,7 +51,7 @@
 
     <TextView android:id="@+id/tvTotal"
         style="@style/DefaultTextView"
-        android:text="MMK 200,000"
+        tools:text="MMK 200,000"
         android:textColor="@color/primary_500"
         android:textStyle="bold"
         android:gravity="center"

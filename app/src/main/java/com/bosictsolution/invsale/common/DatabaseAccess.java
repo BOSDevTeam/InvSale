@@ -6,8 +6,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.bosictsolution.invsale.data.MainMenuData;
 import com.bosictsolution.invsale.data.SaleMasterData;
 import com.bosictsolution.invsale.data.SaleTranData;
+import com.bosictsolution.invsale.data.SubMenuData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -145,6 +147,77 @@ public class DatabaseAccess {
         }
         return list;
     }
+    public boolean insertMainMenu(List<MainMenuData> list){
+        deleteMainMenu();
+        database = openHelper.getWritableDatabase();
+        for(int i=0;i<list.size();i++){
+            ContentValues cv = new ContentValues();
+            cv.put("MainMenuID", list.get(i).getMainMenuID());
+            cv.put("MainMenuName", list.get(i).getMainMenuName());
+            database.insert("MainMenuTemp", null, cv);
+        }
+        return true;
+    }
+    public List<MainMenuData> getMainMenu() {
+        database = openHelper.getReadableDatabase();
+        List<MainMenuData> list = new ArrayList<>();
+        Cursor cur = database.rawQuery("SELECT * FROM MainMenuTemp", null);
+        while (cur.moveToNext()) {
+            MainMenuData data = new MainMenuData();
+            data.setMainMenuID(cur.getInt(0));
+            data.setMainMenuName(cur.getString(1));
+            list.add(data);
+        }
+        return list;
+    }
+    public boolean insertSubMenu(List<SubMenuData> list){
+        deleteSubMenu();
+        database = openHelper.getWritableDatabase();
+        for(int i=0;i<list.size();i++){
+            ContentValues cv = new ContentValues();
+            cv.put("SubMenuID", list.get(i).getSubMenuID());
+            cv.put("MainMenuID", list.get(i).getMainMenuID());
+            cv.put("SubMenuName", list.get(i).getSubMenuName());
+            database.insert("SubMenuTemp", null, cv);
+        }
+        return true;
+    }
+    public List<SubMenuData> getSubMenu() {
+        database = openHelper.getReadableDatabase();
+        List<SubMenuData> list = new ArrayList<>();
+        Cursor cur = database.rawQuery("SELECT * FROM SubMenuTemp", null);
+        while (cur.moveToNext()) {
+            SubMenuData data = new SubMenuData();
+            data.setSubMenuID(cur.getInt(0));
+            data.setMainMenuID(cur.getInt(1));
+            data.setSubMenuName(cur.getString(2));
+            list.add(data);
+        }
+        return list;
+    }
+    public List<SubMenuData> getSubMenuForCategoryFilter() {
+        int mainMenuId = 0;
+        database = openHelper.getReadableDatabase();
+        List<SubMenuData> list = new ArrayList<>();
+        Cursor cur = database.rawQuery("SELECT SubMenuID,MainMenuID,SubMenuName FROM SubMenuTemp ORDER BY MainMenuID", null);
+        while (cur.moveToNext()) {
+            if (mainMenuId != cur.getInt(1)) {
+                SubMenuData data = new SubMenuData();
+                data.setSubMenuID(0);
+                data.setMainMenuID(cur.getInt(1));
+                data.setSubMenuName("All");
+                list.add(data);
+            }
+            SubMenuData data = new SubMenuData();
+            data.setSubMenuID(cur.getInt(0));
+            data.setMainMenuID(cur.getInt(1));
+            data.setSubMenuName(cur.getString(2));
+            list.add(data);
+
+            mainMenuId = cur.getInt(1);
+        }
+        return list;
+    }
     private boolean deleteMasterSale(){
         database=openHelper.getWritableDatabase();
         database.execSQL("DELETE FROM MasterSaleTemp");
@@ -153,6 +226,16 @@ public class DatabaseAccess {
     private boolean deleteTranSale(){
         database=openHelper.getWritableDatabase();
         database.execSQL("DELETE FROM TranSaleTemp");
+        return true;
+    }
+    private boolean deleteMainMenu(){
+        database=openHelper.getWritableDatabase();
+        database.execSQL("DELETE FROM MainMenuTemp");
+        return true;
+    }
+    private boolean deleteSubMenu(){
+        database=openHelper.getWritableDatabase();
+        database.execSQL("DELETE FROM SubMenuTemp");
         return true;
     }
 }

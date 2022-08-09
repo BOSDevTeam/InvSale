@@ -1,17 +1,22 @@
 package com.bosictsolution.invsale.fragment;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +29,10 @@ import android.widget.TextView;
 import com.bosictsolution.invsale.R;
 import com.bosictsolution.invsale.adapter.GeneralExpandableListAdapter;
 import com.bosictsolution.invsale.adapter.ListItemSaleTranAdapter;
+import com.bosictsolution.invsale.api.Api;
+import com.bosictsolution.invsale.common.AppConstant;
 import com.bosictsolution.invsale.common.AppSetting;
+import com.bosictsolution.invsale.common.DatabaseAccess;
 import com.bosictsolution.invsale.data.MainMenuData;
 import com.bosictsolution.invsale.data.SaleTranData;
 import com.bosictsolution.invsale.data.SubMenuData;
@@ -51,17 +59,21 @@ public class SaleItemFragment extends Fragment {
 
     RecyclerView rvSaleItem;
     ListItemSaleTranAdapter listItemSaleTranAdapter;
-    List<SaleTranData> lstSale=new ArrayList<>();
-    TextView tvDate,tvCategory;
-    public static final int REQUEST_CODE = 11; // Used to identify the result
-    FragmentManager fm;
+    TextView tvDate,tvCategory,tvFromDate,tvToDate,tvTotal;
     AppSetting appSetting=new AppSetting();
-    String selectedDate;
+    String selectedDate,fromDate,toDate;
+    int clientId,mainMenuId,subMenuId,date_filter_type,date_filter=1,from_to_date_filter=2;
     List<MainMenuData> lstMainMenu=new ArrayList<>();
     List<SubMenuData> lstSubMenu=new ArrayList<>();
     List<String> listDataHeader;
     HashMap<String,List<String>> listDataChild;
     GeneralExpandableListAdapter generalExpandableListAdapter;
+    private ProgressDialog progressDialog;
+    SharedPreferences sharedpreferences;
+    public static final int SPECIFIC_DATE_REQUEST_CODE = 11; // Used to identify the result
+    public static final int FROM_DATE_REQUEST_CODE = 12;
+    public static final int TO_DATE_REQUEST_CODE = 13;
+    DatabaseAccess db;
 
     public SaleItemFragment() {
         // Required empty public constructor
@@ -99,16 +111,9 @@ public class SaleItemFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_sale_item, container, false);
-
-        rvSaleItem=root.findViewById(R.id.rvSaleItem);
-        tvDate=root.findViewById(R.id.tvDate);
-        selectedDate= appSetting.getTodayDate();
-        tvDate.setText(selectedDate);
-        tvCategory=root.findViewById(R.id.tvCategory);
-
-        fm = ((AppCompatActivity)getActivity()).getSupportFragmentManager().getPrimaryNavigationFragment().getChildFragmentManager();
-
-        setAdapter();
+        setLayoutResource(root);
+        init();
+        fillData();
 
         tvDate.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -127,32 +132,8 @@ public class SaleItemFragment extends Fragment {
         return root;
     }
 
-    private void setAdapter(){
-        SaleTranData data=new SaleTranData();
-        data.setProductName("ProductABC");
-        data.setQuantity(20);
-        data.setTotalAmount(6600);
-        lstSale.add(data);
-
-        data=new SaleTranData();
-        data.setProductName("ProductABC");
-        data.setQuantity(20);
-        data.setTotalAmount(6600);
-        lstSale.add(data);
-
-        data=new SaleTranData();
-        data.setProductName("ProductABC");
-        data.setQuantity(20);
-        data.setTotalAmount(6600);
-        lstSale.add(data);
-
-        data=new SaleTranData();
-        data.setProductName("ProductABC");
-        data.setQuantity(20);
-        data.setTotalAmount(6600);
-        lstSale.add(data);
-
-        listItemSaleTranAdapter=new ListItemSaleTranAdapter(lstSale,getContext());
+    private void setAdapter(List<SaleTranData> list){
+        listItemSaleTranAdapter=new ListItemSaleTranAdapter(list,getContext());
         rvSaleItem.setAdapter(listItemSaleTranAdapter);
         rvSaleItem.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
     }
@@ -165,9 +146,10 @@ public class SaleItemFragment extends Fragment {
 
         final ImageButton btnClose = v.findViewById(R.id.btnClose);
         final ExpandableListView expList = v.findViewById(R.id.list);
+        final TextView tvAll = v.findViewById(R.id.tvAll);
 
-        createMainMenu();
-        createSubMenu();
+        getMainMenu();
+        getSubMenuForCategoryFilter();
         setDataToExpList(expList);
 
         dialog.setCancelable(true);
@@ -180,157 +162,48 @@ public class SaleItemFragment extends Fragment {
                 alertDialog.dismiss();
             }
         });
+        tvAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mainMenuId=0;
+                subMenuId=0;
+                tvCategory.setText(getResources().getString(R.string.all));
+                if(date_filter_type==date_filter)getSaleItemByDate();
+                else if(date_filter_type==from_to_date_filter)getSaleItemByFromToDate();
+                alertDialog.dismiss();
+            }
+        });
+        expList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView expandableListView, View view, int groupPosition, int childPosition, long l) {
+                List<SubMenuData> list=new ArrayList<>();
+                mainMenuId = lstMainMenu.get(groupPosition).getMainMenuID();
+                String mainMenuName=lstMainMenu.get(groupPosition).getMainMenuName();
+                for (int i = 0; i < lstSubMenu.size(); i++) {
+                    if (lstSubMenu.get(i).getMainMenuID() == mainMenuId) {
+                        list.add(lstSubMenu.get(i));
+                    }
+                }
+                subMenuId = list.get(childPosition).getSubMenuID();
+                String subMenuName=list.get(childPosition).getSubMenuName();
+                if(subMenuId==0)tvCategory.setText(mainMenuName);
+                else tvCategory.setText(subMenuName);
+                if(date_filter_type==date_filter)getSaleItemByDate();
+                else if(date_filter_type==from_to_date_filter)getSaleItemByFromToDate();
+                alertDialog.dismiss();
+                return false;
+            }
+        });
     }
 
-    private void createMainMenu(){
+    private void getMainMenu(){
         lstMainMenu=new ArrayList<>();
-
-        MainMenuData data=new MainMenuData();
-        data.setMainMenuID(0);
-        data.setMainMenuName("All");
-        lstMainMenu.add(data);
-
-        data=new MainMenuData();
-        data.setMainMenuID(1);
-        data.setMainMenuName("Main Menu 1");
-        lstMainMenu.add(data);
-
-        data=new MainMenuData();
-        data.setMainMenuID(2);
-        data.setMainMenuName("Main Menu 2");
-        lstMainMenu.add(data);
-
-        data=new MainMenuData();
-        data.setMainMenuID(3);
-        data.setMainMenuName("Main Menu 3");
-        lstMainMenu.add(data);
-
-        data=new MainMenuData();
-        data.setMainMenuID(4);
-        data.setMainMenuName("Main Menu 4");
-        lstMainMenu.add(data);
-
-        data=new MainMenuData();
-        data.setMainMenuID(5);
-        data.setMainMenuName("Main Menu 5");
-        lstMainMenu.add(data);
-
-        data=new MainMenuData();
-        data.setMainMenuID(6);
-        data.setMainMenuName("Main Menu 6");
-        lstMainMenu.add(data);
+        lstMainMenu=db.getMainMenu();
     }
 
-    private void createSubMenu(){
+    private void getSubMenuForCategoryFilter(){
         lstSubMenu=new ArrayList<>();
-
-        SubMenuData data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(0);
-        data.setSubMenuName("");
-        lstSubMenu.add(data);
-
-        data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(1);
-        data.setSubMenuName("All");
-        lstSubMenu.add(data);
-
-        data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(1);
-        data.setSubMenuName("Sub Menu 1/1");
-        lstSubMenu.add(data);
-
-        data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(1);
-        data.setSubMenuName("Sub Menu 2/1");
-        lstSubMenu.add(data);
-
-        data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(1);
-        data.setSubMenuName("Sub Menu 3/1");
-        lstSubMenu.add(data);
-
-        data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(1);
-        data.setSubMenuName("Sub Menu 4/1");
-        lstSubMenu.add(data);
-
-        data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(1);
-        data.setSubMenuName("Sub Menu 5/1");
-        lstSubMenu.add(data);
-
-        data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(1);
-        data.setSubMenuName("Sub Menu 6/1");
-        lstSubMenu.add(data);
-
-        data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(2);
-        data.setSubMenuName("All");
-        lstSubMenu.add(data);
-
-        data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(2);
-        data.setSubMenuName("Sub Menu 1/2");
-        lstSubMenu.add(data);
-
-        data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(3);
-        data.setSubMenuName("All");
-        lstSubMenu.add(data);
-
-        data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(3);
-        data.setSubMenuName("Sub Menu 1/3");
-        lstSubMenu.add(data);
-
-        data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(4);
-        data.setSubMenuName("All");
-        lstSubMenu.add(data);
-
-        data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(4);
-        data.setSubMenuName("Sub Menu 1/4");
-        lstSubMenu.add(data);
-
-        data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(5);
-        data.setSubMenuName("All");
-        lstSubMenu.add(data);
-
-        data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(5);
-        data.setSubMenuName("Sub Menu 1/5");
-        lstSubMenu.add(data);
-
-        data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(6);
-        data.setSubMenuName("All");
-        lstSubMenu.add(data);
-
-        data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(6);
-        data.setSubMenuName("Sub Menu 1/6");
-        lstSubMenu.add(data);
+        lstSubMenu=db.getSubMenuForCategoryFilter();
     }
 
     private void setDataToExpList(ExpandableListView expList){
@@ -378,12 +251,7 @@ public class SaleItemFragment extends Fragment {
         rdoDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // create the datePickerFragment
-                AppCompatDialogFragment newFragment = new DatePickerFragment();
-                // set the targetFragment to receive the results, specifying the request code
-                newFragment.setTargetFragment(SaleItemFragment.this, REQUEST_CODE);
-                // show the datePicker
-                newFragment.show(fm, "datePicker");
+                showDatePicker(SPECIFIC_DATE_REQUEST_CODE);
                 alertDialog.dismiss();
             }
         });
@@ -405,10 +273,16 @@ public class SaleItemFragment extends Fragment {
         dialog.setView(v);
 
         final ImageButton btnClose = v.findViewById(R.id.btnClose);
-        final TextView tvFromDate = v.findViewById(R.id.tvFromDate);
-        final TextView tvToDate=v.findViewById(R.id.tvToDate);
+        tvFromDate = v.findViewById(R.id.tvFromDate);
+        tvToDate=v.findViewById(R.id.tvToDate);
         final Button btnOK = v.findViewById(R.id.btnOK);
         final Button btnCancel = v.findViewById(R.id.btnCancel);
+
+        selectedDate= appSetting.getTodayDate();
+        fromDate=selectedDate;
+        toDate= selectedDate;
+        tvFromDate.setText(fromDate);
+        tvToDate.setText(toDate);
 
         dialog.setCancelable(true);
         final android.app.AlertDialog alertDialog = dialog.create();
@@ -429,19 +303,21 @@ public class SaleItemFragment extends Fragment {
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                tvDate.setText(fromDate+"-"+toDate);
+                getSaleItemByFromToDate();
                 alertDialog.dismiss();
             }
         });
         tvFromDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // show calendar
+                showDatePicker(FROM_DATE_REQUEST_CODE);
             }
         });
         tvToDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // show calendar
+                showDatePicker(TO_DATE_REQUEST_CODE);
             }
         });
     }
@@ -449,11 +325,117 @@ public class SaleItemFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         // check for the results
-        if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        if (requestCode == SPECIFIC_DATE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             // get date from string
             selectedDate = data.getStringExtra("selectedDate");
             // set the value of the editText
             tvDate.setText(selectedDate);
+            getSaleItemByDate();
+        }else if (requestCode == FROM_DATE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            fromDate = data.getStringExtra("selectedDate");
+            tvFromDate.setText(fromDate);
+        }else if (requestCode == TO_DATE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            toDate = data.getStringExtra("selectedDate");
+            tvToDate.setText(toDate);
         }
+    }
+
+    private void getSaleItemByDate(){
+        date_filter_type=date_filter;
+        progressDialog.show();
+        progressDialog.setMessage(getResources().getString(R.string.loading));
+        Api.getClient().getSaleItemByDate(selectedDate,clientId,mainMenuId,subMenuId).enqueue(new Callback<List<SaleTranData>>() {
+            @Override
+            public void onResponse(Call<List<SaleTranData>> call, Response<List<SaleTranData>> response) {
+                progressDialog.dismiss();
+                List<SaleTranData> list=response.body();
+                setAdapter(list);
+                tvTotal.setText("MMK"+getContext().getResources().getString(R.string.space)+calculateAmountTotal(list));
+            }
+
+            @Override
+            public void onFailure(Call<List<SaleTranData>> call, Throwable t) {
+                progressDialog.dismiss();
+                Log.e("SaleItemFragment", t.getMessage());
+            }
+        });
+    }
+
+    private void getSaleItemByFromToDate(){
+        date_filter_type=from_to_date_filter;
+        progressDialog.show();
+        progressDialog.setMessage(getResources().getString(R.string.loading));
+        Api.getClient().getSaleItemByFromToDate(fromDate,toDate,clientId,mainMenuId,subMenuId).enqueue(new Callback<List<SaleTranData>>() {
+            @Override
+            public void onResponse(Call<List<SaleTranData>> call, Response<List<SaleTranData>> response) {
+                progressDialog.dismiss();
+                List<SaleTranData> list=response.body();
+                setAdapter(list);
+                tvTotal.setText("MMK"+getContext().getResources().getString(R.string.space)+calculateAmountTotal(list));
+            }
+
+            @Override
+            public void onFailure(Call<List<SaleTranData>> call, Throwable t) {
+                progressDialog.dismiss();
+                Log.e("SaleItemFragment", t.getMessage());
+            }
+        });
+    }
+
+    private void showDatePicker(int requestCode){
+        // create the datePickerFragment
+        AppCompatDialogFragment newFragment = new DatePickerFragment();
+        // set the targetFragment to receive the results, specifying the request code
+        newFragment.setTargetFragment(SaleItemFragment.this, requestCode);
+        // show the datePicker
+        newFragment.show(getFragmentManager(), "datePicker");
+    }
+
+    private void setLayoutResource(View root){
+        rvSaleItem=root.findViewById(R.id.rvSaleItem);
+        tvDate=root.findViewById(R.id.tvDate);
+        tvCategory=root.findViewById(R.id.tvCategory);
+        tvTotal=root.findViewById(R.id.tvTotal);
+    }
+
+    private void init(){
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+        db=new DatabaseAccess(getContext());
+        sharedpreferences = getContext().getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
+    }
+
+    private void fillData(){
+        date_filter_type=date_filter;
+        selectedDate= appSetting.getTodayDate();
+        tvDate.setText(selectedDate);
+        clientId=sharedpreferences.getInt(AppConstant.ClientID,0);
+        getSaleItemByDate();
+    }
+
+    private void refresh(){
+        date_filter_type=date_filter;
+        selectedDate= appSetting.getTodayDate();
+        tvDate.setText(selectedDate);
+        mainMenuId=0;
+        subMenuId=0;
+        tvCategory.setText(getResources().getString(R.string.all));
+        getSaleItemByDate();
+    }
+
+    private String calculateAmountTotal(List<SaleTranData> list) {
+        int amountTotal = 0;
+        String result = "";
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            amountTotal = list.stream().mapToInt(x -> x.getTotalAmount()).sum();
+        } else {
+            for (int i = 0; i < list.size(); i++) {
+                amountTotal += list.get(i).getTotalAmount();
+            }
+        }
+        result = appSetting.df.format(amountTotal);
+        return result;
     }
 }

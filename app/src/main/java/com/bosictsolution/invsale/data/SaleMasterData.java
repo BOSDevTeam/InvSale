@@ -4,7 +4,7 @@ import java.util.List;
 
 public class SaleMasterData {
 
-    private String Date, Voucher, CustomerName,Remark;
+    private String Date, Voucher, CustomerName,Remark,UserVoucherNo;
     private int NetAmt,CustomerID,LocationID,PaymentID,VoucherDis,AdvancedPayAmt,TaxAmt,ChargesAmt,
                 TotalAmt,VouDisPercent,VouDisAmount,PayMethodID,BankPaymentID,PaymentPercent,ClientID,LimitedDayID,
                 PayPercentAmt,Subtotal;
@@ -217,5 +217,13 @@ public class SaleMasterData {
 
     public void setLstSaleTran(List<SaleTranData> lstSaleTran) {
         this.lstSaleTran = lstSaleTran;
+    }
+
+    public String getUserVoucherNo() {
+        return UserVoucherNo;
+    }
+
+    public void setUserVoucherNo(String userVoucherNo) {
+        UserVoucherNo = userVoucherNo;
     }
 }

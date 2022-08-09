@@ -12,6 +12,7 @@ import com.bosictsolution.invsale.data.PaymentData;
 import com.bosictsolution.invsale.data.PaymentMethodData;
 import com.bosictsolution.invsale.data.ProductData;
 import com.bosictsolution.invsale.data.SaleMasterData;
+import com.bosictsolution.invsale.data.SaleTranData;
 import com.bosictsolution.invsale.data.SubMenuData;
 import com.bosictsolution.invsale.data.TownshipData;
 import com.bosictsolution.invsale.data.VoucherSettingData;
@@ -58,8 +59,11 @@ public interface ApiInterface {
     @GET("mainmenu")
     Call<List<MainMenuData>> getMainMenu();
 
-    @GET("submenu")
+    @GET("submenu/GetSubMenuByMainMenu")
     Call<List<SubMenuData>> getSubMenuByMainMenu(@Query("mainMenuId") int mainMenuId);
+
+    @GET("submenu/GetSubMenu")
+    Call<List<SubMenuData>> getSubMenu();
 
     @GET("product/GetProductBySubMenuList")
     Call<List<ProductData>> getProductBySubMenuList(@Query("subMenuIdList") String subMenuIdList);
@@ -93,7 +97,15 @@ public interface ApiInterface {
     @GET("vouchersetting")
     Call<VoucherSettingData> getVoucherSetting(@Query("locationId") int locationId);
 
-    @GET("sale")
-    Call<List<SaleMasterData>> getMasterSaleByDate(@Query("date") String date);
+    @GET("sale/GetMasterSaleByDate")
+    Call<List<SaleMasterData>> getMasterSaleByDate(@Query("date") String date,@Query("clientId") int clientId);
 
+    @GET("sale/GetMasterSaleByFromToDate")
+    Call<List<SaleMasterData>> getMasterSaleByFromToDate(@Query("fromDate") String fromDate,@Query("toDate") String toDate,@Query("clientId") int clientId);
+
+    @GET("sale/GetSaleItemByDate")
+    Call<List<SaleTranData>> getSaleItemByDate(@Query("date") String date, @Query("clientId") int clientId, @Query("mainMenuId") int mainMenuId, @Query("subMenuId") int subMenuId);
+
+    @GET("sale/GetSaleItemByFromToDate")
+    Call<List<SaleTranData>> getSaleItemByFromToDate(@Query("fromDate") String fromDate,@Query("toDate") String toDate,@Query("clientId") int clientId, @Query("mainMenuId") int mainMenuId, @Query("subMenuId") int subMenuId);
 }

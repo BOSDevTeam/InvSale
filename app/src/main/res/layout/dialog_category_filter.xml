@@ -18,7 +18,20 @@
 
     <View style="@style/Divider"/>
 
-    <LinearLayout style="@style/DialogLayout">
+    <LinearLayout style="@style/DialogLayout"
+        android:orientation="vertical">
+
+        <TextView android:id="@+id/tvAll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:textSize="@dimen/text_regular"
+            android:text="@string/all"
+            android:layout_marginLeft="25dp"
+            android:padding="15dp"/>
+
+        <View style="@style/Divider"/>
 
         <ExpandableListView android:id="@+id/list"
             android:layout_width="match_parent"
