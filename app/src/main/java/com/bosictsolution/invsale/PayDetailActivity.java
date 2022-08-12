@@ -13,7 +13,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -73,21 +72,17 @@ public class PayDetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pay_detail);
         setLayoutResource();
+        init();
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setDisplayShowTitleEnabled(true);
         setTitle(getResources().getString(R.string.menu_sale));
-        sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
-        db=new DatabaseAccess(context);
-        activity=this;
 
         Intent i = getIntent();
         subtotal = i.getIntExtra("Subtotal", 0);
         taxAmount = i.getIntExtra("TaxAmount", 0);
         chargesAmount = i.getIntExtra("ChargesAmount", 0);
         total = i.getIntExtra("Total", 0);
-
-        clientId=sharedpreferences.getInt(AppConstant.ClientID,0);
 
         fillData();
         setLayoutPaymentCredit();
@@ -153,6 +148,17 @@ public class PayDetailActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void init(){
+        sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
+        db=new DatabaseAccess(context);
+        activity=this;
+
+        progressDialog = new ProgressDialog(context);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
     }
 
     private void showAmountGroupDialog(SaleMasterData saleMasterData) {
@@ -256,7 +262,7 @@ public class PayDetailActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Integer> call, Throwable t) {
                 progressDialog.dismiss();
-                Log.e("PayDetailActivity", t.getMessage());
+                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -435,7 +441,13 @@ public class PayDetailActivity extends AppCompatActivity {
     }
 
     private void fillData() {
+        clientId=sharedpreferences.getInt(AppConstant.ClientID,0);
         voucherDiscountType = discountPercentType;
+        getLocation();
+        getPayment();
+        getPaymentMethod();
+        getBankPayment();
+        getLimitedDay();
         progressDialog.show();
         progressDialog.setMessage(getResources().getString(R.string.loading));
         getCustomer();
@@ -506,102 +518,42 @@ public class PayDetailActivity extends AppCompatActivity {
         Api.getClient().getCustomer().enqueue(new Callback<List<CustomerData>>() {
             @Override
             public void onResponse(Call<List<CustomerData>> call, Response<List<CustomerData>> response) {
+                progressDialog.dismiss();
                 lstCustomer = response.body();
                 setCustomer();
-                getLocation();
             }
 
             @Override
             public void onFailure(Call<List<CustomerData>> call, Throwable t) {
                 progressDialog.dismiss();
-                Log.e("PayDetailActivity", t.getMessage());
+                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
             }
         });
     }
 
     private void getLocation() {
-        Api.getClient().getLocation().enqueue(new Callback<List<LocationData>>() {
-            @Override
-            public void onResponse(Call<List<LocationData>> call, Response<List<LocationData>> response) {
-                lstLocation = response.body();
-                setLocation();
-                getPayment();
-            }
-
-            @Override
-            public void onFailure(Call<List<LocationData>> call, Throwable t) {
-                progressDialog.dismiss();
-                Log.e("PayDetailActivity", t.getMessage());
-            }
-        });
+        lstLocation = db.getLocation();
+        setLocation();
     }
 
     private void getPayment() {
-        Api.getClient().getPayment().enqueue(new Callback<List<PaymentData>>() {
-            @Override
-            public void onResponse(Call<List<PaymentData>> call, Response<List<PaymentData>> response) {
-                lstPayment = response.body();
-                setPayment();
-                getPaymentMethod();
-            }
-
-            @Override
-            public void onFailure(Call<List<PaymentData>> call, Throwable t) {
-                progressDialog.dismiss();
-                Log.e("PayDetailActivity", t.getMessage());
-            }
-        });
+        lstPayment = db.getPayment();
+        setPayment();
     }
 
     private void getPaymentMethod() {
-        Api.getClient().getPaymentMethod().enqueue(new Callback<List<PaymentMethodData>>() {
-            @Override
-            public void onResponse(Call<List<PaymentMethodData>> call, Response<List<PaymentMethodData>> response) {
-                lstPaymentMethod = response.body();
-                setPaymentMethod();
-                getBankPayment();
-            }
-
-            @Override
-            public void onFailure(Call<List<PaymentMethodData>> call, Throwable t) {
-                progressDialog.dismiss();
-                Log.e("PayDetailActivity", t.getMessage());
-            }
-        });
+        lstPaymentMethod = db.getPaymentMethod();
+        setPaymentMethod();
     }
 
     private void getBankPayment() {
-        Api.getClient().getBankPayment().enqueue(new Callback<List<BankPaymentData>>() {
-            @Override
-            public void onResponse(Call<List<BankPaymentData>> call, Response<List<BankPaymentData>> response) {
-                lstBankPayment = response.body();
-                setBankPayment();
-                getLimitedDay();
-            }
-
-            @Override
-            public void onFailure(Call<List<BankPaymentData>> call, Throwable t) {
-                progressDialog.dismiss();
-                Log.e("PayDetailActivity", t.getMessage());
-            }
-        });
+        lstBankPayment = db.getBankPayment();
+        setBankPayment();
     }
 
     private void getLimitedDay() {
-        Api.getClient().getLimitedDay().enqueue(new Callback<List<LimitedDayData>>() {
-            @Override
-            public void onResponse(Call<List<LimitedDayData>> call, Response<List<LimitedDayData>> response) {
-                progressDialog.dismiss();
-                lstLimitedDay = response.body();
-                setLimitedDay();
-            }
-
-            @Override
-            public void onFailure(Call<List<LimitedDayData>> call, Throwable t) {
-                progressDialog.dismiss();
-                Log.e("PayDetailActivity", t.getMessage());
-            }
-        });
+        lstLimitedDay = db.getLimitedDay();
+        setLimitedDay();
     }
 
     private void setLayoutResource() {
@@ -625,10 +577,5 @@ public class PayDetailActivity extends AppCompatActivity {
         inputVoucherDiscount = findViewById(R.id.inputVoucherDiscount);
         inputPaymentPercent = findViewById(R.id.inputPaymentPercent);
         etRemark = findViewById(R.id.etRemark);
-
-        progressDialog = new ProgressDialog(context);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(false);
     }
 }

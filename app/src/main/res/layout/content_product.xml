@@ -14,7 +14,7 @@
 
         <TextView android:id="@+id/tvSubMenu"
             style="@style/DefaultTextView"
-            android:text="Sub Menu 1/1"
+            tools:text="Sub Menu 1/1"
             android:padding="10dp"/>
 
         <View style="@style/Divider"/>
@@ -34,7 +34,7 @@
         android:layout_gravity="bottom"
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="@dimen/fab_margin"
-        android:text="Order:3 Items    MMK 6,000"
+        tools:text="Order:3 Items    MMK 6,000"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="20dp"

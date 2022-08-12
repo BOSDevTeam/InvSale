@@ -49,6 +49,11 @@
 
         </LinearLayout>
 
+        <TextView android:id="@+id/tvAlreadyInOrder"
+            style="@style/SmallTextView"
+            android:text="@string/already_in_order"
+            android:textColor="@color/accent_700"/>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -61,7 +66,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center|left">
 
-                <ImageButton
+                <ImageButton android:id="@+id/btnMinus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_remove_24"
@@ -80,7 +85,7 @@
                     android:background="@drawable/bd_quantity"
                     android:layout_marginLeft="10dp"/>
 
-                <ImageButton
+                <ImageButton android:id="@+id/btnPlus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_add_24"
@@ -96,7 +101,7 @@
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:gravity="right">
-                <Button android:id="@+id/btnAdd"
+                <Button android:id="@+id/btnAddToOrder"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="@string/add_to_order"

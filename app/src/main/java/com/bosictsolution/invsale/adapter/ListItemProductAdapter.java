@@ -6,13 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bosictsolution.invsale.R;
 import com.bosictsolution.invsale.common.AppSetting;
 import com.bosictsolution.invsale.data.ProductData;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import java.util.List;
 
@@ -22,12 +20,15 @@ public class ListItemProductAdapter extends RecyclerView.Adapter<ListItemProduct
     private Context context;
     List<ProductData> list;
     AppSetting appSetting=new AppSetting();
-    BottomSheetBehavior sheetBehavior;
+    IListener iListener;
 
-    public ListItemProductAdapter(List<ProductData> list, Context context, LinearLayout bottom_sheet) {
+    public ListItemProductAdapter(List<ProductData> list, Context context) {
         this.list = list;
         this.context = context;
-        this.sheetBehavior=BottomSheetBehavior.from(bottom_sheet);
+    }
+
+    public void setListener(IListener iListener){
+        this.iListener=iListener;
     }
 
     @Override
@@ -41,12 +42,12 @@ public class ListItemProductAdapter extends RecyclerView.Adapter<ListItemProduct
     @Override
     public void onBindViewHolder(ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         holder.tvProductName.setText(list.get(position).getProductName());
-        holder.tvPrice.setText("MMK "+appSetting.df.format(list.get(position).getSalePrice()));
+        holder.tvPrice.setText(context.getResources().getString(R.string.mmk)+appSetting.df.format(list.get(position).getSalePrice()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                if(iListener!=null)iListener.onProductClicked(position);
             }
         });
     }
@@ -67,5 +68,9 @@ public class ListItemProductAdapter extends RecyclerView.Adapter<ListItemProduct
             tvPrice =  itemView.findViewById(R.id.tvPrice);
             imgPhoto =  itemView.findViewById(R.id.imgPhoto);
         }
+    }
+
+    public interface IListener{
+        void onProductClicked(int position);
     }
 }

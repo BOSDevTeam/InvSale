@@ -3,6 +3,8 @@ package com.bosictsolution.invsale;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -10,6 +12,8 @@ import android.view.View;
 import android.widget.ExpandableListView;
 
 import com.bosictsolution.invsale.adapter.ExpandableListAdapter;
+import com.bosictsolution.invsale.common.AppSetting;
+import com.bosictsolution.invsale.common.DatabaseAccess;
 import com.bosictsolution.invsale.data.MainMenuData;
 import com.bosictsolution.invsale.data.SubMenuData;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
@@ -27,29 +31,33 @@ public class CategoryActivity extends AppCompatActivity {
     ExpandableListAdapter expListAdapter;
     List<MainMenuData> lstMainMenu=new ArrayList<>();
     List<SubMenuData> lstSubMenu=new ArrayList<>();
+    DatabaseAccess db;
+    private Context context=this;
+    private ProgressDialog progressDialog;
+    AppSetting appSetting=new AppSetting();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_category);
         setLayoutResource();
+        init();
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setDisplayShowTitleEnabled(true);
         setTitle(getResources().getString(R.string.categories));
 
-        createMainMenu();
-        createSubMenu();
-        setDataToExpList();
+        fillData();
 
         expList.setOnChildClickListener(new ExpandableListView.OnChildClickListener(){
             @Override
             public boolean onChildClick(ExpandableListView parent, View view, int groupPosition, int childPosition, long id){
                 int subMenuId,mainMenuId;
-                String subMenuName;
+                String subMenuName,mainMenuName;
                 List<Integer> lstSubMenuID = new ArrayList<>();
 
                 mainMenuId = lstMainMenu.get(groupPosition).getMainMenuID();
+                mainMenuName=lstMainMenu.get(groupPosition).getMainMenuName();
                 subMenuName = listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition);
                 for (int i = 0; i < lstSubMenu.size(); i++) {
                     if (lstSubMenu.get(i).getMainMenuID() == mainMenuId) {
@@ -58,6 +66,9 @@ public class CategoryActivity extends AppCompatActivity {
                 }
                 subMenuId = lstSubMenuID.get(childPosition);
                 Intent i=new Intent(CategoryActivity.this, ProductActivity.class);
+                i.putExtra("MainMenuName",mainMenuName);
+                i.putExtra("SubMenuName",subMenuName);
+                i.putExtra("SubMenuID",subMenuId);
                 startActivity(i);
                 return false;
             }
@@ -82,125 +93,59 @@ public class CategoryActivity extends AppCompatActivity {
         }
     }
 
-    private void createMainMenu(){
-        MainMenuData data=new MainMenuData();
-        data.setMainMenuID(1);
-        data.setMainMenuName("Main Menu 1");
-        lstMainMenu.add(data);
-
-        data=new MainMenuData();
-        data.setMainMenuID(2);
-        data.setMainMenuName("Main Menu 2");
-        lstMainMenu.add(data);
-
-        data=new MainMenuData();
-        data.setMainMenuID(3);
-        data.setMainMenuName("Main Menu 3");
-        lstMainMenu.add(data);
-
-        data=new MainMenuData();
-        data.setMainMenuID(4);
-        data.setMainMenuName("Main Menu 4");
-        lstMainMenu.add(data);
-
-        data=new MainMenuData();
-        data.setMainMenuID(5);
-        data.setMainMenuName("Main Menu 5");
-        lstMainMenu.add(data);
-
-        data=new MainMenuData();
-        data.setMainMenuID(6);
-        data.setMainMenuName("Main Menu 6");
-        lstMainMenu.add(data);
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setFab();
     }
 
-    private void createSubMenu(){
-        SubMenuData data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(1);
-        data.setSubMenuName("Sub Menu 1/1");
-        lstSubMenu.add(data);
-
-        data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(1);
-        data.setSubMenuName("Sub Menu 2/1");
-        lstSubMenu.add(data);
-
-        data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(1);
-        data.setSubMenuName("Sub Menu 3/1");
-        lstSubMenu.add(data);
-
-        data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(1);
-        data.setSubMenuName("Sub Menu 4/1");
-        lstSubMenu.add(data);
-
-        data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(1);
-        data.setSubMenuName("Sub Menu 5/1");
-        lstSubMenu.add(data);
-
-        data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(1);
-        data.setSubMenuName("Sub Menu 6/1");
-        lstSubMenu.add(data);
-
-        data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(2);
-        data.setSubMenuName("Sub Menu 1/2");
-        lstSubMenu.add(data);
-
-        data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(3);
-        data.setSubMenuName("Sub Menu 1/3");
-        lstSubMenu.add(data);
-
-        data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(4);
-        data.setSubMenuName("Sub Menu 1/4");
-        lstSubMenu.add(data);
-
-        data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(5);
-        data.setSubMenuName("Sub Menu 1/5");
-        lstSubMenu.add(data);
-
-        data=new SubMenuData();
-        data.setSubMenuID(1);
-        data.setMainMenuID(6);
-        data.setSubMenuName("Sub Menu 1/6");
-        lstSubMenu.add(data);
+    private void init(){
+        db=new DatabaseAccess(context);
+        progressDialog =new ProgressDialog(context);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
     }
 
-    private void setDataToExpList(){
-        listDataHeader=new ArrayList<>();
-        listDataChild=new HashMap<>();
-        for(int i=0;i<lstMainMenu.size();i++){
-            int mainMenuID=lstMainMenu.get(i).getMainMenuID();
-            String mainMenuName=lstMainMenu.get(i).getMainMenuName();
+    private void fillData() {
+        getMainMenu();
+        getSubMenu();
+        setDataToExpList();
+    }
 
-            List<String> lstSubMenuName=new ArrayList<>();
-            for(int j=0;j<lstSubMenu.size();j++){
-                if(lstSubMenu.get(j).getMainMenuID()==mainMenuID){
+    private void setFab() {
+        int totalSaleOrderItem = db.getTotalSaleOrderItem();
+        if (totalSaleOrderItem != 0) {
+            fab.setText("Order:" + totalSaleOrderItem + " Items - " + getResources().getString(R.string.mmk) + appSetting.df.format(db.getTotalSaleOrderAmount()));
+            fab.setVisibility(View.VISIBLE);
+        } else fab.setVisibility(View.GONE);
+    }
+
+    private void getMainMenu(){
+        lstMainMenu=db.getMainMenu();
+    }
+
+    private void getSubMenu(){
+        lstSubMenu=db.getSubMenu();
+    }
+
+    private void setDataToExpList() {
+        listDataHeader = new ArrayList<>();
+        listDataChild = new HashMap<>();
+        for (int i = 0; i < lstMainMenu.size(); i++) {
+            int mainMenuID = lstMainMenu.get(i).getMainMenuID();
+            String mainMenuName = lstMainMenu.get(i).getMainMenuName();
+
+            List<String> lstSubMenuName = new ArrayList<>();
+            for (int j = 0; j < lstSubMenu.size(); j++) {
+                if (lstSubMenu.get(j).getMainMenuID() == mainMenuID) {
                     lstSubMenuName.add(lstSubMenu.get(j).getSubMenuName());
                 }
             }
-            if(lstSubMenuName.size()!=0){
-                listDataChild.put(mainMenuName, lstSubMenuName);
-                listDataHeader.add(mainMenuName);
-            }
+            listDataChild.put(mainMenuName, lstSubMenuName);
+            listDataHeader.add(mainMenuName);
         }
-        expListAdapter=new ExpandableListAdapter(this,listDataHeader,listDataChild);
+        expListAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild);
         expList.setAdapter(expListAdapter);
     }
 

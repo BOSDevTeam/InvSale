@@ -13,7 +13,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -38,11 +37,17 @@ import com.bosictsolution.invsale.api.Api;
 import com.bosictsolution.invsale.common.AppSetting;
 import com.bosictsolution.invsale.common.Confirmation;
 import com.bosictsolution.invsale.common.DatabaseAccess;
+import com.bosictsolution.invsale.data.BankPaymentData;
 import com.bosictsolution.invsale.data.CompanySettingData;
+import com.bosictsolution.invsale.data.LimitedDayData;
+import com.bosictsolution.invsale.data.LocationData;
 import com.bosictsolution.invsale.data.MainMenuData;
+import com.bosictsolution.invsale.data.PaymentData;
+import com.bosictsolution.invsale.data.PaymentMethodData;
 import com.bosictsolution.invsale.data.ProductData;
 import com.bosictsolution.invsale.data.SaleTranData;
 import com.bosictsolution.invsale.data.SubMenuData;
+import com.bosictsolution.invsale.data.VoucherSettingData;
 import com.bosictsolution.invsale.listener.IConfirmation;
 import com.bosictsolution.invsale.listener.ListItemProductInfoListener;
 import com.bosictsolution.invsale.listener.ListItemSaleListener;
@@ -81,13 +86,14 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sale);
         setLayoutResource();
+        init();
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setDisplayShowTitleEnabled(true);
         setTitle(getResources().getString(R.string.menu_sale));
-        db=new DatabaseAccess(context);
 
         getCompanySetting();
+        loadData();
 
         btnPay.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -150,6 +156,15 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
             lstSaleTran=new ArrayList<>();
             setSaleTranAdapter();
         }
+    }
+
+    private void init(){
+        db=new DatabaseAccess(context);
+
+        progressDialog =new ProgressDialog(context);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
     }
 
     @Override
@@ -445,26 +460,24 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         textView.setText(value);
     }
 
-    private void setDataToExpList(ExpandableListView expList){
+    private void setDataToExpList(ExpandableListView expList) {
         GeneralExpandableListAdapter expListAdapter;
-        listDataHeader=new ArrayList<>();
-        listDataChild=new HashMap<>();
-        for(int i=0;i<lstSubMenu.size();i++){
-            int subMenuID=lstSubMenu.get(i).getSubMenuID();
-            String subMenuName=lstSubMenu.get(i).getSubMenuName();
+        listDataHeader = new ArrayList<>();
+        listDataChild = new HashMap<>();
+        for (int i = 0; i < lstSubMenu.size(); i++) {
+            int subMenuID = lstSubMenu.get(i).getSubMenuID();
+            String subMenuName = lstSubMenu.get(i).getSubMenuName();
 
-            List<String> lstProductName=new ArrayList<>();
-            for(int j=0;j<lstProduct.size();j++){
-                if(lstProduct.get(j).getSubMenuID()==subMenuID){
+            List<String> lstProductName = new ArrayList<>();
+            for (int j = 0; j < lstProduct.size(); j++) {
+                if (lstProduct.get(j).getSubMenuID() == subMenuID) {
                     lstProductName.add(lstProduct.get(j).getProductName());
                 }
             }
-            if(lstProductName.size()!=0){
-                listDataChild.put(subMenuName, lstProductName);
-                listDataHeader.add(subMenuName);
-            }
+            listDataChild.put(subMenuName, lstProductName);
+            listDataHeader.add(subMenuName);
         }
-        expListAdapter=new GeneralExpandableListAdapter(this,listDataHeader,listDataChild);
+        expListAdapter = new GeneralExpandableListAdapter(this, listDataHeader, listDataChild);
         expList.setAdapter(expListAdapter);
     }
 
@@ -525,119 +538,156 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
     }
 
     private void getMainMenu() {
-        progressDialog.show();
-        progressDialog.setMessage(getResources().getString(R.string.loading));
-        Api.getClient().getMainMenu().enqueue(new Callback<List<MainMenuData>>() {
-            @Override
-            public void onResponse(Call<List<MainMenuData>> call, Response<List<MainMenuData>> response) {
-                progressDialog.dismiss();
-                lstMainMenu = response.body();
-                if (lstMainMenu.size() != 0)
-                    setMainMenu(spMainMenu);
-                else
-                    Toast.makeText(context, getResources().getString(R.string.product_not_found), Toast.LENGTH_LONG).show();
-            }
-
-            @Override
-            public void onFailure(Call<List<MainMenuData>> call, Throwable t) {
-                progressDialog.dismiss();
-                Log.e("SaleActivity", t.getMessage());
-            }
-        });
+        lstMainMenu = db.getMainMenu();
+        if (lstMainMenu.size() != 0)
+            setMainMenu(spMainMenu);
+        else
+            Toast.makeText(context, getResources().getString(R.string.product_not_found), Toast.LENGTH_LONG).show();
     }
 
     private void getSubMenuByMainMenu(int mainMenuId) {
-        progressDialog.show();
-        progressDialog.setMessage(getResources().getString(R.string.loading));
-        Api.getClient().getSubMenuByMainMenu(mainMenuId).enqueue(new Callback<List<SubMenuData>>() {
-            @Override
-            public void onResponse(Call<List<SubMenuData>> call, Response<List<SubMenuData>> response) {
-                lstSubMenu=response.body();
-                if (lstSubMenu.size() != 0) {
-                    String subMenuIdList="";
-                    for(int i=0;i<lstSubMenu.size();i++){
-                        subMenuIdList+=lstSubMenu.get(i).getSubMenuID()+",";
-                    }
-                    if(subMenuIdList.length()!=0){
-                        subMenuIdList=subMenuIdList.substring(0,subMenuIdList.length()-1);
-                    }
-                    getProductBySubMenuList(subMenuIdList);
-                } else {
-                    progressDialog.dismiss();
-                    setDataToExpList(expList);
-                    Toast.makeText(context, getResources().getString(R.string.product_not_found_by_menu), Toast.LENGTH_LONG).show();
-                }
+        lstSubMenu=db.getSubMenuByMainMenu(mainMenuId);
+        if (lstSubMenu.size() != 0) {
+            String subMenuIdList="";
+            for(int i=0;i<lstSubMenu.size();i++){
+                subMenuIdList+=lstSubMenu.get(i).getSubMenuID()+",";
             }
-
-            @Override
-            public void onFailure(Call<List<SubMenuData>> call, Throwable t) {
-                progressDialog.dismiss();
-                Log.e("SaleActivity", t.getMessage());
+            if(subMenuIdList.length()!=0){
+                subMenuIdList=subMenuIdList.substring(0,subMenuIdList.length()-1);
             }
-        });
+            getProductBySubMenuList(subMenuIdList);
+        } else {
+            setDataToExpList(expList);
+            Toast.makeText(context, getResources().getString(R.string.product_not_found_by_menu), Toast.LENGTH_LONG).show();
+        }
     }
 
     private void getProductBySubMenuList(String subMenuIdList) {
-        Api.getClient().getProductBySubMenuList(subMenuIdList).enqueue(new Callback<List<ProductData>>() {
-            @Override
-            public void onResponse(Call<List<ProductData>> call, Response<List<ProductData>> response) {
-                progressDialog.dismiss();
-                lstProduct=response.body();
-                setDataToExpList(expList);
-            }
-
-            @Override
-            public void onFailure(Call<List<ProductData>> call, Throwable t) {
-                progressDialog.dismiss();
-                Log.e("SaleActivity", t.getMessage());
-            }
-        });
+        lstProduct=db.getProductBySubMenuList(subMenuIdList);
+        setDataToExpList(expList);
     }
 
     private void getCompanySetting(){
-        progressDialog.show();
-        progressDialog.setMessage(getResources().getString(R.string.loading));
-        Api.getClient().getCompanySetting().enqueue(new Callback<CompanySettingData>() {
-            @Override
-            public void onResponse(Call<CompanySettingData> call, Response<CompanySettingData> response) {
-                progressDialog.dismiss();
-                CompanySettingData data=response.body();
-                if(data!=null){
-                    tax=data.getTax();
-                    charges =data.getServiceCharges();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<CompanySettingData> call, Throwable t) {
-                progressDialog.dismiss();
-                Log.e("SaleActivity", t.getMessage());
-            }
-        });
+        CompanySettingData data=db.getCompanySetting();
+        if(data!=null){
+            tax=data.getTax();
+            charges =data.getServiceCharges();
+        }
     }
 
     private void searchProductByValue(String value) {
         progressDialog.show();
         progressDialog.setMessage(getResources().getString(R.string.loading));
-        Api.getClient().searchProductByValue(value).enqueue(new Callback<List<ProductData>>() {
+        List<ProductData> list=db.searchProductByValue(value);
+        progressDialog.dismiss();
+        if (list.size() == 0)
+            Toast.makeText(context, getResources().getString(R.string.product_not_found_by_value), Toast.LENGTH_LONG).show();
+        else if (list.size() > 1)
+            showProductInfoDialog(value, list);
+        else if (list.size() == 1){
+            setSaleTran(0, list);
+            setSaleTranAdapter();
+        }
+    }
+
+    private void loadData(){
+        progressDialog.show();
+        progressDialog.setMessage(getResources().getString(R.string.loading));
+        getLocation();
+    }
+
+    private void getLocation() {
+        Api.getClient().getLocation().enqueue(new Callback<List<LocationData>>() {
             @Override
-            public void onResponse(Call<List<ProductData>> call, Response<List<ProductData>> response) {
-                progressDialog.dismiss();
-                List<ProductData> list = response.body();
-                if (list.size() == 0)
-                    Toast.makeText(context, getResources().getString(R.string.product_not_found_by_value), Toast.LENGTH_LONG).show();
-                else if (list.size() > 1)
-                    showProductInfoDialog(value, list);
-                else if (list.size() == 1){
-                    setSaleTran(0, list);
-                    setSaleTranAdapter();
-                }
+            public void onResponse(Call<List<LocationData>> call, Response<List<LocationData>> response) {
+                db.insertLocation(response.body());
+                getPayment();
             }
 
             @Override
-            public void onFailure(Call<List<ProductData>> call, Throwable t) {
+            public void onFailure(Call<List<LocationData>> call, Throwable t) {
                 progressDialog.dismiss();
-                Log.e("SaleActivity", t.getMessage());
+                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void getPayment() {
+        Api.getClient().getPayment().enqueue(new Callback<List<PaymentData>>() {
+            @Override
+            public void onResponse(Call<List<PaymentData>> call, Response<List<PaymentData>> response) {
+                db.insertPayment(response.body());
+                getPaymentMethod();
+            }
+
+            @Override
+            public void onFailure(Call<List<PaymentData>> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void getPaymentMethod() {
+        Api.getClient().getPaymentMethod().enqueue(new Callback<List<PaymentMethodData>>() {
+            @Override
+            public void onResponse(Call<List<PaymentMethodData>> call, Response<List<PaymentMethodData>> response) {
+                db.insertPaymentMethod(response.body());
+                getBankPayment();
+            }
+
+            @Override
+            public void onFailure(Call<List<PaymentMethodData>> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void getBankPayment() {
+        Api.getClient().getBankPayment().enqueue(new Callback<List<BankPaymentData>>() {
+            @Override
+            public void onResponse(Call<List<BankPaymentData>> call, Response<List<BankPaymentData>> response) {
+                db.insertBankPayment(response.body());
+                getLimitedDay();
+            }
+
+            @Override
+            public void onFailure(Call<List<BankPaymentData>> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void getLimitedDay() {
+        Api.getClient().getLimitedDay().enqueue(new Callback<List<LimitedDayData>>() {
+            @Override
+            public void onResponse(Call<List<LimitedDayData>> call, Response<List<LimitedDayData>> response) {
+                db.insertLimitedDay(response.body());
+                getVoucherSetting();
+            }
+
+            @Override
+            public void onFailure(Call<List<LimitedDayData>> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void getVoucherSetting(){
+        Api.getClient().getVoucherSetting().enqueue(new Callback<List<VoucherSettingData>>() {
+            @Override
+            public void onResponse(Call<List<VoucherSettingData>> call, Response<List<VoucherSettingData>> response) {
+                progressDialog.dismiss();
+                db.insertVoucherSetting(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<List<VoucherSettingData>> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -652,11 +702,6 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         tvSubtotal=findViewById(R.id.tvSubtotal);
         tvTotal=findViewById(R.id.tvTotal);
         btnRemove=findViewById(R.id.btnRemove);
-
-        progressDialog =new ProgressDialog(context);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(false);
     }
 
 }

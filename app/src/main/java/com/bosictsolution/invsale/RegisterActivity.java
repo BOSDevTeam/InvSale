@@ -11,7 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -55,7 +54,7 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
         getSupportActionBar().hide();
         setLayoutResource();
-        sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
+        init();
 
         ConnectionLiveData connectionLiveData = new ConnectionLiveData(this);
         connectionLiveData.observe(this, new Observer<ConnectionData>() {
@@ -116,6 +115,14 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
+    private void init(){
+        sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
+        progressDialog =new ProgressDialog(context);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+    }
+
     private boolean validateControl(){
         if(etUserName.getText().toString().length()==0){
             inputUserName.setError(getResources().getString(R.string.enter_value));
@@ -153,7 +160,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<DivisionData>> call, Throwable t) {
                 progressDialog.dismiss();
-                Log.e("RegisterActivity", t.getMessage());
+                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -170,7 +177,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<TownshipData>> call, Throwable t) {
                 progressDialog.dismiss();
-                Log.e("RegisterActivity", t.getMessage());
+                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -206,7 +213,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Integer> call, Throwable t) {
                 progressDialog.dismiss();
-                Log.e("RegisterActivity", t.getMessage());
+                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -244,10 +251,5 @@ public class RegisterActivity extends AppCompatActivity {
         inputPhone=findViewById(R.id.inputPhone);
         inputAddress=findViewById(R.id.inputAddress);
         tvSignIn=findViewById(R.id.tvSignIn);
-
-        progressDialog =new ProgressDialog(context);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(false);
     }
 }

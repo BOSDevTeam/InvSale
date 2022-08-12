@@ -5,16 +5,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bosictsolution.invsale.adapter.ListItemProductAdapter;
+import com.bosictsolution.invsale.common.AppSetting;
+import com.bosictsolution.invsale.common.DatabaseAccess;
 import com.bosictsolution.invsale.data.ProductData;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
@@ -22,9 +27,11 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProductActivity extends AppCompatActivity {
+public class ProductActivity extends AppCompatActivity implements ListItemProductAdapter.IListener {
 
-    TextView tvSubMenu;
+    TextView tvSubMenu,tvProductName,tvPrice,tvQuantity,tvAlreadyInOrder;
+    Button btnAddToOrder;
+    ImageButton btnPlus,btnMinus;
     RecyclerView rvProduct;
     ExtendedFloatingActionButton fab;
     ListItemProductAdapter listItemProductAdapter;
@@ -33,19 +40,29 @@ public class ProductActivity extends AppCompatActivity {
     BottomSheetBehavior sheetBehavior;
     LinearLayout bottom_sheet;
     ImageButton btnBottomSheetClose;
+    DatabaseAccess db;
+    private ProgressDialog progressDialog;
+    String mainMenuName,subMenuName;
+    int subMenuId,productId;
+    AppSetting appSetting=new AppSetting();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product);
         setLayoutResource();
+        init();
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setDisplayShowTitleEnabled(true);
-        setTitle("Main Menu 1");
 
-        createProduct();
-        setAdapter();
+        Intent i=getIntent();
+        mainMenuName=i.getStringExtra("MainMenuName");
+        subMenuName=i.getStringExtra("SubMenuName");
+        subMenuId=i.getIntExtra("SubMenuID",subMenuId);
+
+        setTitle(mainMenuName);
+        fillData();
 
         sheetBehavior=BottomSheetBehavior.from(bottom_sheet);
 
@@ -62,6 +79,34 @@ public class ProductActivity extends AppCompatActivity {
                 sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
             }
         });
+        btnPlus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int quantity = Integer.parseInt(tvQuantity.getText().toString());
+                quantity += 1;
+                tvQuantity.setText(String.valueOf(quantity));
+            }
+        });
+        btnMinus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int quantity = Integer.parseInt(tvQuantity.getText().toString());
+                if (quantity == 1) return;
+                else quantity -= 1;
+                tvQuantity.setText(String.valueOf(quantity));
+            }
+        });
+        btnAddToOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int quantity=Integer.parseInt(tvQuantity.getText().toString());
+                if(db.insertUpdateTranSaleOrder(productId,quantity)){
+                    setFab();
+                    sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    Toast.makeText(context,getResources().getString(R.string.added),Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 
     @Override
@@ -75,62 +120,43 @@ public class ProductActivity extends AppCompatActivity {
         }
     }
 
-    private void createProduct(){
-        ProductData data=new ProductData();
-        data.setProductName("Product ABC");
-        data.setSalePrice(2000);
-        lstProduct.add(data);
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setFab();
+    }
 
-        data=new ProductData();
-        data.setProductName("Product ABC");
-        data.setSalePrice(2000);
-        lstProduct.add(data);
+    private void setFab() {
+        int totalSaleOrderItem = db.getTotalSaleOrderItem();
+        if (totalSaleOrderItem != 0) {
+            fab.setText("Order:" + totalSaleOrderItem + " Items - " + getResources().getString(R.string.mmk) + appSetting.df.format(db.getTotalSaleOrderAmount()));
+            fab.setVisibility(View.VISIBLE);
+        } else fab.setVisibility(View.GONE);
+    }
 
-        data=new ProductData();
-        data.setProductName("Product ABC");
-        data.setSalePrice(2000);
-        lstProduct.add(data);
+    private void init(){
+        db=new DatabaseAccess(context);
+        progressDialog =new ProgressDialog(context);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+    }
 
-        data=new ProductData();
-        data.setProductName("Product ABC");
-        data.setSalePrice(2000);
-        lstProduct.add(data);
+    private void fillData(){
+        tvSubMenu.setText(subMenuName);
+        getProductBySubMenu(subMenuId);
+        setAdapter();
+    }
 
-        data=new ProductData();
-        data.setProductName("Product ABC");
-        data.setSalePrice(2000);
-        lstProduct.add(data);
-
-        data=new ProductData();
-        data.setProductName("Product ABC");
-        data.setSalePrice(2000);
-        lstProduct.add(data);
-
-        data=new ProductData();
-        data.setProductName("Product ABC");
-        data.setSalePrice(2000);
-        lstProduct.add(data);
-
-        data=new ProductData();
-        data.setProductName("Product ABC");
-        data.setSalePrice(2000);
-        lstProduct.add(data);
-
-        data=new ProductData();
-        data.setProductName("Product ABC");
-        data.setSalePrice(2000);
-        lstProduct.add(data);
-
-        data=new ProductData();
-        data.setProductName("Product ABC");
-        data.setSalePrice(2000);
-        lstProduct.add(data);
+    private void getProductBySubMenu(int subMenuId){
+        lstProduct=db.getProductBySubMenu(subMenuId);
     }
 
     private void setAdapter(){
-        listItemProductAdapter=new ListItemProductAdapter(lstProduct,context,bottom_sheet);
+        listItemProductAdapter=new ListItemProductAdapter(lstProduct,context);
         rvProduct.setAdapter(listItemProductAdapter);
         rvProduct.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
+        listItemProductAdapter.setListener(this);
     }
 
     private void setLayoutResource() {
@@ -138,6 +164,29 @@ public class ProductActivity extends AppCompatActivity {
         rvProduct = findViewById(R.id.rvProduct);
         bottom_sheet=findViewById(R.id.bottom_sheet);
         btnBottomSheetClose=findViewById(R.id.btnBottomSheetClose);
+        tvProductName = findViewById(R.id.tvProductName);
+        tvPrice = findViewById(R.id.tvPrice);
+        tvQuantity = findViewById(R.id.tvQuantity);
+        tvAlreadyInOrder = findViewById(R.id.tvAlreadyInOrder);
+        btnPlus = findViewById(R.id.btnPlus);
+        btnMinus = findViewById(R.id.btnMinus);
+        btnAddToOrder = findViewById(R.id.btnAddToOrder);
         fab=findViewById(R.id.fab);
+    }
+
+    @Override
+    public void onProductClicked(int position) {
+        productId = lstProduct.get(position).getProductID();
+        tvProductName.setText(lstProduct.get(position).getProductName());
+        tvPrice.setText(context.getResources().getString(R.string.mmk) + appSetting.df.format(lstProduct.get(position).getSalePrice()));
+        int quantity = db.getSaleOrderQuantityByProduct(productId);
+        if (quantity == 0) {
+            tvAlreadyInOrder.setVisibility(View.GONE);
+            tvQuantity.setText("1");
+        } else {
+            tvAlreadyInOrder.setVisibility(View.VISIBLE);
+            tvQuantity.setText(String.valueOf(quantity));
+        }
+        sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
     }
 }

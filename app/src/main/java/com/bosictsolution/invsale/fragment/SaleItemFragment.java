@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialogFragment;
 import androidx.fragment.app.Fragment;
@@ -36,6 +37,7 @@ import com.bosictsolution.invsale.common.DatabaseAccess;
 import com.bosictsolution.invsale.data.MainMenuData;
 import com.bosictsolution.invsale.data.SaleTranData;
 import com.bosictsolution.invsale.data.SubMenuData;
+import com.bosictsolution.invsale.ui.sale.SaleFragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +48,7 @@ import java.util.List;
  * Use the {@link SaleItemFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SaleItemFragment extends Fragment {
+public class SaleItemFragment extends Fragment implements SaleFragment.onFragmentInteractionListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -74,6 +76,7 @@ public class SaleItemFragment extends Fragment {
     public static final int FROM_DATE_REQUEST_CODE = 12;
     public static final int TO_DATE_REQUEST_CODE = 13;
     DatabaseAccess db;
+    private SaleFragment.onFragmentInteractionListener listener;
 
     public SaleItemFragment() {
         // Required empty public constructor
@@ -132,6 +135,14 @@ public class SaleItemFragment extends Fragment {
         return root;
     }
 
+    @Override
+    public void onAttachFragment(@NonNull Fragment childFragment) {
+        super.onAttachFragment(childFragment);
+        if(childFragment instanceof SaleFragment.onFragmentInteractionListener){
+            listener=(SaleFragment.onFragmentInteractionListener) childFragment;
+        }
+    }
+
     private void setAdapter(List<SaleTranData> list){
         listItemSaleTranAdapter=new ListItemSaleTranAdapter(list,getContext());
         rvSaleItem.setAdapter(listItemSaleTranAdapter);
@@ -177,6 +188,7 @@ public class SaleItemFragment extends Fragment {
             @Override
             public boolean onChildClick(ExpandableListView expandableListView, View view, int groupPosition, int childPosition, long l) {
                 List<SubMenuData> list=new ArrayList<>();
+                String subMenuName="";
                 mainMenuId = lstMainMenu.get(groupPosition).getMainMenuID();
                 String mainMenuName=lstMainMenu.get(groupPosition).getMainMenuName();
                 for (int i = 0; i < lstSubMenu.size(); i++) {
@@ -184,8 +196,10 @@ public class SaleItemFragment extends Fragment {
                         list.add(lstSubMenu.get(i));
                     }
                 }
-                subMenuId = list.get(childPosition).getSubMenuID();
-                String subMenuName=list.get(childPosition).getSubMenuName();
+                if(list.size()!=0) {
+                    subMenuId = list.get(childPosition).getSubMenuID();
+                    subMenuName = list.get(childPosition).getSubMenuName();
+                }
                 if(subMenuId==0)tvCategory.setText(mainMenuName);
                 else tvCategory.setText(subMenuName);
                 if(date_filter_type==date_filter)getSaleItemByDate();
@@ -206,25 +220,23 @@ public class SaleItemFragment extends Fragment {
         lstSubMenu=db.getSubMenuForCategoryFilter();
     }
 
-    private void setDataToExpList(ExpandableListView expList){
-        listDataHeader=new ArrayList<>();
-        listDataChild=new HashMap<>();
-        for(int i=0;i<lstMainMenu.size();i++){
-            int mainMenuID=lstMainMenu.get(i).getMainMenuID();
-            String mainMenuName=lstMainMenu.get(i).getMainMenuName();
+    private void setDataToExpList(ExpandableListView expList) {
+        listDataHeader = new ArrayList<>();
+        listDataChild = new HashMap<>();
+        for (int i = 0; i < lstMainMenu.size(); i++) {
+            int mainMenuID = lstMainMenu.get(i).getMainMenuID();
+            String mainMenuName = lstMainMenu.get(i).getMainMenuName();
 
-            List<String> lstSubMenuName=new ArrayList<>();
-            for(int j=0;j<lstSubMenu.size();j++){
-                if(lstSubMenu.get(j).getMainMenuID()==mainMenuID){
+            List<String> lstSubMenuName = new ArrayList<>();
+            for (int j = 0; j < lstSubMenu.size(); j++) {
+                if (lstSubMenu.get(j).getMainMenuID() == mainMenuID) {
                     lstSubMenuName.add(lstSubMenu.get(j).getSubMenuName());
                 }
             }
-            if(lstSubMenuName.size()!=0){
-                listDataChild.put(mainMenuName, lstSubMenuName);
-                listDataHeader.add(mainMenuName);
-            }
+            listDataChild.put(mainMenuName, lstSubMenuName);
+            listDataHeader.add(mainMenuName);
         }
-        generalExpandableListAdapter=new GeneralExpandableListAdapter(getContext(),listDataHeader,listDataChild);
+        generalExpandableListAdapter = new GeneralExpandableListAdapter(getContext(), listDataHeader, listDataChild);
         expList.setAdapter(generalExpandableListAdapter);
     }
 
@@ -350,7 +362,7 @@ public class SaleItemFragment extends Fragment {
                 progressDialog.dismiss();
                 List<SaleTranData> list=response.body();
                 setAdapter(list);
-                tvTotal.setText("MMK"+getContext().getResources().getString(R.string.space)+calculateAmountTotal(list));
+                tvTotal.setText(getResources().getString(R.string.mmk)+calculateAmountTotal(list));
             }
 
             @Override
@@ -371,7 +383,25 @@ public class SaleItemFragment extends Fragment {
                 progressDialog.dismiss();
                 List<SaleTranData> list=response.body();
                 setAdapter(list);
-                tvTotal.setText("MMK"+getContext().getResources().getString(R.string.space)+calculateAmountTotal(list));
+                tvTotal.setText(getResources().getString(R.string.mmk)+calculateAmountTotal(list));
+            }
+
+            @Override
+            public void onFailure(Call<List<SaleTranData>> call, Throwable t) {
+                progressDialog.dismiss();
+                Log.e("SaleItemFragment", t.getMessage());
+            }
+        });
+    }
+
+    private void getSaleItemByValue(String value){
+        Api.getClient().getSaleItemByValue(value,clientId).enqueue(new Callback<List<SaleTranData>>() {
+            @Override
+            public void onResponse(Call<List<SaleTranData>> call, Response<List<SaleTranData>> response) {
+                progressDialog.dismiss();
+                List<SaleTranData> list=response.body();
+                setAdapter(list);
+                tvTotal.setText(getResources().getString(R.string.mmk)+calculateAmountTotal(list));
             }
 
             @Override
@@ -415,7 +445,22 @@ public class SaleItemFragment extends Fragment {
         getSaleItemByDate();
     }
 
-    private void refresh(){
+    private String calculateAmountTotal(List<SaleTranData> list) {
+        int amountTotal = 0;
+        String result = "";
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            if (list != null) amountTotal = list.stream().mapToInt(x -> x.getTotalAmount()).sum();
+        } else {
+            for (int i = 0; i < list.size(); i++) {
+                amountTotal += list.get(i).getTotalAmount();
+            }
+        }
+        result = appSetting.df.format(amountTotal);
+        return result;
+    }
+
+    @Override
+    public void refresh() {
         date_filter_type=date_filter;
         selectedDate= appSetting.getTodayDate();
         tvDate.setText(selectedDate);
@@ -425,17 +470,9 @@ public class SaleItemFragment extends Fragment {
         getSaleItemByDate();
     }
 
-    private String calculateAmountTotal(List<SaleTranData> list) {
-        int amountTotal = 0;
-        String result = "";
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            amountTotal = list.stream().mapToInt(x -> x.getTotalAmount()).sum();
-        } else {
-            for (int i = 0; i < list.size(); i++) {
-                amountTotal += list.get(i).getTotalAmount();
-            }
-        }
-        result = appSetting.df.format(amountTotal);
-        return result;
+    @Override
+    public void search(String value) {
+        if (value.length() != 0)
+            getSaleItemByValue(value);
     }
 }

@@ -9,6 +9,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.bosictsolution.invsale.adapter.ListItemSaleAdapter;
+import com.bosictsolution.invsale.adapter.ListItemSaleAdapterR;
 import com.bosictsolution.invsale.data.SaleTranData;
 import com.bosictsolution.invsale.listener.ListItemSaleListener;
 

@@ -50,23 +50,17 @@ public interface ApiInterface {
     @POST("client/UpdateClient")
     Call<Void> updateClient(@Query("clientId") int clientId,@Body ClientData clientData);
 
-    @GET("product/SearchProductByValue")
-    Call<List<ProductData>> searchProductByValue(@Query("value") String value);
-
     @GET("companysetting")
     Call<CompanySettingData> getCompanySetting();
 
     @GET("mainmenu")
     Call<List<MainMenuData>> getMainMenu();
 
-    @GET("submenu/GetSubMenuByMainMenu")
-    Call<List<SubMenuData>> getSubMenuByMainMenu(@Query("mainMenuId") int mainMenuId);
-
     @GET("submenu/GetSubMenu")
     Call<List<SubMenuData>> getSubMenu();
 
-    @GET("product/GetProductBySubMenuList")
-    Call<List<ProductData>> getProductBySubMenuList(@Query("subMenuIdList") String subMenuIdList);
+    @GET("product/GetProduct")
+    Call<List<ProductData>> getProduct();
 
     @GET("customer")
     Call<List<CustomerData>> getCustomer();
@@ -95,7 +89,7 @@ public interface ApiInterface {
     Call<Integer> insertSale(@Body SaleMasterData model);
 
     @GET("vouchersetting")
-    Call<VoucherSettingData> getVoucherSetting(@Query("locationId") int locationId);
+    Call<List<VoucherSettingData>> getVoucherSetting();
 
     @GET("sale/GetMasterSaleByDate")
     Call<List<SaleMasterData>> getMasterSaleByDate(@Query("date") String date,@Query("clientId") int clientId);
@@ -103,9 +97,15 @@ public interface ApiInterface {
     @GET("sale/GetMasterSaleByFromToDate")
     Call<List<SaleMasterData>> getMasterSaleByFromToDate(@Query("fromDate") String fromDate,@Query("toDate") String toDate,@Query("clientId") int clientId);
 
+    @GET("sale/GetMasterSaleByValue")
+    Call<List<SaleMasterData>> getMasterSaleByValue(@Query("value") String value,@Query("clientId") int clientId);
+
     @GET("sale/GetSaleItemByDate")
     Call<List<SaleTranData>> getSaleItemByDate(@Query("date") String date, @Query("clientId") int clientId, @Query("mainMenuId") int mainMenuId, @Query("subMenuId") int subMenuId);
 
     @GET("sale/GetSaleItemByFromToDate")
     Call<List<SaleTranData>> getSaleItemByFromToDate(@Query("fromDate") String fromDate,@Query("toDate") String toDate,@Query("clientId") int clientId, @Query("mainMenuId") int mainMenuId, @Query("subMenuId") int subMenuId);
+
+    @GET("sale/GetSaleItemByValue")
+    Call<List<SaleTranData>> getSaleItemByValue(@Query("value") String value, @Query("clientId") int clientId);
 }

@@ -38,7 +38,7 @@ public class ListItemSaleSummaryAdapter extends RecyclerView.Adapter<ListItemSal
         holder.tvDate.setText(list.get(position).getDate());
         holder.tvCustomer.setText(list.get(position).getCustomerName());
         holder.tvSaleNo.setText(context.getResources().getString(R.string.hash)+list.get(position).getUserVoucherNo());
-        holder.tvGrandTotal.setText("MMK"+context.getResources().getString(R.string.space)+appSetting.df.format(list.get(position).getNetAmt()));
+        holder.tvGrandTotal.setText(context.getResources().getString(R.string.mmk)+appSetting.df.format(list.get(position).getNetAmt()));
     }
 
     @Override

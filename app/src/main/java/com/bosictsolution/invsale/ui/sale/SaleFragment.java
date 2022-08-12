@@ -8,7 +8,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
@@ -21,7 +20,6 @@ import com.bosictsolution.invsale.R;
 import com.bosictsolution.invsale.SaleActivity;
 import com.bosictsolution.invsale.adapter.SaleTabAdapter;
 import com.bosictsolution.invsale.databinding.FragmentSaleBinding;
-import com.bosictsolution.invsale.fragment.SaleSummaryFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
@@ -33,7 +31,7 @@ public class SaleFragment extends Fragment {
     ViewPager viewPager;
     FloatingActionButton fab;
     int tabPosition;
-    private onFragmentInteractionListener listener;
+    private onFragmentInteractionListener saleSummaryListener,saleItemListener;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -52,9 +50,6 @@ public class SaleFragment extends Fragment {
         viewPager.setAdapter(adapter);
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-
-        // important
-        //listener=(SaleFragment.onFragmentInteractionListener)getActivity().getSupportFragmentManager().getPrimaryNavigationFragment().getParentFragment().getChildFragmentManager();
 
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -86,6 +81,16 @@ public class SaleFragment extends Fragment {
     }
 
     @Override
+    public void onAttachFragment(@NonNull Fragment childFragment) {
+        super.onAttachFragment(childFragment);
+        if (childFragment instanceof SaleFragment.onFragmentInteractionListener) {
+            if (saleSummaryListener == null)
+                saleSummaryListener = (SaleFragment.onFragmentInteractionListener) childFragment;
+            else saleItemListener = (SaleFragment.onFragmentInteractionListener) childFragment;
+        }
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
@@ -101,19 +106,26 @@ public class SaleFragment extends Fragment {
         itemRefresh.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
-                if(tabPosition==0) {
-                    Toast.makeText(getContext(), "summary", Toast.LENGTH_SHORT).show();
-                    if(listener!=null){
-                        listener.refresh();
-                    }
+                if (tabPosition == 0) {
+                    if (saleSummaryListener != null)
+                        saleSummaryListener.refresh();
+                } else if (tabPosition == 1) {
+                    if (saleItemListener != null)
+                        saleItemListener.refresh();
                 }
-                else if(tabPosition==1) Toast.makeText(getContext(), "item", Toast.LENGTH_SHORT).show();
                 return false;
             }
         });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                if (tabPosition == 0) {
+                    if (saleSummaryListener != null)
+                        saleSummaryListener.search(query);
+                } else if (tabPosition == 1) {
+                    if (saleItemListener != null)
+                        saleItemListener.search(query);
+                }
                 return false;
             }
 
@@ -145,5 +157,6 @@ public class SaleFragment extends Fragment {
 
     public interface onFragmentInteractionListener{
         void refresh();
+        void search(String value);
     }
 }

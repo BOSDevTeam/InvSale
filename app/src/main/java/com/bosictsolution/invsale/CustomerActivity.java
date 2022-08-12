@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,7 +23,6 @@ import com.bosictsolution.invsale.common.DatabaseAccess;
 import com.bosictsolution.invsale.data.CustomerData;
 import com.bosictsolution.invsale.data.DivisionData;
 import com.bosictsolution.invsale.data.SaleMasterData;
-import com.bosictsolution.invsale.data.SaleTranData;
 import com.bosictsolution.invsale.data.TownshipData;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -55,18 +53,15 @@ public class CustomerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_customer);
         setLayoutResource();
+        init();
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setDisplayShowTitleEnabled(true);
         setTitle(getResources().getString(R.string.customer_detail));
-        sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
-        db=new DatabaseAccess(context);
 
         Intent i=getIntent();
         moduleType=i.getShortExtra(AppConstant.extra_module_type,Short.MIN_VALUE);
         locationId=i.getIntExtra("LocationID",0);
-
-        clientId=sharedpreferences.getInt(AppConstant.ClientID,0);
 
         fillData();
 
@@ -117,6 +112,15 @@ public class CustomerActivity extends AppCompatActivity {
         }
     }
 
+    private void init(){
+        sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
+        db=new DatabaseAccess(context);
+        progressDialog =new ProgressDialog(context);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+    }
+
     private void insertCustomer(CustomerData customerData) {
         progressDialog.show();
         progressDialog.setMessage(getResources().getString(R.string.loading));
@@ -135,7 +139,7 @@ public class CustomerActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Integer> call, Throwable t) {
                 progressDialog.dismiss();
-                Log.e("CustomerActivity", t.getMessage());
+                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -171,7 +175,7 @@ public class CustomerActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Integer> call, Throwable t) {
                 progressDialog.dismiss();
-                Log.e("CustomerActivity", t.getMessage());
+                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -194,6 +198,7 @@ public class CustomerActivity extends AppCompatActivity {
     }
 
     private void fillData(){
+        clientId=sharedpreferences.getInt(AppConstant.ClientID,0);
         if(moduleType==AppConstant.sale_module_type)btnConfirm.setText(getResources().getString(R.string.pay_confirm));
         else if(moduleType==AppConstant.sale_order_module_type)btnConfirm.setText(getResources().getString(R.string.order_confirm));
         progressDialog.show();
@@ -212,7 +217,7 @@ public class CustomerActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<DivisionData>> call, Throwable t) {
                 progressDialog.dismiss();
-                Log.e("RegisterActivity", t.getMessage());
+                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -229,7 +234,7 @@ public class CustomerActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<TownshipData>> call, Throwable t) {
                 progressDialog.dismiss();
-                Log.e("RegisterActivity", t.getMessage());
+                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -265,10 +270,5 @@ public class CustomerActivity extends AppCompatActivity {
         etEmail=findViewById(R.id.etEmail);
         etContactPerson=findViewById(R.id.etContactPerson);
         etAddress=findViewById(R.id.etAddress);
-
-        progressDialog =new ProgressDialog(context);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(false);
     }
 }

@@ -2,22 +2,54 @@ package com.bosictsolution.invsale.data;
 
 public class SaleOrderTranData {
 
-    private String productName;
-    private int quantity;
+    private String ProductName;
+    private int Quantity,ProductID,SalePrice,Amount,Number;
 
     public String getProductName() {
-        return productName;
+        return ProductName;
     }
 
     public void setProductName(String productName) {
-        this.productName = productName;
+        this.ProductName = productName;
     }
 
     public int getQuantity() {
-        return quantity;
+        return Quantity;
     }
 
     public void setQuantity(int quantity) {
-        this.quantity = quantity;
+        this.Quantity = quantity;
+    }
+
+    public int getProductID() {
+        return ProductID;
+    }
+
+    public void setProductID(int productID) {
+        ProductID = productID;
+    }
+
+    public int getSalePrice() {
+        return SalePrice;
+    }
+
+    public void setSalePrice(int salePrice) {
+        SalePrice = salePrice;
+    }
+
+    public int getAmount() {
+        return Amount;
+    }
+
+    public void setAmount(int amount) {
+        Amount = amount;
+    }
+
+    public int getNumber() {
+        return Number;
+    }
+
+    public void setNumber(int number) {
+        Number = number;
     }
 }

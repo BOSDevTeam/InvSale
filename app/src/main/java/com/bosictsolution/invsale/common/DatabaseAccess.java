@@ -6,10 +6,20 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.bosictsolution.invsale.data.BankPaymentData;
+import com.bosictsolution.invsale.data.CompanySettingData;
+import com.bosictsolution.invsale.data.LimitedDayData;
+import com.bosictsolution.invsale.data.LocationData;
 import com.bosictsolution.invsale.data.MainMenuData;
+import com.bosictsolution.invsale.data.PaymentData;
+import com.bosictsolution.invsale.data.PaymentMethodData;
+import com.bosictsolution.invsale.data.ProductData;
 import com.bosictsolution.invsale.data.SaleMasterData;
+import com.bosictsolution.invsale.data.SaleOrderMasterData;
+import com.bosictsolution.invsale.data.SaleOrderTranData;
 import com.bosictsolution.invsale.data.SaleTranData;
 import com.bosictsolution.invsale.data.SubMenuData;
+import com.bosictsolution.invsale.data.VoucherSettingData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -195,6 +205,18 @@ public class DatabaseAccess {
         }
         return list;
     }
+    public List<SubMenuData> getSubMenuByMainMenu(int mainMenuId) {
+        database = openHelper.getReadableDatabase();
+        List<SubMenuData> list = new ArrayList<>();
+        Cursor cur = database.rawQuery("SELECT SubMenuID,SubMenuName FROM SubMenuTemp WHERE MainMenuID="+mainMenuId, null);
+        while (cur.moveToNext()) {
+            SubMenuData data = new SubMenuData();
+            data.setSubMenuID(cur.getInt(0));
+            data.setSubMenuName(cur.getString(1));
+            list.add(data);
+        }
+        return list;
+    }
     public List<SubMenuData> getSubMenuForCategoryFilter() {
         int mainMenuId = 0;
         database = openHelper.getReadableDatabase();
@@ -218,6 +240,309 @@ public class DatabaseAccess {
         }
         return list;
     }
+    public boolean insertProduct(List<ProductData> list){
+        deleteProduct();
+        database = openHelper.getWritableDatabase();
+        for(int i=0;i<list.size();i++){
+            ContentValues cv = new ContentValues();
+            cv.put("ProductID", list.get(i).getProductID());
+            cv.put("SubMenuID", list.get(i).getSubMenuID());
+            cv.put("Code", list.get(i).getCode());
+            cv.put("ProductName", list.get(i).getProductName());
+            cv.put("SalePrice", list.get(i).getSalePrice());
+            database.insert("ProductTemp", null, cv);
+        }
+        return true;
+    }
+    public List<ProductData> searchProductByValue(String value) {
+        database = openHelper.getReadableDatabase();
+        List<ProductData> list = new ArrayList<>();
+        Cursor cur = database.rawQuery("SELECT ProductID,Code,ProductName,SalePrice FROM ProductTemp WHERE Code LIKE '" + value + "%' OR ProductName LIKE '" + value + "%'", null);
+        while (cur.moveToNext()) {
+            ProductData data = new ProductData();
+            data.setProductID(cur.getInt(0));
+            data.setCode(cur.getString(1));
+            data.setProductName(cur.getString(2));
+            data.setSalePrice(cur.getInt(3));
+            list.add(data);
+        }
+        return list;
+    }
+    public List<ProductData> getProductBySubMenuList(String subMenuIdList) {
+        database = openHelper.getReadableDatabase();
+        List<ProductData> list = new ArrayList<>();
+        Cursor cur = database.rawQuery("SELECT ProductID,ProductName,SalePrice,SubMenuID FROM ProductTemp WHERE SubMenuID IN (" + subMenuIdList + ")", null);
+        while (cur.moveToNext()) {
+            ProductData data = new ProductData();
+            data.setProductID(cur.getInt(0));
+            data.setProductName(cur.getString(1));
+            data.setSalePrice(cur.getInt(2));
+            data.setSubMenuID(cur.getInt(3));
+            list.add(data);
+        }
+        return list;
+    }
+    public List<ProductData> getProductBySubMenu(int subMenuId) {
+        database = openHelper.getReadableDatabase();
+        List<ProductData> list = new ArrayList<>();
+        Cursor cur = database.rawQuery("SELECT ProductID,ProductName,SalePrice,SubMenuID FROM ProductTemp WHERE SubMenuID =" + subMenuId, null);
+        while (cur.moveToNext()) {
+            ProductData data = new ProductData();
+            data.setProductID(cur.getInt(0));
+            data.setProductName(cur.getString(1));
+            data.setSalePrice(cur.getInt(2));
+            data.setSubMenuID(cur.getInt(3));
+            list.add(data);
+        }
+        return list;
+    }
+    public boolean insertCompanySetting(CompanySettingData data){
+        deleteCompanySetting();
+        database = openHelper.getWritableDatabase();
+        if(data!=null){
+            ContentValues cv = new ContentValues();
+            cv.put("Tax", data.getTax());
+            cv.put("ServiceCharges", data.getServiceCharges());
+            database.insert("CompanySettingTemp", null, cv);
+        }
+        return true;
+    }
+    public CompanySettingData getCompanySetting() {
+        database = openHelper.getReadableDatabase();
+        CompanySettingData data = new CompanySettingData();
+        Cursor cur = database.rawQuery("SELECT * FROM CompanySettingTemp", null);
+        if (cur.moveToFirst()) {
+            data.setTax(cur.getInt(0));
+            data.setServiceCharges(cur.getInt(1));
+        }
+        return data;
+    }
+    public boolean insertLocation(List<LocationData> list){
+        deleteLocation();
+        database = openHelper.getWritableDatabase();
+        for(int i=0;i<list.size();i++){
+            ContentValues cv = new ContentValues();
+            cv.put("LocationID", list.get(i).getLocationID());
+            cv.put("ShortName", list.get(i).getShortName());
+            database.insert("LocationTemp", null, cv);
+        }
+        return true;
+    }
+    public List<LocationData> getLocation() {
+        database = openHelper.getReadableDatabase();
+        List<LocationData> list = new ArrayList<>();
+        Cursor cur = database.rawQuery("SELECT * FROM LocationTemp", null);
+        while (cur.moveToNext()) {
+            LocationData data = new LocationData();
+            data.setLocationID(cur.getInt(0));
+            data.setShortName(cur.getString(1));
+            list.add(data);
+        }
+        return list;
+    }
+    public boolean insertPayment(List<PaymentData> list){
+        deletePayment();
+        database = openHelper.getWritableDatabase();
+        for(int i=0;i<list.size();i++){
+            ContentValues cv = new ContentValues();
+            cv.put("PaymentID", list.get(i).getPaymentID());
+            cv.put("Keyword", list.get(i).getKeyword());
+            database.insert("PaymentTemp", null, cv);
+        }
+        return true;
+    }
+    public List<PaymentData> getPayment() {
+        database = openHelper.getReadableDatabase();
+        List<PaymentData> list = new ArrayList<>();
+        Cursor cur = database.rawQuery("SELECT * FROM PaymentTemp", null);
+        while (cur.moveToNext()) {
+            PaymentData data = new PaymentData();
+            data.setPaymentID(cur.getInt(0));
+            data.setKeyword(cur.getString(1));
+            list.add(data);
+        }
+        return list;
+    }
+    public boolean insertPaymentMethod(List<PaymentMethodData> list){
+        deletePaymentMethod();
+        database = openHelper.getWritableDatabase();
+        for(int i=0;i<list.size();i++){
+            ContentValues cv = new ContentValues();
+            cv.put("PayMethodID", list.get(i).getPayMethodID());
+            cv.put("PayMethodName", list.get(i).getPayMethodName());
+            database.insert("PaymentMethodTemp", null, cv);
+        }
+        return true;
+    }
+    public List<PaymentMethodData> getPaymentMethod() {
+        database = openHelper.getReadableDatabase();
+        List<PaymentMethodData> list = new ArrayList<>();
+        Cursor cur = database.rawQuery("SELECT * FROM PaymentMethodTemp", null);
+        while (cur.moveToNext()) {
+            PaymentMethodData data = new PaymentMethodData();
+            data.setPayMethodID(cur.getInt(0));
+            data.setPayMethodName(cur.getString(1));
+            list.add(data);
+        }
+        return list;
+    }
+    public boolean insertLimitedDay(List<LimitedDayData> list){
+        deleteLimitedDay();
+        database = openHelper.getWritableDatabase();
+        for(int i=0;i<list.size();i++){
+            ContentValues cv = new ContentValues();
+            cv.put("LimitedDayID", list.get(i).getLimitedDayID());
+            cv.put("LimitedDayName", list.get(i).getLimitedDayName());
+            database.insert("LimitedDayTemp", null, cv);
+        }
+        return true;
+    }
+    public List<LimitedDayData> getLimitedDay() {
+        database = openHelper.getReadableDatabase();
+        List<LimitedDayData> list = new ArrayList<>();
+        Cursor cur = database.rawQuery("SELECT * FROM LimitedDayTemp", null);
+        while (cur.moveToNext()) {
+            LimitedDayData data = new LimitedDayData();
+            data.setLimitedDayID(cur.getInt(0));
+            data.setLimitedDayName(cur.getString(1));
+            list.add(data);
+        }
+        return list;
+    }
+    public boolean insertBankPayment(List<BankPaymentData> list){
+        deleteBankPayment();
+        database = openHelper.getWritableDatabase();
+        for(int i=0;i<list.size();i++){
+            ContentValues cv = new ContentValues();
+            cv.put("BankPaymentID", list.get(i).getBankPaymentID());
+            cv.put("BankPaymentName", list.get(i).getBankPaymentName());
+            database.insert("BankPaymentTemp", null, cv);
+        }
+        return true;
+    }
+    public List<BankPaymentData> getBankPayment() {
+        database = openHelper.getReadableDatabase();
+        List<BankPaymentData> list = new ArrayList<>();
+        Cursor cur = database.rawQuery("SELECT * FROM BankPaymentTemp", null);
+        while (cur.moveToNext()) {
+            BankPaymentData data = new BankPaymentData();
+            data.setBankPaymentID(cur.getInt(0));
+            data.setBankPaymentName(cur.getString(1));
+            list.add(data);
+        }
+        return list;
+    }
+    public boolean insertVoucherSetting(List<VoucherSettingData> list){
+        deleteVoucherSetting();
+        database = openHelper.getWritableDatabase();
+        for(int i=0;i<list.size();i++){
+            ContentValues cv = new ContentValues();
+            cv.put("LocationID", list.get(i).getLocationID());
+            cv.put("HeaderName", list.get(i).getHeaderName());
+            cv.put("HeaderDesp", list.get(i).getHeaderDesp());
+            cv.put("HeaderPhone", list.get(i).getHeaderPhone());
+            cv.put("HeaderAddress", list.get(i).getHeaderAddress());
+            cv.put("OtherHeader1", list.get(i).getOtherHeader1());
+            cv.put("OtherHeader2", list.get(i).getOtherHeader2());
+            cv.put("FooterMessage1", list.get(i).getFooterMessage1());
+            cv.put("FooterMessage2", list.get(i).getFooterMessage2());
+            cv.put("FooterMessage3", list.get(i).getFooterMessage3());
+            cv.put("VoucherLogoUrl", list.get(i).getVoucherLogoUrl());
+            database.insert("VoucherSettingTemp", null, cv);
+        }
+        return true;
+    }
+    public VoucherSettingData getVoucherSettingByLocation(int locationId) {
+        database = openHelper.getReadableDatabase();
+        VoucherSettingData data = new VoucherSettingData();
+        Cursor cur = database.rawQuery("SELECT * FROM VoucherSettingTemp WHERE LocationID="+locationId, null);
+        if (cur.moveToFirst()) {
+            data.setHeaderName(cur.getString(1));
+            data.setHeaderDesp(cur.getString(2));
+            data.setHeaderPhone(cur.getString(3));
+            data.setHeaderAddress(cur.getString(4));
+            data.setOtherHeader1(cur.getString(5));
+            data.setOtherHeader2(cur.getString(6));
+            data.setFooterMessage1(cur.getString(7));
+            data.setFooterMessage2(cur.getString(8));
+            data.setFooterMessage3(cur.getString(9));
+            data.setVoucherLogoUrl(cur.getString(10));
+        }
+        return data;
+    }
+    public boolean insertMasterSaleOrder(SaleOrderMasterData data){
+        deleteMasterSaleOrder();
+        database = openHelper.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("CustomerID", data.getCustomerID());
+        cv.put("Subtotal", data.getSubtotal());
+        cv.put("Tax", data.getTax());
+        cv.put("TaxAmt", data.getTaxAmt());
+        cv.put("Charges", data.getCharges());
+        cv.put("ChargesAmt", data.getChargesAmt());
+        cv.put("Total", data.getTotal());
+        cv.put("Remark", data.getRemark());
+        database.insert("MasterSaleOrderTemp", null, cv);
+        return true;
+    }
+    public boolean insertUpdateTranSaleOrder(int productId, int quantity) {
+        boolean isAlreadyExist = false;
+        database = openHelper.getReadableDatabase();
+        Cursor cur = database.rawQuery("SELECT * FROM TranSaleOrderTemp WHERE ProductID=" + productId, null);
+        if (cur.moveToFirst()) isAlreadyExist = true;
+
+        database = openHelper.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("ProductID", productId);
+        cv.put("Quantity", quantity);
+        if (!isAlreadyExist) database.insert("TranSaleOrderTemp", null, cv);
+        else database.update("TranSaleOrderTemp", cv, "ProductID=" + productId, null);
+        return true;
+    }
+    public int getSaleOrderQuantityByProduct(int productId) {
+        int quantity = 0;
+        database = openHelper.getReadableDatabase();
+        Cursor cur = database.rawQuery("SELECT Quantity FROM TranSaleOrderTemp WHERE ProductID=" + productId, null);
+        if (cur.moveToFirst())
+            quantity = cur.getInt(0);
+        return quantity;
+    }
+    public int getTotalSaleOrderItem(){
+        int count = 0;
+        database = openHelper.getReadableDatabase();
+        Cursor cur = database.rawQuery("SELECT COUNT(*) FROM TranSaleOrderTemp", null);
+        if (cur.moveToFirst())
+            count = cur.getInt(0);
+        return count;
+    }
+    public int getTotalSaleOrderAmount() {
+        int totalAmount = 0;
+        database = openHelper.getReadableDatabase();
+        Cursor cur = database.rawQuery("SELECT Quantity,SalePrice FROM TranSaleOrderTemp so INNER JOIN ProductTemp p ON so.ProductID=p.ProductID", null);
+        while (cur.moveToNext()) {
+            totalAmount += cur.getInt(0) * cur.getInt(1);
+        }
+        return totalAmount;
+    }
+    public List<SaleOrderTranData> getTranSaleOrder() {
+        List<SaleOrderTranData> list = new ArrayList<>();
+        SaleOrderTranData data;
+        int number = 0;
+        database = openHelper.getReadableDatabase();
+        Cursor cur = database.rawQuery("SELECT so.ProductID,ProductName,Quantity,SalePrice FROM TranSaleOrderTemp so INNER JOIN ProductTemp p ON so.ProductID=p.ProductID", null);
+        while (cur.moveToNext()) {
+            data = new SaleOrderTranData();
+            number += 1;
+            data.setNumber(number);
+            data.setProductID(cur.getInt(0));
+            data.setProductName(cur.getString(1));
+            data.setQuantity(cur.getInt(2));
+            data.setSalePrice(cur.getInt(3));
+            data.setAmount(cur.getInt(2) * cur.getInt(3));
+            list.add(data);
+        }
+        return list;
+    }
     private boolean deleteMasterSale(){
         database=openHelper.getWritableDatabase();
         database.execSQL("DELETE FROM MasterSaleTemp");
@@ -236,6 +561,61 @@ public class DatabaseAccess {
     private boolean deleteSubMenu(){
         database=openHelper.getWritableDatabase();
         database.execSQL("DELETE FROM SubMenuTemp");
+        return true;
+    }
+    private boolean deleteProduct(){
+        database=openHelper.getWritableDatabase();
+        database.execSQL("DELETE FROM ProductTemp");
+        return true;
+    }
+    private boolean deleteCompanySetting(){
+        database=openHelper.getWritableDatabase();
+        database.execSQL("DELETE FROM CompanySettingTemp");
+        return true;
+    }
+    private boolean deleteLocation(){
+        database=openHelper.getWritableDatabase();
+        database.execSQL("DELETE FROM LocationTemp");
+        return true;
+    }
+    private boolean deletePayment(){
+        database=openHelper.getWritableDatabase();
+        database.execSQL("DELETE FROM PaymentTemp");
+        return true;
+    }
+    private boolean deletePaymentMethod(){
+        database=openHelper.getWritableDatabase();
+        database.execSQL("DELETE FROM PaymentMethodTemp");
+        return true;
+    }
+    private boolean deleteLimitedDay(){
+        database=openHelper.getWritableDatabase();
+        database.execSQL("DELETE FROM LimitedDayTemp");
+        return true;
+    }
+    private boolean deleteBankPayment(){
+        database=openHelper.getWritableDatabase();
+        database.execSQL("DELETE FROM BankPaymentTemp");
+        return true;
+    }
+    private boolean deleteVoucherSetting(){
+        database=openHelper.getWritableDatabase();
+        database.execSQL("DELETE FROM VoucherSettingTemp");
+        return true;
+    }
+    private boolean deleteMasterSaleOrder(){
+        database=openHelper.getWritableDatabase();
+        database.execSQL("DELETE FROM MasterSaleOrderTemp");
+        return true;
+    }
+    private boolean deleteTranSaleOrder(){
+        database=openHelper.getWritableDatabase();
+        database.execSQL("DELETE FROM TranSaleOrderTemp");
+        return true;
+    }
+    public boolean deleteTranSaleOrderByProduct(int productId){
+        database=openHelper.getWritableDatabase();
+        database.execSQL("DELETE FROM TranSaleOrderTemp WHERE ProductID="+productId);
         return true;
     }
 }

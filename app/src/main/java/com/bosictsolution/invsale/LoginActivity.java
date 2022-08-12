@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -19,7 +18,9 @@ import android.widget.Toast;
 import com.bosictsolution.invsale.api.Api;
 import com.bosictsolution.invsale.common.AppConstant;
 import com.bosictsolution.invsale.common.DatabaseAccess;
+import com.bosictsolution.invsale.data.CompanySettingData;
 import com.bosictsolution.invsale.data.MainMenuData;
+import com.bosictsolution.invsale.data.ProductData;
 import com.bosictsolution.invsale.data.SubMenuData;
 
 import java.util.List;
@@ -163,7 +164,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
                 progressDialog.dismiss();
-                Log.e("LoginActivity", t.getMessage());
+                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -205,7 +206,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<MainMenuData>> call, Throwable t) {
                 progressDialog.dismiss();
-                Log.e("LoginActivity", t.getMessage());
+                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -217,6 +218,50 @@ public class LoginActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     List<SubMenuData> list = response.body();
                     db.insertSubMenu(list);
+                    getProduct();
+                } else {
+                    progressDialog.dismiss();
+                    Toast.makeText(context, getResources().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<SubMenuData>> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void getProduct(){
+        Api.getClient().getProduct().enqueue(new Callback<List<ProductData>>() {
+            @Override
+            public void onResponse(Call<List<ProductData>> call, Response<List<ProductData>> response) {
+                if (response.isSuccessful()) {
+                    List<ProductData> list = response.body();
+                    db.insertProduct(list);
+                    getCompanySetting();
+                } else {
+                    progressDialog.dismiss();
+                    Toast.makeText(context, getResources().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<ProductData>> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void getCompanySetting() {
+        Api.getClient().getCompanySetting().enqueue(new Callback<CompanySettingData>() {
+            @Override
+            public void onResponse(Call<CompanySettingData> call, Response<CompanySettingData> response) {
+                if (response.isSuccessful()) {
+                    CompanySettingData data = response.body();
+                    db.insertCompanySetting(data);
                     Intent i = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(i);
                     finish();
@@ -227,9 +272,9 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(Call<List<SubMenuData>> call, Throwable t) {
+            public void onFailure(Call<CompanySettingData> call, Throwable t) {
                 progressDialog.dismiss();
-                Log.e("LoginActivity", t.getMessage());
+                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
             }
         });
     }

@@ -4,6 +4,7 @@ public class VoucherSettingData {
     private String HeaderName,HeaderDesp,HeaderPhone,HeaderAddress,OtherHeader1,OtherHeader2,
                     FooterMessage1,FooterMessage2,FooterMessage3,VoucherLogoUrl;
     private byte[] VoucherLogo;
+    private int LocationID;
 
     public String getHeaderName() {
         return HeaderName;
@@ -91,5 +92,13 @@ public class VoucherSettingData {
 
     public void setVoucherLogoUrl(String voucherLogoUrl) {
         VoucherLogoUrl = voucherLogoUrl;
+    }
+
+    public int getLocationID() {
+        return LocationID;
+    }
+
+    public void setLocationID(int locationID) {
+        LocationID = locationID;
     }
 }

@@ -11,7 +11,8 @@
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:layout_below="@id/tabLayout"
-        android:gravity="center">
+        android:gravity="center"
+        android:background="@color/gray">
 
         <LinearLayout
             android:layout_width="0dp"
@@ -38,7 +39,8 @@
                 android:text="@string/all"
                 android:textColor="@color/black"
                 android:maxLines="2"
-                android:ellipsize="end"/>
+                android:ellipsize="end"
+                android:background="@drawable/btn_transparent"/>
 
         </LinearLayout>
 
@@ -66,7 +68,8 @@
                 tools:text="07/07/2022-07/07/2022"
                 android:textColor="@color/black"
                 android:maxLines="2"
-                android:ellipsize="end"/>
+                android:ellipsize="end"
+                android:background="@drawable/btn_transparent"/>
 
         </LinearLayout>
 

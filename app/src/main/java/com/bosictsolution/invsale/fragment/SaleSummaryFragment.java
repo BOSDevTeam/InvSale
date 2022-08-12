@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -34,6 +35,7 @@ import com.bosictsolution.invsale.common.AppSetting;
 import com.bosictsolution.invsale.data.SaleMasterData;
 import com.bosictsolution.invsale.ui.sale.SaleFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -64,6 +66,7 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
     int clientId;
     SharedPreferences sharedpreferences;
     private SaleFragment.onFragmentInteractionListener listener;
+    List<SaleMasterData> list=new ArrayList<>();
 
     public SaleSummaryFragment() {
         // Required empty public constructor
@@ -116,21 +119,23 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
     }
 
     @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        listener=(SaleFragment.onFragmentInteractionListener) getParentFragment();
+    public void onAttachFragment(@NonNull Fragment childFragment) {
+        super.onAttachFragment(childFragment);
+        if(childFragment instanceof SaleFragment.onFragmentInteractionListener){
+            listener=(SaleFragment.onFragmentInteractionListener) childFragment;
+        }
     }
 
-    public void getMasterSaleByDate() {
+    private void getMasterSaleByDate() {
         progressDialog.show();
         progressDialog.setMessage(getResources().getString(R.string.loading));
         Api.getClient().getMasterSaleByDate(selectedDate,clientId).enqueue(new Callback<List<SaleMasterData>>() {
             @Override
             public void onResponse(Call<List<SaleMasterData>> call, Response<List<SaleMasterData>> response) {
                 progressDialog.dismiss();
-                List<SaleMasterData> list=response.body();
+                list=response.body();
                 setAdapter(list);
-                tvTotal.setText("MMK"+getContext().getResources().getString(R.string.space)+calculateNetAmtTotal(list));
+                tvTotal.setText(getResources().getString(R.string.mmk)+calculateNetAmtTotal(list));
             }
 
             @Override
@@ -141,16 +146,36 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
         });
     }
 
-    public void getMasterSaleByFromToDate(){
+    private void getMasterSaleByFromToDate(){
         progressDialog.show();
         progressDialog.setMessage(getResources().getString(R.string.loading));
         Api.getClient().getMasterSaleByFromToDate(fromDate,toDate,clientId).enqueue(new Callback<List<SaleMasterData>>() {
             @Override
             public void onResponse(Call<List<SaleMasterData>> call, Response<List<SaleMasterData>> response) {
                 progressDialog.dismiss();
-                List<SaleMasterData> list=response.body();
+                list=response.body();
                 setAdapter(list);
-                tvTotal.setText("MMK"+getContext().getResources().getString(R.string.space)+calculateNetAmtTotal(list));
+                tvTotal.setText(getResources().getString(R.string.mmk)+calculateNetAmtTotal(list));
+            }
+
+            @Override
+            public void onFailure(Call<List<SaleMasterData>> call, Throwable t) {
+                progressDialog.dismiss();
+                Log.e("SaleSummaryFragment", t.getMessage());
+            }
+        });
+    }
+
+    private void getMasterSaleByValue(String value){
+        progressDialog.show();
+        progressDialog.setMessage(getResources().getString(R.string.loading));
+        Api.getClient().getMasterSaleByValue(value,clientId).enqueue(new Callback<List<SaleMasterData>>() {
+            @Override
+            public void onResponse(Call<List<SaleMasterData>> call, Response<List<SaleMasterData>> response) {
+                progressDialog.dismiss();
+                list=response.body();
+                setAdapter(list);
+                tvTotal.setText(getResources().getString(R.string.mmk)+calculateNetAmtTotal(list));
             }
 
             @Override
@@ -329,5 +354,11 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
         selectedDate= appSetting.getTodayDate();
         tvDate.setText(selectedDate);
         getMasterSaleByDate();
+    }
+
+    @Override
+    public void search(String value) {
+        if (value.length() != 0)
+            getMasterSaleByValue(value);
     }
 }

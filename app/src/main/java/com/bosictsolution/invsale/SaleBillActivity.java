@@ -2,16 +2,12 @@ package com.bosictsolution.invsale;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,7 +17,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.bosictsolution.invsale.api.Api;
 import com.bosictsolution.invsale.common.AppConstant;
 import com.bosictsolution.invsale.common.AppSetting;
 import com.bosictsolution.invsale.common.DatabaseAccess;
@@ -54,21 +49,18 @@ public class SaleBillActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sale_bill);
         setLayoutResource();
+        init();
         ActionBar actionbar = getSupportActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setDisplayShowTitleEnabled(true);
         setTitle(getResources().getString(R.string.sale_completed));
-        sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
-        db=new DatabaseAccess(context);
 
         Intent intent=getIntent();
         locationId=intent.getIntExtra("LocationID",0);
         customerName=intent.getStringExtra("CustomerName");
         slipId=intent.getIntExtra("SlipID",0);
 
-        clientName=sharedpreferences.getString(AppConstant.ClientName,"");
-
-        getVoucherSetting(locationId);
+        fillData();
 
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,24 +76,24 @@ public class SaleBillActivity extends AppCompatActivity {
         });
     }
 
-    private void getVoucherSetting(int locationId){
-        progressDialog.show();
-        progressDialog.setMessage(getResources().getString(R.string.loading));
-        Api.getClient().getVoucherSetting(locationId).enqueue(new Callback<VoucherSettingData>() {
-            @Override
-            public void onResponse(Call<VoucherSettingData> call, Response<VoucherSettingData> response) {
-                progressDialog.dismiss();
-                setVoucherSetting(response.body());
-                getMasterSale();
-                getTranSale();
-            }
+    private void init(){
+        sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
+        db=new DatabaseAccess(context);
+        progressDialog =new ProgressDialog(context);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+    }
 
-            @Override
-            public void onFailure(Call<VoucherSettingData> call, Throwable t) {
-                progressDialog.dismiss();
-                Log.e("SaleBillActivity", t.getMessage());
-            }
-        });
+    private void fillData(){
+        clientName=sharedpreferences.getString(AppConstant.ClientName,"");
+        getVoucherSetting(locationId);
+    }
+
+    private void getVoucherSetting(int locationId){
+        setVoucherSetting(db.getVoucherSettingByLocation(locationId));
+        getMasterSale();
+        getTranSale();
     }
 
     private void setVoucherSetting(VoucherSettingData data) {
@@ -248,10 +240,5 @@ public class SaleBillActivity extends AppCompatActivity {
         tvPercentGrandTotal=findViewById(R.id.tvPercentGrandTotal);
         btnBack=findViewById(R.id.btnBack);
         btnPrint=findViewById(R.id.btnPrint);
-
-        progressDialog =new ProgressDialog(context);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(false);
     }
 }
