@@ -1,56 +1,51 @@
 package com.bosictsolution.invsale.data;
 
+import java.util.List;
+
 public class SaleOrderMasterData {
 
-    private String year,month,day,orderNumber,customerName,Remark;
-    private int grandTotal,CustomerID,Tax,TaxAmt,Charges,ChargesAmt,Subtotal,Total;
+    private String Year, Month, Day, OrderNumber, CustomerName,Remark,OrderDateTime;
+    private int CustomerID,Tax,TaxAmt,Charges,ChargesAmt,Subtotal,Total,ClientID,SaleOrderID;
+    private List<SaleOrderTranData> lstSaleOrderTran;
 
     public String getYear() {
-        return year;
+        return Year;
     }
 
     public void setYear(String year) {
-        this.year = year;
+        this.Year = year;
     }
 
     public String getMonth() {
-        return month;
+        return Month;
     }
 
     public void setMonth(String month) {
-        this.month = month;
+        this.Month = month;
     }
 
     public String getDay() {
-        return day;
+        return Day;
     }
 
     public void setDay(String day) {
-        this.day = day;
+        this.Day = day;
     }
 
     public String getOrderNumber() {
-        return orderNumber;
+        return OrderNumber;
     }
 
     public void setOrderNumber(String orderNumber) {
-        this.orderNumber = orderNumber;
-    }
-
-    public int getGrandTotal() {
-        return grandTotal;
-    }
-
-    public void setGrandTotal(int grandTotal) {
-        this.grandTotal = grandTotal;
+        this.OrderNumber = orderNumber;
     }
 
     public String getCustomerName() {
-        return customerName;
+        return CustomerName;
     }
 
     public void setCustomerName(String customerName) {
-        this.customerName = customerName;
+        this.CustomerName = customerName;
     }
 
     public String getRemark() {
@@ -115,5 +110,37 @@ public class SaleOrderMasterData {
 
     public void setTotal(int total) {
         Total = total;
+    }
+
+    public List<SaleOrderTranData> getLstSaleOrderTran() {
+        return lstSaleOrderTran;
+    }
+
+    public void setLstSaleOrderTran(List<SaleOrderTranData> lstSaleOrderTran) {
+        this.lstSaleOrderTran = lstSaleOrderTran;
+    }
+
+    public int getClientID() {
+        return ClientID;
+    }
+
+    public void setClientID(int clientID) {
+        ClientID = clientID;
+    }
+
+    public int getSaleOrderID() {
+        return SaleOrderID;
+    }
+
+    public void setSaleOrderID(int saleOrderID) {
+        SaleOrderID = saleOrderID;
+    }
+
+    public String getOrderDateTime() {
+        return OrderDateTime;
+    }
+
+    public void setOrderDateTime(String orderDateTime) {
+        OrderDateTime = orderDateTime;
     }
 }

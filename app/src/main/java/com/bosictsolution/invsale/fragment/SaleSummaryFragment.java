@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -18,7 +17,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +24,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bosictsolution.invsale.R;
 import com.bosictsolution.invsale.adapter.ListItemSaleSummaryAdapter;
@@ -141,7 +140,7 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
             @Override
             public void onFailure(Call<List<SaleMasterData>> call, Throwable t) {
                 progressDialog.dismiss();
-                Log.e("SaleSummaryFragment", t.getMessage());
+                Toast.makeText(getContext(),t.getMessage(),Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -161,7 +160,7 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
             @Override
             public void onFailure(Call<List<SaleMasterData>> call, Throwable t) {
                 progressDialog.dismiss();
-                Log.e("SaleSummaryFragment", t.getMessage());
+                Toast.makeText(getContext(),t.getMessage(),Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -181,7 +180,7 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
             @Override
             public void onFailure(Call<List<SaleMasterData>> call, Throwable t) {
                 progressDialog.dismiss();
-                Log.e("SaleSummaryFragment", t.getMessage());
+                Toast.makeText(getContext(),t.getMessage(),Toast.LENGTH_LONG).show();
             }
         });
     }

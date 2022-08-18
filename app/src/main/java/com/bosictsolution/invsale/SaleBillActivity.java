@@ -130,17 +130,17 @@ public class SaleBillActivity extends AppCompatActivity {
         tvSubtotal.setText(appSetting.df.format(data.getSubtotal()));
 
         if (data.getTaxAmt() != 0)
-            tvTax.setText(getResources().getString(R.string.tax) + "(" + data.getTaxAmt() + "%)");
+            tvTax.setText(getResources().getString(R.string.tax_colon) + "(" + data.getTaxAmt() + "%)");
         tvTax.setText(appSetting.df.format(data.getTaxAmt()));
 
         if (data.getChargesAmt() != 0)
-            tvCharges.setText(getResources().getString(R.string.charges) + "(" + data.getChargesAmt() + "%)");
+            tvCharges.setText(getResources().getString(R.string.charges_colon) + "(" + data.getChargesAmt() + "%)");
         tvCharges.setText(appSetting.df.format(data.getChargesAmt()));
 
         tvTotal.setText(appSetting.df.format(data.getSubtotal()+data.getTaxAmt()+data.getChargesAmt()));
 
         if (data.getVouDisPercent() != 0)
-            tvLabelVoucherDiscount.setText(getResources().getString(R.string.voucher_discount) + "(" + data.getVouDisPercent() + "%)");
+            tvLabelVoucherDiscount.setText(getResources().getString(R.string.voucher_discount_colon) + "(" + data.getVouDisPercent() + "%)");
         tvVoucherDiscount.setText(appSetting.df.format(data.getVoucherDis()));
 
         if (data.getAdvancedPayAmt() !=0) {
@@ -157,7 +157,7 @@ public class SaleBillActivity extends AppCompatActivity {
             layoutPercentGrandTotal.setVisibility(View.VISIBLE);
             tvPercentAmount.setText(appSetting.df.format(data.getPayPercentAmt()));
             tvPercentGrandTotal.setText(appSetting.df.format(data.getNetAmt()));
-            tvLabelPercent.setText(getResources().getString(R.string.percent) + "(" + data.getPaymentPercent() + "%)");
+            tvLabelPercent.setText(getResources().getString(R.string.percent) + "(" + data.getPaymentPercent() + "%)"+getResources().getString(R.string.colon_sign));
         } else {
             layoutPercent.setVisibility(View.GONE);
             layoutPercentGrandTotal.setVisibility(View.GONE);

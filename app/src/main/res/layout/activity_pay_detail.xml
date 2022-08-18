@@ -32,7 +32,7 @@
             android:layout_marginTop="5dp" />
 
         <TextView style="@style/SmallTextView"
-            android:text="@string/voucher_discount"
+            android:text="@string/voucher_discount_colon"
             android:layout_marginTop="15dp"/>
 
         <LinearLayout

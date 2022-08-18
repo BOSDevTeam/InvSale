@@ -93,6 +93,16 @@ public class SaleOrderSummaryAdapter extends RecyclerView.Adapter<SaleOrderSumma
         return list.size();
     }
 
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvNumber,tvProductName,tvPrice,tvQuantity,tvAmount;
         ImageButton btnRemove;

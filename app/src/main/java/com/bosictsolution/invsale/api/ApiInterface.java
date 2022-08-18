@@ -12,6 +12,8 @@ import com.bosictsolution.invsale.data.PaymentData;
 import com.bosictsolution.invsale.data.PaymentMethodData;
 import com.bosictsolution.invsale.data.ProductData;
 import com.bosictsolution.invsale.data.SaleMasterData;
+import com.bosictsolution.invsale.data.SaleOrderMasterData;
+import com.bosictsolution.invsale.data.SaleOrderTranData;
 import com.bosictsolution.invsale.data.SaleTranData;
 import com.bosictsolution.invsale.data.SubMenuData;
 import com.bosictsolution.invsale.data.TownshipData;
@@ -108,4 +110,20 @@ public interface ApiInterface {
 
     @GET("sale/GetSaleItemByValue")
     Call<List<SaleTranData>> getSaleItemByValue(@Query("value") String value, @Query("clientId") int clientId);
+
+    @Headers("Content-type: application/json")
+    @POST("saleorder")
+    Call<String> insertSaleOrder(@Body SaleOrderMasterData model);
+
+    @GET("saleorder/GetMasterSaleOrderByDate")
+    Call<List<SaleOrderMasterData>> getMasterSaleOrderByDate(@Query("date") String date,@Query("clientId") int clientId,@Query("isOrderFinished") boolean isOrderFinished);
+
+    @GET("saleorder/GetMasterSaleOrderByFromToDate")
+    Call<List<SaleOrderMasterData>> getMasterSaleOrderByFromToDate(@Query("fromDate") String fromDate,@Query("toDate") String toDate,@Query("clientId") int clientId,@Query("isOrderFinished") boolean isOrderFinished);
+
+    @GET("saleorder/GetMasterSaleOrderByValue")
+    Call<List<SaleOrderMasterData>> getMasterSaleOrderByValue(@Query("value") String value,@Query("clientId") int clientId,@Query("isOrderFinished") boolean isOrderFinished);
+
+    @GET("saleorder/GetTranSaleOrderBySaleOrderID")
+    Call<List<SaleOrderTranData>> getTranSaleOrderBySaleOrderID(@Query("saleOrderId") int saleOrderId);
 }

@@ -15,18 +15,41 @@
         android:orientation="vertical"
         android:background="@color/primary_soft">
 
-        <TextView style="@style/DefaultTextView"
-            android:text="Order#: SO0001"
-            android:textStyle="bold"
-            android:textSize="@dimen/text_large"/>
-
-        <TextView style="@style/DefaultTextView"
-            android:text="Order Date: 27/06/2022"
-            android:layout_marginTop="5dp"/>
-
-        <TextView style="@style/DefaultTextView"
-            android:text="Customer: CustomerA"
-            android:layout_marginTop="5dp"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView style="@style/TableLabelTextView"
+                android:text="@string/order_number" />
+            <TextView style="@style/TableLabelTextView"
+                android:text="@string/colon_sign" />
+            <TextView android:id="@+id/tvOrderNumber"
+                style="@style/TableValueTextView"
+                tools:text="#SO0001" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp">
+            <TextView style="@style/TableLabelTextView"
+                android:text="@string/order_date" />
+            <TextView style="@style/TableLabelTextView"
+                android:text="@string/colon_sign" />
+            <TextView android:id="@+id/tvOrderDateTime"
+                style="@style/TableValueTextView"
+                tools:text="27/06/2022" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp">
+            <TextView style="@style/TableLabelTextView"
+                android:text="@string/customer" />
+            <TextView style="@style/TableLabelTextView"
+                android:text="@string/colon_sign" />
+            <TextView android:id="@+id/tvCustomer"
+                style="@style/TableValueTextView"
+                tools:text="CustomerA" />
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -61,7 +84,7 @@
 
         <View style="@style/Divider"></View>
 
-        <ListView android:id="@+id/lvItemSaleOrder"
+        <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvItemSaleOrder"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
@@ -88,22 +111,24 @@
                     <TextView style="@style/AmountGroupTextView"
                         android:layout_width="0dp"
                         android:layout_weight="2"
-                        android:text="Tax :  " />
+                        android:text="@string/tax_colon" />
 
-                    <TextView style="@style/AmountGroupTextView"
+                    <TextView android:id="@+id/tvTax"
+                        style="@style/AmountGroupTextView"
                         android:layout_width="0dp"
                         android:layout_weight="1"
-                        android:text="300" />
+                        android:text="0" />
 
                     <TextView style="@style/AmountGroupTextView"
                         android:layout_width="0dp"
                         android:layout_weight="2"
-                        android:text="Subtotal :  " />
+                        android:text="@string/subtotal_colon" />
 
-                    <TextView style="@style/AmountGroupTextView"
+                    <TextView android:id="@+id/tvSubtotal"
+                        style="@style/AmountGroupTextView"
                         android:layout_width="0dp"
                         android:layout_weight="2"
-                        android:text="6,000" />
+                        android:text="0" />
 
                 </LinearLayout>
 
@@ -114,9 +139,10 @@
                     <TextView style="@style/AmountGroupTextView"
                         android:layout_width="0dp"
                         android:layout_weight="2"
-                        android:text="Charges :  " />
+                        android:text="@string/charges_colon"/>
 
-                    <TextView style="@style/AmountGroupTextView"
+                    <TextView android:id="@+id/tvCharges"
+                        style="@style/AmountGroupTextView"
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:text="0" />
@@ -124,14 +150,15 @@
                     <TextView style="@style/AmountGroupTextView"
                         android:layout_width="0dp"
                         android:layout_weight="2"
-                        android:text="Total :  "
+                        android:text="@string/total_colon"
                         android:textColor="@color/primary_500"
                         android:textSize="@dimen/text_large" />
 
-                    <TextView style="@style/AmountGroupTextView"
+                    <TextView android:id="@+id/tvTotal"
+                        style="@style/AmountGroupTextView"
                         android:layout_width="0dp"
                         android:layout_weight="2"
-                        android:text="6,300"
+                        android:text="0"
                         android:textColor="@color/primary_500"
                         android:textSize="@dimen/text_large" />
 
@@ -141,7 +168,7 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <LinearLayout android:id="@+id/layoutRemark"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
@@ -149,8 +176,9 @@
             android:background="@drawable/bd_gray_1r_white"
             android:layout_marginTop="10dp">
 
-            <TextView style="@style/SmallTextView"
-                android:text="Remark: We’ll share what each component of an address means so you know why you need it and where to find it."
+            <TextView android:id="@+id/tvRemark"
+                style="@style/SmallTextView"
+                tools:text="Remark: We’ll share what each component of an address means so you know why you need it and where to find it."
                 android:layout_marginTop="5dp"/>
 
         </LinearLayout>

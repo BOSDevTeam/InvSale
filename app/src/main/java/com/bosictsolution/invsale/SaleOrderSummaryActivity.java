@@ -9,9 +9,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -21,6 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -47,13 +50,16 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
     EditText etRemark;
     Spinner spCustomer;
     SaleOrderSummaryAdapter saleOrderSummaryAdapter;
-    List<SaleOrderTranData> list=new ArrayList<>();
+    LinearLayout layoutProcessCustomer;
+    List<SaleOrderTranData> lstSaleOrderTran =new ArrayList<>();
     DatabaseAccess db;
     private ProgressDialog progressDialog;
     AppSetting appSetting=new AppSetting();
     private Context context=this;
     List<CustomerData> lstCustomer = new ArrayList<>();
-    int tax, charges, total, subtotal , taxAmount, chargesAmount;
+    int tax, charges, total, subtotal , taxAmount, chargesAmount,clientId;
+    SharedPreferences sharedpreferences;
+    public static Activity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,23 +77,28 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
         btnContinue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SaleOrderMasterData data=prepareSaleOrderMasterData();
+                if(lstSaleOrderTran.size()==0)return;
+                SaleOrderMasterData data = prepareSaleOrderMasterData();
                 db.insertMasterSaleOrder(data); // think about this line (require or not)
-                Intent i;
-                if(data.getCustomerID()==0) {
-                    i = new Intent(SaleOrderSummaryActivity.this, CustomerActivity.class);
+                if (data.getCustomerID() == 0) {
+                    Intent i = new Intent(SaleOrderSummaryActivity.this, CustomerActivity.class);
                     i.putExtra(AppConstant.extra_module_type, AppConstant.sale_order_module_type);
-                }else{
-                    // insert into server database
-                    i = new Intent(SaleOrderSummaryActivity.this, SaleOrderSuccessActivity.class);
-                }
-                startActivity(i);
+                    startActivity(i);
+                } else
+                    insertSaleOrder();
             }
         });
         spCustomer.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if(!lstCustomer.get(i).isDefault())btnContinue.setText(getResources().getString(R.string.order_confirm));
+                if(!lstCustomer.get(i).isDefault()){
+                    btnContinue.setText(getResources().getString(R.string.order_confirm));
+                    layoutProcessCustomer.setVisibility(View.GONE);
+                }
+                else {
+                    btnContinue.setText(getResources().getString(R.string.str_continue));
+                    layoutProcessCustomer.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -97,8 +108,40 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
         });
     }
 
+    private void insertSaleOrder(){
+        SaleOrderMasterData data=db.getMasterSaleOrder();
+        data.setLstSaleOrderTran(db.getTranSaleOrder());
+        data.setClientID(clientId);
+        progressDialog.show();
+        progressDialog.setMessage(getResources().getString(R.string.loading));
+        Api.getClient().insertSaleOrder(data).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                progressDialog.dismiss();
+                if(response.isSuccessful()){
+                    db.deleteMasterSaleOrder();
+                    db.deleteTranSaleOrder();
+                    String orderNumber=response.body();
+                    Intent i= new Intent(SaleOrderSummaryActivity.this, SaleOrderSuccessActivity.class);
+                    i.putExtra("OrderNumber",orderNumber);
+                    i.putExtra("Total",data.getTotal());
+                    startActivity(i);
+                    finish();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
     private void init(){
+        activity=this;
         db=new DatabaseAccess(context);
+        sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
         progressDialog =new ProgressDialog(context);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setIndeterminate(true);
@@ -106,8 +149,9 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
     }
 
     private void fillData(){
+        clientId=sharedpreferences.getInt(AppConstant.ClientID,0);
         getCompanySetting();
-        list=db.getTranSaleOrder();
+        lstSaleOrderTran =db.getTranSaleOrder();
         setSaleOrderAdapter();
         calculateAmount();
         progressDialog.show();
@@ -129,6 +173,7 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
 
         SaleOrderMasterData data=new SaleOrderMasterData();
         data.setCustomerID(customerId);
+        data.setSubtotal(subtotal);
         data.setTax(tax);
         data.setTaxAmt(taxAmount);
         data.setCharges(charges);
@@ -149,8 +194,8 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
 
     private void calculateAmount() {
         subtotal=0;
-        for (int i = 0; i < list.size(); i++) {
-            subtotal += list.get(i).getAmount();
+        for (int i = 0; i < lstSaleOrderTran.size(); i++) {
+            subtotal += lstSaleOrderTran.get(i).getAmount();
         }
         taxAmount = (subtotal * tax) / 100;
         chargesAmount = (subtotal * charges) / 100;
@@ -192,7 +237,7 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
         while (rvItemSaleOrder.getItemDecorationCount() > 0) {
             rvItemSaleOrder.removeItemDecorationAt(0);
         }
-        saleOrderSummaryAdapter =new SaleOrderSummaryAdapter(this,list,true);
+        saleOrderSummaryAdapter =new SaleOrderSummaryAdapter(this, lstSaleOrderTran,true);
         rvItemSaleOrder.setAdapter(saleOrderSummaryAdapter);
         rvItemSaleOrder.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rvItemSaleOrder.addItemDecoration(new DividerItemDecoration(rvItemSaleOrder.getContext(), DividerItemDecoration.VERTICAL));
@@ -219,17 +264,18 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
         tvSubtotal=findViewById(R.id.tvSubtotal);
         tvTotal=findViewById(R.id.tvTotal);
         etRemark=findViewById(R.id.etRemark);
+        layoutProcessCustomer=findViewById(R.id.layoutProcessCustomer);
     }
 
     @Override
     public void onQuantityClickListener(int position, TextView tvQuantity, TextView tvAmount) {
-        showNumberDialog(list.get(position).getProductName(),position,tvQuantity,tvAmount);
+        showNumberDialog(lstSaleOrderTran.get(position).getProductName(),lstSaleOrderTran.get(position).getQuantity(),position,tvQuantity,tvAmount);
     }
 
     @Override
     public void onRemoveClickListener(int position) {
-        if(db.deleteTranSaleOrderByProduct(list.get(position).getProductID())) {
-            list.remove(position);
+        if(db.deleteTranSaleOrderByProduct(lstSaleOrderTran.get(position).getProductID())) {
+            lstSaleOrderTran.remove(position);
             setSaleOrderAdapter();
             calculateAmount();
         }
@@ -240,7 +286,7 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
 
     }
 
-    private void showNumberDialog(String productName,int position,TextView tvQuantity, TextView tvAmount) {
+    private void showNumberDialog(String productName,int quantity,int position,TextView tvQuantity, TextView tvAmount) {
         LayoutInflater reg = LayoutInflater.from(context);
         View v = reg.inflate(R.layout.dialog_number, null);
         android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(context);
@@ -263,6 +309,7 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
         final Button btnNine = v.findViewById(R.id.btnNine);
 
         tvTitle.setText(productName);
+        tvInput.setText(String.valueOf(quantity));
 
         dialog.setCancelable(true);
         final android.app.AlertDialog alertDialog = dialog.create();
@@ -286,7 +333,7 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
                 alertDialog.dismiss();
                 if (!tvInput.getText().toString().equals("0")) {
                     int quantity = Integer.parseInt(tvInput.getText().toString());
-                    if (db.insertUpdateTranSaleOrder(list.get(position).getProductID(), quantity)) {
+                    if (db.insertUpdateTranSaleOrder(lstSaleOrderTran.get(position).getProductID(), quantity)) {
                         updateControlByQuantity(position, tvQuantity, tvAmount, quantity);
                         updateListByQuantity(position, quantity);
                         calculateAmount();
@@ -365,11 +412,11 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
 
     private void updateControlByQuantity(int position, TextView tvQuantity, TextView tvAmount, int quantity) {
         tvQuantity.setText(String.valueOf(quantity));
-        tvAmount.setText(appSetting.df.format(quantity * list.get(position).getSalePrice()));
+        tvAmount.setText(appSetting.df.format(quantity * lstSaleOrderTran.get(position).getSalePrice()));
     }
 
     private void updateListByQuantity(int position,int quantity) {
-        list.get(position).setQuantity(quantity);
-        list.get(position).setAmount(quantity * list.get(position).getSalePrice());
+        lstSaleOrderTran.get(position).setQuantity(quantity);
+        lstSaleOrderTran.get(position).setAmount(quantity * lstSaleOrderTran.get(position).getSalePrice());
     }
 }

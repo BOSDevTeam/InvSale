@@ -55,7 +55,7 @@
     <string name="payment">Payment</string>
     <string name="advanced_pay">Advanced Pay</string>
     <string name="ok">OK</string>
-    <string name="voucher_discount">Voucher Discount</string>
+    <string name="voucher_discount_colon">Voucher Discount:</string>
     <string name="no_discount">No Discount</string>
     <string name="debt">(Debt)</string>
     <string name="dollar_sign">$</string>
@@ -73,6 +73,7 @@
     <string name="order_detail">Order Detail</string>
     <string name="order_success">Order Success</string>
     <string name="order">Order</string>
+    <string name="total_colon">Total:</string>
     <string name="total">Total</string>
     <string name="space">\u0020</string>
     <string name="order_receive_message">Your order has been successfully received.</string>
@@ -80,10 +81,10 @@
     <string name="order_number">Order Number</string>
     <string name="total_amount">Total Amount</string>
     <string name="print">Print</string>
-    <string name="subtotal">Subtotal</string>
-    <string name="tax">Tax</string>
-    <string name="charges">Charges</string>
-    <string name="grandtotal">Grandtotal</string>
+    <string name="subtotal_colon">Subtotal:</string>
+    <string name="tax_colon">Tax:</string>
+    <string name="charges_colon">Charges:</string>
+    <string name="grandtotal_colon">Grandtotal:</string>
     <string name="sale_completed">Sale Completed</string>
     <string name="bluetooth_printer_mac_address">Bluetooth Printer Mac Address</string>
     <string name="find_printer">Find Printer</string>
@@ -141,7 +142,7 @@
     <string name="delete_confirm_message">Are you sure you want to delete?</string>
     <string name="product_not_found_by_menu">Not found product for this menu!</string>
     <string name="product_not_found">Not found product!</string>
-    <string name="advenced_pay">Advanced Pay</string>
+    <string name="advanced_pay_colon">Advanced Pay:</string>
     <string name="invalid_percent_value">Invalid Percent Value!</string>
     <string name="invalid_discount_amount">Invalid! Voucher discount is greater than grand total.</string>
     <string name="limited_day">Limited Day</string>
@@ -157,5 +158,7 @@
     <string name="mmk">MMK\u0020</string>
     <string name="added">Added</string>
     <string name="already_in_order">Already in your order!</string>
+    <string name="order_date">Order Date</string>
+    <string name="summary">Summary</string>
 
 </resources>

@@ -94,84 +94,86 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/gray_soft">
+        android:background="@color/gray_soft"
+        android:orientation="vertical">
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:orientation="vertical"
-            android:padding="5dp">
+            android:paddingRight="5dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+            <TextView style="@style/AmountGroupTextView"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="@string/tax_colon" />
 
-                <TextView style="@style/AmountGroupTextView"
-                    android:layout_width="0dp"
-                    android:layout_weight="2"
-                    android:text="@string/tax" />
+            <TextView android:id="@+id/tvTax"
+                style="@style/AmountGroupTextView"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="0" />
 
-                <TextView android:id="@+id/tvTax"
-                    style="@style/AmountGroupTextView"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:text="0" />
+            <TextView style="@style/AmountGroupTextView"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="@string/subtotal_colon" />
 
-                <TextView style="@style/AmountGroupTextView"
-                    android:layout_width="0dp"
-                    android:layout_weight="2"
-                    android:text="@string/subtotal" />
-
-                <TextView android:id="@+id/tvSubtotal"
-                    style="@style/AmountGroupTextView"
-                    android:layout_width="0dp"
-                    android:layout_weight="2"
-                    android:text="0" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView style="@style/AmountGroupTextView"
-                    android:layout_width="0dp"
-                    android:layout_weight="2"
-                    android:text="@string/charges"/>
-
-                <TextView android:id="@+id/tvCharges"
-                    style="@style/AmountGroupTextView"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:text="0" />
-
-                <TextView style="@style/AmountGroupTextView"
-                    android:layout_width="0dp"
-                    android:layout_weight="2"
-                    android:text="@string/total"
-                    android:textColor="@color/primary_500"
-                    android:textSize="@dimen/text_large" />
-
-                <TextView android:id="@+id/tvTotal"
-                    style="@style/AmountGroupTextView"
-                    android:layout_width="0dp"
-                    android:layout_weight="2"
-                    android:text="0"
-                    android:textColor="@color/primary_500"
-                    android:textSize="@dimen/text_large" />
-
-            </LinearLayout>
+            <TextView android:id="@+id/tvSubtotal"
+                style="@style/AmountGroupTextView"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="0" />
 
         </LinearLayout>
 
-        <Button android:id="@+id/btnPay"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="@string/pay"
-            android:textSize="@dimen/text_regular"
-            android:textAllCaps="true"
-            android:background="@drawable/btn_primary"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingRight="5dp">
+
+            <TextView style="@style/AmountGroupTextView"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="@string/charges_colon"/>
+
+            <TextView android:id="@+id/tvCharges"
+                style="@style/AmountGroupTextView"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="0" />
+
+            <TextView style="@style/AmountGroupTextView"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="@string/total_colon"
+                android:textColor="@color/primary_500"
+                android:textSize="@dimen/text_large" />
+
+            <TextView android:id="@+id/tvTotal"
+                style="@style/AmountGroupTextView"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="0"
+                android:textColor="@color/primary_500"
+                android:textSize="@dimen/text_large" />
+
+        </LinearLayout>
+
+        <View style="@style/Divider"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+            <Button android:id="@+id/btnPay"
+                style="@style/DefaultButton"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="@string/pay"
+                android:layout_gravity="right" />
+        </LinearLayout>
 
     </LinearLayout>
 

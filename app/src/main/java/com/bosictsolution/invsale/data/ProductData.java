@@ -2,7 +2,7 @@ package com.bosictsolution.invsale.data;
 
 public class ProductData {
     private String ProductName, Code;
-    private int ProductID,SalePrice,SubMenuID;
+    private int ProductID,SalePrice,SubMenuID,Quantity;
 
     public String getProductName() {
         return ProductName;
@@ -42,5 +42,13 @@ public class ProductData {
 
     public void setProductID(int productID) {
         ProductID = productID;
+    }
+
+    public int getQuantity() {
+        return Quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        Quantity = quantity;
     }
 }

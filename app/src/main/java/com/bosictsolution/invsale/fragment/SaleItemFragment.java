@@ -17,7 +17,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +25,7 @@ import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bosictsolution.invsale.R;
 import com.bosictsolution.invsale.adapter.GeneralExpandableListAdapter;
@@ -368,7 +368,7 @@ public class SaleItemFragment extends Fragment implements SaleFragment.onFragmen
             @Override
             public void onFailure(Call<List<SaleTranData>> call, Throwable t) {
                 progressDialog.dismiss();
-                Log.e("SaleItemFragment", t.getMessage());
+                Toast.makeText(getContext(),t.getMessage(),Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -389,7 +389,7 @@ public class SaleItemFragment extends Fragment implements SaleFragment.onFragmen
             @Override
             public void onFailure(Call<List<SaleTranData>> call, Throwable t) {
                 progressDialog.dismiss();
-                Log.e("SaleItemFragment", t.getMessage());
+                Toast.makeText(getContext(),t.getMessage(),Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -407,7 +407,7 @@ public class SaleItemFragment extends Fragment implements SaleFragment.onFragmen
             @Override
             public void onFailure(Call<List<SaleTranData>> call, Throwable t) {
                 progressDialog.dismiss();
-                Log.e("SaleItemFragment", t.getMessage());
+                Toast.makeText(getContext(),t.getMessage(),Toast.LENGTH_LONG).show();
             }
         });
     }

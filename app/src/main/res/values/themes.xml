@@ -112,7 +112,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_weight">1</item>
-        <item name="android:textColor">@color/black_soft</item>
+        <item name="android:textColor">@color/black</item>
         <item name="android:textSize">@dimen/text_regular</item>
     </style>
 
@@ -257,6 +257,48 @@
         <item name="android:paddingTop">20dp</item>
         <item name="android:paddingBottom">20dp</item>
         <item name="android:layout_margin">5dp</item>
+    </style>
+
+    <style name="StepSuccessImage">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:src">@drawable/ic_check_circle_24</item>
+        <item name="android:tint">@color/primary_500</item>
+    </style>
+
+    <style name="StepSuccessText">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:textColor">@color/primary_500</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="StepSuccessView">
+        <item name="android:layout_height">3dp</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@color/primary_500</item>
+    </style>
+
+    <style name="StepProcessImage">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:src">@drawable/ic_check_circle_outline_24</item>
+        <item name="android:tint">@color/black_soft</item>
+    </style>
+
+    <style name="StepProcessText">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:textColor">@color/black_soft</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="StepProcessView">
+        <item name="android:layout_height">3dp</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@color/gray</item>
     </style>
 
 </resources>

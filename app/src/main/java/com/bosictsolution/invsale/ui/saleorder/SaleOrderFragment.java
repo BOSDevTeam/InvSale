@@ -8,7 +8,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.SearchView;
@@ -26,9 +25,13 @@ import com.google.android.material.tabs.TabLayout;
 
 public class SaleOrderFragment extends Fragment {
 
-    TextView tvDate;
     private SaleOrderViewModel saleOrderViewModel;
     private FragmentSaleOrderBinding binding;
+    TabLayout tabLayout;
+    ViewPager viewPager;
+    FloatingActionButton fab;
+    int tabPosition;
+    private SaleOrderFragment.onFragmentInteractionListener currentOrderListener,orderHistoryListener;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -38,11 +41,8 @@ public class SaleOrderFragment extends Fragment {
         binding = FragmentSaleOrderBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         setHasOptionsMenu(true);
+        setLayoutResource();
 
-        final TabLayout tabLayout = binding.tabLayout;
-        final ViewPager viewPager=binding.viewPager;
-        final FloatingActionButton fab=binding.fab;
-        tvDate=binding.tvDate;
         tabLayout.addTab(tabLayout.newTab().setText(getResources().getString(R.string.current_order)));
         tabLayout.addTab(tabLayout.newTab().setText(getResources().getString(R.string.order_history)));
 
@@ -55,6 +55,7 @@ public class SaleOrderFragment extends Fragment {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 viewPager.setCurrentItem(tab.getPosition());
+                tabPosition=tab.getPosition();
             }
 
             @Override
@@ -79,6 +80,16 @@ public class SaleOrderFragment extends Fragment {
     }
 
     @Override
+    public void onAttachFragment(@NonNull Fragment childFragment) {
+        super.onAttachFragment(childFragment);
+        if (childFragment instanceof SaleOrderFragment.onFragmentInteractionListener) {
+            if (currentOrderListener == null)
+                currentOrderListener = (SaleOrderFragment.onFragmentInteractionListener) childFragment;
+            else orderHistoryListener = (SaleOrderFragment.onFragmentInteractionListener) childFragment;
+        }
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
@@ -87,12 +98,33 @@ public class SaleOrderFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.search, menu);
-        MenuItem item=menu.findItem(R.id.action_search);
-        SearchView searchView = (SearchView) MenuItemCompat.getActionView(item);
+        MenuItem itemSearch=menu.findItem(R.id.action_search);
+        MenuItem itemRefresh=menu.findItem(R.id.action_refresh);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(itemSearch);
 
+        itemRefresh.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                if (tabPosition == 0) {
+                    if (currentOrderListener != null)
+                        currentOrderListener.refresh();
+                } else if (tabPosition == 1) {
+                    if (orderHistoryListener != null)
+                        orderHistoryListener.refresh();
+                }
+                return false;
+            }
+        });
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                if (tabPosition == 0) {
+                    if (currentOrderListener != null)
+                        currentOrderListener.search(query);
+                } else if (tabPosition == 1) {
+                    if (orderHistoryListener != null)
+                        orderHistoryListener.search(query);
+                }
                 return false;
             }
 
@@ -102,7 +134,7 @@ public class SaleOrderFragment extends Fragment {
             }
         });
 
-        item.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+        itemSearch.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem menuItem) {
                 return true;
@@ -115,5 +147,16 @@ public class SaleOrderFragment extends Fragment {
         });
 
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    private void setLayoutResource() {
+        tabLayout = binding.tabLayout;
+        viewPager = binding.viewPager;
+        fab = binding.fab;
+    }
+
+    public interface onFragmentInteractionListener{
+        void refresh();
+        void search(String value);
     }
 }

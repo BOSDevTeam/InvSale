@@ -44,6 +44,8 @@ public class ListItemProductAdapter extends RecyclerView.Adapter<ListItemProduct
         holder.tvProductName.setText(list.get(position).getProductName());
         holder.tvPrice.setText(context.getResources().getString(R.string.mmk)+appSetting.df.format(list.get(position).getSalePrice()));
 
+        if(list.get(position).getQuantity()!=0)holder.tvQuantity.setText(String.valueOf(list.get(position).getQuantity()));
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -52,20 +54,35 @@ public class ListItemProductAdapter extends RecyclerView.Adapter<ListItemProduct
         });
     }
 
+    public void setItem(List<ProductData> list){
+        this.list=list;
+    }
+
     @Override
     public int getItemCount() {
         //returns the number of elements the RecyclerView will display
         return list.size();
     }
 
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvProductName,tvPrice;
+        TextView tvProductName,tvPrice,tvQuantity;
         ImageView imgPhoto;
 
         public ViewHolder(View itemView) {
             super(itemView);
             tvProductName =itemView.findViewById(R.id.tvProductName);
             tvPrice =  itemView.findViewById(R.id.tvPrice);
+            tvQuantity =  itemView.findViewById(R.id.tvQuantity);
             imgPhoto =  itemView.findViewById(R.id.imgPhoto);
         }
     }

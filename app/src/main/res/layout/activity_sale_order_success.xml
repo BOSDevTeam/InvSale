@@ -64,8 +64,9 @@
                         <TextView style="@style/TableLabelTextView"
                             android:text="@string/date"/>
 
-                        <TextView style="@style/TableValueTextView"
-                            android:text="28/06/2022"/>
+                        <TextView android:id="@+id/tvDate"
+                            style="@style/TableValueTextView"
+                            tools:text="28/06/2022"/>
 
                     </TableRow>
 
@@ -76,8 +77,9 @@
                         <TextView style="@style/TableLabelTextView"
                             android:text="@string/order_number"/>
 
-                        <TextView style="@style/TableValueTextView"
-                            android:text="#SO35877497"/>
+                        <TextView android:id="@+id/tvOrderNumber"
+                            style="@style/TableValueTextView"
+                            tools:text="#SO35877497"/>
 
                     </TableRow>
 
@@ -88,8 +90,9 @@
                         <TextView style="@style/TableLabelTextView"
                             android:text="@string/total_amount"/>
 
-                        <TextView style="@style/TableValueTextView"
-                            android:text="MMK 6,600"/>
+                        <TextView android:id="@+id/tvTotal"
+                            style="@style/TableValueTextView"
+                            tools:text="MMK 6,600"/>
 
                     </TableRow>
 "
@@ -106,7 +109,7 @@
         android:layout_gravity="center"
         android:layout_marginBottom="16dp"
         android:layout_marginEnd="@dimen/fab_margin"
-        app:srcCompat="@android:drawable/ic_menu_close_clear_cancel"
+        app:srcCompat="@drawable/ic_arrow_back_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"/>

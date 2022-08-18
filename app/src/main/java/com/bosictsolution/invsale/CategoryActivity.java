@@ -3,6 +3,7 @@ package com.bosictsolution.invsale;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -35,6 +36,7 @@ public class CategoryActivity extends AppCompatActivity {
     private Context context=this;
     private ProgressDialog progressDialog;
     AppSetting appSetting=new AppSetting();
+    public static Activity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +102,7 @@ public class CategoryActivity extends AppCompatActivity {
     }
 
     private void init(){
+        activity=this;
         db=new DatabaseAccess(context);
         progressDialog =new ProgressDialog(context);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);

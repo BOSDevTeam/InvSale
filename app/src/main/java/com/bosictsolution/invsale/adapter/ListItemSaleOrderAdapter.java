@@ -42,12 +42,21 @@ public class ListItemSaleOrderAdapter extends RecyclerView.Adapter<ListItemSaleO
         holder.tvMonth.setText(list.get(position).getMonth());
         holder.tvCustomer.setText(list.get(position).getCustomerName());
         holder.tvOrderNumber.setText(context.getResources().getString(R.string.space)+context.getResources().getString(R.string.hash)+list.get(position).getOrderNumber());
-        holder.tvGrandTotal.setText("MMK"+context.getResources().getString(R.string.space)+appSetting.df.format(list.get(position).getGrandTotal()));
+        holder.tvGrandTotal.setText(context.getResources().getString(R.string.mmk)+appSetting.df.format(list.get(position).getTotal()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i=new Intent(context, SaleOrderDetailActivity.class);
+                i.putExtra("SaleOrderID",list.get(position).getSaleOrderID());
+                i.putExtra("OrderNumber",list.get(position).getOrderNumber());
+                i.putExtra("OrderDateTime",list.get(position).getOrderDateTime());
+                i.putExtra("CustomerName",list.get(position).getCustomerName());
+                i.putExtra("TaxAmt",list.get(position).getTaxAmt());
+                i.putExtra("ChargesAmt",list.get(position).getChargesAmt());
+                i.putExtra("Subtotal",list.get(position).getSubtotal());
+                i.putExtra("Total",list.get(position).getTotal());
+                i.putExtra("Remark",list.get(position).getRemark());
                 context.startActivity(i);
             }
         });

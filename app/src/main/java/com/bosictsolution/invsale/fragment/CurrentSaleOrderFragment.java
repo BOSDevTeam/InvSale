@@ -1,18 +1,39 @@
 package com.bosictsolution.invsale.fragment;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.RadioButton;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bosictsolution.invsale.R;
 import com.bosictsolution.invsale.adapter.ListItemSaleOrderAdapter;
+import com.bosictsolution.invsale.api.Api;
+import com.bosictsolution.invsale.common.AppConstant;
+import com.bosictsolution.invsale.common.AppSetting;
+import com.bosictsolution.invsale.data.SaleMasterData;
 import com.bosictsolution.invsale.data.SaleOrderMasterData;
+import com.bosictsolution.invsale.ui.saleorder.SaleOrderFragment;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +43,7 @@ import java.util.List;
  * Use the {@link CurrentSaleOrderFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class CurrentSaleOrderFragment extends Fragment {
+public class CurrentSaleOrderFragment extends Fragment implements SaleOrderFragment.onFragmentInteractionListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -33,9 +54,19 @@ public class CurrentSaleOrderFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    RecyclerView rvSaleOrder;
     ListItemSaleOrderAdapter listItemSaleOrderAdapter;
     List<SaleOrderMasterData> lstSaleOrder=new ArrayList<>();
-    RecyclerView rvSaleOrder;
+    private ProgressDialog progressDialog;
+    TextView tvDate,tvFromDate,tvToDate;
+    String selectedDate,fromDate,toDate;
+    AppSetting appSetting=new AppSetting();
+    public static final int SPECIFIC_DATE_REQUEST_CODE = 11; // Used to identify the result
+    public static final int FROM_DATE_REQUEST_CODE = 12;
+    public static final int TO_DATE_REQUEST_CODE = 13;
+    int clientId;
+    SharedPreferences sharedpreferences;
+    private SaleOrderFragment.onFragmentInteractionListener listener;
 
     public CurrentSaleOrderFragment() {
         // Required empty public constructor
@@ -73,44 +104,242 @@ public class CurrentSaleOrderFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_current_sale_order, container, false);
+        setLayoutResource(root);
+        init();
+        fillData();
 
-        rvSaleOrder=root.findViewById(R.id.rvSaleOrder);
-
-        setAdapter();
+        tvDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDateFilterDialog();
+            }
+        });
 
         return root;
     }
 
-    private void setAdapter(){
-        SaleOrderMasterData data=new SaleOrderMasterData();
-        data.setYear("2022");
-        data.setDay("27");
-        data.setMonth("Jun");
-        data.setOrderNumber("SO0001");
-        data.setGrandTotal(6600);
-        data.setCustomerName("CustomerA");
-        lstSaleOrder.add(data);
+    @Override
+    public void onAttachFragment(@NonNull Fragment childFragment) {
+        super.onAttachFragment(childFragment);
+        if(childFragment instanceof SaleOrderFragment.onFragmentInteractionListener){
+            listener=(SaleOrderFragment.onFragmentInteractionListener) childFragment;
+        }
+    }
 
-        data=new SaleOrderMasterData();
-        data.setYear("2022");
-        data.setDay("26");
-        data.setMonth("Jun");
-        data.setOrderNumber("SO0001");
-        data.setGrandTotal(6600);
-        data.setCustomerName("CustomerA");
-        lstSaleOrder.add(data);
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        // check for the results
+        if (requestCode == SPECIFIC_DATE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            // get date from string
+            selectedDate = data.getStringExtra("selectedDate");
+            // set the value of the editText
+            tvDate.setText(selectedDate);
+            getMasterSaleOrderByDate();
+        }else if (requestCode == FROM_DATE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            fromDate = data.getStringExtra("selectedDate");
+            tvFromDate.setText(fromDate);
+        }else if (requestCode == TO_DATE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            toDate = data.getStringExtra("selectedDate");
+            tvToDate.setText(toDate);
+        }
+    }
 
-        data=new SaleOrderMasterData();
-        data.setYear("2022");
-        data.setDay("26");
-        data.setMonth("Jun");
-        data.setOrderNumber("SO0001");
-        data.setGrandTotal(6600);
-        data.setCustomerName("CustomerB");
-        lstSaleOrder.add(data);
+    private void showDateFilterDialog() {
+        LayoutInflater reg = LayoutInflater.from(getContext());
+        View v = reg.inflate(R.layout.dialog_date_filter, null);
+        android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(getContext());
+        dialog.setView(v);
 
-        listItemSaleOrderAdapter=new ListItemSaleOrderAdapter(lstSaleOrder,getContext());
+        final ImageButton btnClose = v.findViewById(R.id.btnClose);
+        final RadioButton rdoDate = v.findViewById(R.id.rdoDate);
+        final RadioButton rdoFromToDate=v.findViewById(R.id.rdoFromToDate);
+
+        dialog.setCancelable(true);
+        final android.app.AlertDialog alertDialog = dialog.create();
+        alertDialog.show();
+
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
+        rdoDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDatePicker(SPECIFIC_DATE_REQUEST_CODE);
+                alertDialog.dismiss();
+            }
+        });
+        rdoFromToDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(rdoFromToDate.isChecked()){
+                    showFromToDateDialog();
+                    alertDialog.dismiss();
+                }
+            }
+        });
+    }
+
+    private void showFromToDateDialog() {
+        LayoutInflater reg = LayoutInflater.from(getContext());
+        View v = reg.inflate(R.layout.dialog_from_to_date, null);
+        android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(getContext());
+        dialog.setView(v);
+
+        final ImageButton btnClose = v.findViewById(R.id.btnClose);
+        tvFromDate = v.findViewById(R.id.tvFromDate);
+        tvToDate=v.findViewById(R.id.tvToDate);
+        final Button btnOK = v.findViewById(R.id.btnOK);
+        final Button btnCancel = v.findViewById(R.id.btnCancel);
+
+        selectedDate= appSetting.getTodayDate();
+        fromDate=selectedDate;
+        toDate= selectedDate;
+        tvFromDate.setText(fromDate);
+        tvToDate.setText(toDate);
+
+        dialog.setCancelable(true);
+        final android.app.AlertDialog alertDialog = dialog.create();
+        alertDialog.show();
+
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
+        btnOK.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tvDate.setText(fromDate+"-"+toDate);
+                getMasterSaleOrderByFromToDate();
+                alertDialog.dismiss();
+            }
+        });
+        tvFromDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDatePicker(FROM_DATE_REQUEST_CODE);
+            }
+        });
+        tvToDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showDatePicker(TO_DATE_REQUEST_CODE);
+            }
+        });
+    }
+
+    private void showDatePicker(int requestCode){
+        // create the datePickerFragment
+        AppCompatDialogFragment newFragment = new DatePickerFragment();
+        // set the targetFragment to receive the results, specifying the request code
+        newFragment.setTargetFragment(CurrentSaleOrderFragment.this, requestCode);
+        // show the datePicker
+        newFragment.show(getFragmentManager(), "datePicker");
+    }
+
+    private void setLayoutResource(View root){
+        rvSaleOrder=root.findViewById(R.id.rvSaleOrder);
+        tvDate=root.findViewById(R.id.tvDate);
+    }
+
+    private void init(){
+        progressDialog = new ProgressDialog(getContext());
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
+        sharedpreferences = getContext().getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
+    }
+
+    private void fillData(){
+        selectedDate= appSetting.getTodayDate();
+        tvDate.setText(selectedDate);
+        clientId=sharedpreferences.getInt(AppConstant.ClientID,0);
+        getMasterSaleOrderByDate();
+    }
+
+    private void setAdapter(List<SaleOrderMasterData> list){
+        listItemSaleOrderAdapter=new ListItemSaleOrderAdapter(list,getContext());
         rvSaleOrder.setAdapter(listItemSaleOrderAdapter);
         rvSaleOrder.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+    }
+
+    private void getMasterSaleOrderByDate(){
+        progressDialog.show();
+        progressDialog.setMessage(getResources().getString(R.string.loading));
+        Api.getClient().getMasterSaleOrderByDate(selectedDate,clientId,false).enqueue(new Callback<List<SaleOrderMasterData>>() {
+            @Override
+            public void onResponse(Call<List<SaleOrderMasterData>> call, Response<List<SaleOrderMasterData>> response) {
+                progressDialog.dismiss();
+                lstSaleOrder=response.body();
+                setAdapter(lstSaleOrder);
+            }
+
+            @Override
+            public void onFailure(Call<List<SaleOrderMasterData>> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(getContext(),t.getMessage(),Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void getMasterSaleOrderByFromToDate(){
+        progressDialog.show();
+        progressDialog.setMessage(getResources().getString(R.string.loading));
+        Api.getClient().getMasterSaleOrderByFromToDate(fromDate,toDate,clientId,false).enqueue(new Callback<List<SaleOrderMasterData>>() {
+            @Override
+            public void onResponse(Call<List<SaleOrderMasterData>> call, Response<List<SaleOrderMasterData>> response) {
+                progressDialog.dismiss();
+                lstSaleOrder=response.body();
+                setAdapter(lstSaleOrder);
+            }
+
+            @Override
+            public void onFailure(Call<List<SaleOrderMasterData>> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(getContext(),t.getMessage(),Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void getMasterSaleOrderByValue(String value){
+        progressDialog.show();
+        progressDialog.setMessage(getResources().getString(R.string.loading));
+        Api.getClient().getMasterSaleOrderByValue(value,clientId,false).enqueue(new Callback<List<SaleOrderMasterData>>() {
+            @Override
+            public void onResponse(Call<List<SaleOrderMasterData>> call, Response<List<SaleOrderMasterData>> response) {
+                progressDialog.dismiss();
+                lstSaleOrder=response.body();
+                setAdapter(lstSaleOrder);
+            }
+
+            @Override
+            public void onFailure(Call<List<SaleOrderMasterData>> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(getContext(),t.getMessage(),Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    @Override
+    public void refresh() {
+        selectedDate= appSetting.getTodayDate();
+        tvDate.setText(selectedDate);
+        getMasterSaleOrderByDate();
+    }
+
+    @Override
+    public void search(String value) {
+        if (value.length() != 0)
+            getMasterSaleOrderByValue(value);
     }
 }

@@ -285,13 +285,14 @@ public class DatabaseAccess {
     public List<ProductData> getProductBySubMenu(int subMenuId) {
         database = openHelper.getReadableDatabase();
         List<ProductData> list = new ArrayList<>();
-        Cursor cur = database.rawQuery("SELECT ProductID,ProductName,SalePrice,SubMenuID FROM ProductTemp WHERE SubMenuID =" + subMenuId, null);
+        Cursor cur = database.rawQuery("SELECT p.ProductID,ProductName,SalePrice,SubMenuID,Quantity FROM ProductTemp p LEFT JOIN TranSaleOrderTemp ts ON p.ProductID=ts.ProductID WHERE SubMenuID =" + subMenuId, null);
         while (cur.moveToNext()) {
             ProductData data = new ProductData();
             data.setProductID(cur.getInt(0));
             data.setProductName(cur.getString(1));
             data.setSalePrice(cur.getInt(2));
             data.setSubMenuID(cur.getInt(3));
+            data.setQuantity(cur.getInt(4));
             list.add(data);
         }
         return list;
@@ -485,6 +486,22 @@ public class DatabaseAccess {
         database.insert("MasterSaleOrderTemp", null, cv);
         return true;
     }
+    public SaleOrderMasterData getMasterSaleOrder(){
+        database = openHelper.getReadableDatabase();
+        SaleOrderMasterData data=new SaleOrderMasterData();
+        Cursor cur=database.rawQuery("SELECT * FROM MasterSaleOrderTemp",null);
+        if(cur.moveToFirst()){
+            data.setCustomerID(cur.getInt(0));
+            data.setSubtotal(cur.getInt(1));
+            data.setTax(cur.getInt(2));
+            data.setTaxAmt(cur.getInt(3));
+            data.setCharges(cur.getInt(4));
+            data.setChargesAmt(cur.getInt(5));
+            data.setTotal(cur.getInt(6));
+            data.setRemark(cur.getString(7));
+        }
+        return data;
+    }
     public boolean insertUpdateTranSaleOrder(int productId, int quantity) {
         boolean isAlreadyExist = false;
         database = openHelper.getReadableDatabase();
@@ -603,12 +620,12 @@ public class DatabaseAccess {
         database.execSQL("DELETE FROM VoucherSettingTemp");
         return true;
     }
-    private boolean deleteMasterSaleOrder(){
+    public boolean deleteMasterSaleOrder(){
         database=openHelper.getWritableDatabase();
         database.execSQL("DELETE FROM MasterSaleOrderTemp");
         return true;
     }
-    private boolean deleteTranSaleOrder(){
+    public boolean deleteTranSaleOrder(){
         database=openHelper.getWritableDatabase();
         database.execSQL("DELETE FROM TranSaleOrderTemp");
         return true;

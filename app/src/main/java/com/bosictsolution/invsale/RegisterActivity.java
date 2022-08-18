@@ -166,6 +166,10 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void getTownshipByDivision(int divisionId) {
+        if(!progressDialog.isShowing()){
+            progressDialog.show();
+            progressDialog.setMessage(getResources().getString(R.string.loading));
+        }
         Api.getClient().getTownshipByDivision(divisionId).enqueue(new Callback<List<TownshipData>>() {
             @Override
             public void onResponse(Call<List<TownshipData>> call, Response<List<TownshipData>> response) {

@@ -151,7 +151,7 @@
                     android:layout_height="wrap_content">
 
                     <TextView style="@style/BillOtherTotal"
-                        android:text="@string/subtotal" />
+                        android:text="@string/subtotal_colon" />
 
                     <TextView android:id="@+id/tvSubtotal"
                         style="@style/BillOtherTotal"
@@ -165,7 +165,7 @@
 
                     <TextView android:id="@+id/tvLabelTax"
                         style="@style/BillOtherTotal"
-                        android:text="@string/tax" />
+                        android:text="@string/tax_colon" />
 
                     <TextView android:id="@+id/tvTax"
                         style="@style/BillOtherTotal"
@@ -179,7 +179,7 @@
 
                     <TextView android:id="@+id/tvLabelCharges"
                         style="@style/BillOtherTotal"
-                        android:text="@string/charges" />
+                        android:text="@string/charges_colon" />
 
                     <TextView android:id="@+id/tvCharges"
                         style="@style/BillOtherTotal"
@@ -192,7 +192,7 @@
                     android:layout_height="wrap_content">
 
                     <TextView style="@style/BillGrandTotal"
-                        android:text="@string/total" />
+                        android:text="@string/total_colon" />
 
                     <TextView android:id="@+id/tvTotal"
                         style="@style/BillGrandTotal"
@@ -209,7 +209,7 @@
 
                     <TextView android:id="@+id/tvLabelVoucherDiscount"
                         style="@style/BillOtherTotal"
-                        android:text="@string/voucher_discount" />
+                        android:text="@string/voucher_discount_colon" />
 
                     <TextView android:id="@+id/tvVoucherDiscount"
                         style="@style/BillOtherTotal"
@@ -223,7 +223,7 @@
                     android:layout_height="wrap_content">
 
                     <TextView style="@style/BillOtherTotal"
-                        android:text="@string/advanced_pay" />
+                        android:text="@string/advanced_pay_colon" />
 
                     <TextView android:id="@+id/tvAdvancedPay"
                         style="@style/BillOtherTotal"
@@ -239,7 +239,7 @@
                     android:layout_height="wrap_content">
 
                     <TextView style="@style/BillGrandTotal"
-                        android:text="@string/grandtotal" />
+                        android:text="@string/grandtotal_colon" />
 
                     <TextView android:id="@+id/tvGrandTotal"
                         style="@style/BillGrandTotal"

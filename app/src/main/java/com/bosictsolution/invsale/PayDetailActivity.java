@@ -190,7 +190,7 @@ public class PayDetailActivity extends AppCompatActivity {
             layoutAdvancedPay.setVisibility(View.GONE);
 
         if (saleMasterData.getVouDisPercent() != 0)
-            tvLabelVoucherDiscount.setText(getResources().getString(R.string.voucher_discount) + "(" + saleMasterData.getVouDisPercent() + "%)");
+            tvLabelVoucherDiscount.setText(getResources().getString(R.string.voucher_discount_colon) + "(" + saleMasterData.getVouDisPercent() + "%)");
         tvVoucherDiscount.setText(appSetting.df.format(saleMasterData.getVoucherDis()));
 
         int grandTotal = saleMasterData.getTotalAmt() - (saleMasterData.getAdvancedPayAmt() + saleMasterData.getVoucherDis());
@@ -201,7 +201,7 @@ public class PayDetailActivity extends AppCompatActivity {
             layoutPercentGrandTotal.setVisibility(View.VISIBLE);
             tvPercentAmount.setText(appSetting.df.format(saleMasterData.getPayPercentAmt()));
             tvPercentGrandTotal.setText(appSetting.df.format(saleMasterData.getNetAmt()));
-            tvLabelPercent.setText(getResources().getString(R.string.percent) + "(" + saleMasterData.getPaymentPercent() + "%)");
+            tvLabelPercent.setText(getResources().getString(R.string.percent) + "(" + saleMasterData.getPaymentPercent() + "%)"+getResources().getString(R.string.colon_sign));
         } else {
             layoutPercent.setVisibility(View.GONE);
             layoutPercentGrandTotal.setVisibility(View.GONE);
@@ -242,6 +242,8 @@ public class PayDetailActivity extends AppCompatActivity {
         data.setLstSaleTran(db.getTranSale());
         data.setClient(true);
         data.setClientID(clientId);
+        progressDialog.show();
+        progressDialog.setMessage(getResources().getString(R.string.loading));
         Api.getClient().insertSale(data).enqueue(new Callback<Integer>() {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {

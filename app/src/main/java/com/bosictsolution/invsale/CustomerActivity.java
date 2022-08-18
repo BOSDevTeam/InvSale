@@ -14,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -23,6 +24,7 @@ import com.bosictsolution.invsale.common.DatabaseAccess;
 import com.bosictsolution.invsale.data.CustomerData;
 import com.bosictsolution.invsale.data.DivisionData;
 import com.bosictsolution.invsale.data.SaleMasterData;
+import com.bosictsolution.invsale.data.SaleOrderMasterData;
 import com.bosictsolution.invsale.data.TownshipData;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -39,6 +41,7 @@ public class CustomerActivity extends AppCompatActivity {
     Spinner spDivision,spTownship;
     TextInputLayout inputName,inputPhone;
     EditText etName,etPhone,etEmail,etContactPerson,etAddress;
+    LinearLayout layoutProcess;
     short moduleType;
     private Context context=this;
     private ProgressDialog progressDialog;
@@ -129,7 +132,9 @@ public class CustomerActivity extends AppCompatActivity {
             public void onResponse(Call<Integer> call, Response<Integer> response) {
                 int customerId = response.body();
                 if (customerId != 0) {
-                    insertSale(customerId);
+                    if (moduleType == AppConstant.sale_module_type) insertSale(customerId);
+                    else if (moduleType == AppConstant.sale_order_module_type)
+                        insertSaleOrder(customerId);
                 } else {
                     progressDialog.dismiss();
                     Toast.makeText(context, getResources().getString(R.string.already_exist_customer_phone), Toast.LENGTH_LONG).show();
@@ -138,6 +143,37 @@ public class CustomerActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<Integer> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void insertSaleOrder(int customerId){
+        SaleOrderMasterData data=db.getMasterSaleOrder();
+        data.setLstSaleOrderTran(db.getTranSaleOrder());
+        data.setCustomerID(customerId);
+        data.setClientID(clientId);
+        progressDialog.show();
+        progressDialog.setMessage(getResources().getString(R.string.loading));
+        Api.getClient().insertSaleOrder(data).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                progressDialog.dismiss();
+                if(response.isSuccessful()){
+                    db.deleteMasterSaleOrder();
+                    db.deleteTranSaleOrder();
+                    String orderNumber=response.body();
+                    Intent i= new Intent(CustomerActivity.this, SaleOrderSuccessActivity.class);
+                    i.putExtra("OrderNumber",orderNumber);
+                    i.putExtra("Total",data.getTotal());
+                    startActivity(i);
+                    finish();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
                 progressDialog.dismiss();
                 Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
             }
@@ -150,6 +186,8 @@ public class CustomerActivity extends AppCompatActivity {
         data.setCustomerID(customerId);
         data.setClient(true);
         data.setClientID(clientId);
+        progressDialog.show();
+        progressDialog.setMessage(getResources().getString(R.string.loading));
         Api.getClient().insertSale(data).enqueue(new Callback<Integer>() {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
@@ -200,7 +238,10 @@ public class CustomerActivity extends AppCompatActivity {
     private void fillData(){
         clientId=sharedpreferences.getInt(AppConstant.ClientID,0);
         if(moduleType==AppConstant.sale_module_type)btnConfirm.setText(getResources().getString(R.string.pay_confirm));
-        else if(moduleType==AppConstant.sale_order_module_type)btnConfirm.setText(getResources().getString(R.string.order_confirm));
+        else if(moduleType==AppConstant.sale_order_module_type) {
+            btnConfirm.setText(getResources().getString(R.string.order_confirm));
+            layoutProcess.setVisibility(View.VISIBLE);
+        }
         progressDialog.show();
         progressDialog.setMessage(getResources().getString(R.string.loading));
         getDivision();
@@ -223,6 +264,10 @@ public class CustomerActivity extends AppCompatActivity {
     }
 
     private void getTownshipByDivision(int divisionId) {
+        if(!progressDialog.isShowing()){
+            progressDialog.show();
+            progressDialog.setMessage(getResources().getString(R.string.loading));
+        }
         Api.getClient().getTownshipByDivision(divisionId).enqueue(new Callback<List<TownshipData>>() {
             @Override
             public void onResponse(Call<List<TownshipData>> call, Response<List<TownshipData>> response) {
@@ -270,5 +315,6 @@ public class CustomerActivity extends AppCompatActivity {
         etEmail=findViewById(R.id.etEmail);
         etContactPerson=findViewById(R.id.etContactPerson);
         etAddress=findViewById(R.id.etAddress);
+        layoutProcess=findViewById(R.id.layoutProcess);
     }
 }

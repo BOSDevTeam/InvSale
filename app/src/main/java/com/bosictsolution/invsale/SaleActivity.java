@@ -32,7 +32,7 @@ import android.widget.Toast;
 
 import com.bosictsolution.invsale.adapter.ListItemProductInfoAdapter;
 import com.bosictsolution.invsale.adapter.GeneralExpandableListAdapter;
-import com.bosictsolution.invsale.adapter.ListItemSaleAdapterR;
+import com.bosictsolution.invsale.adapter.ListItemSaleAdapter;
 import com.bosictsolution.invsale.api.Api;
 import com.bosictsolution.invsale.common.AppSetting;
 import com.bosictsolution.invsale.common.Confirmation;
@@ -65,7 +65,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
     TextView tvTax,tvSubtotal,tvCharges,tvTotal;
     Spinner spMainMenu;
     ExpandableListView expList;
-    ListItemSaleAdapterR listItemSaleAdapterR;
+    ListItemSaleAdapter listItemSaleAdapter;
     List<SaleTranData> lstSaleTran=new ArrayList<>();
     private Context context=this;
     List<ProductData> lstProduct=new ArrayList<>();
@@ -180,7 +180,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
 
     @Override
     public void onQuantityClickListener(int position, TextView tvQuantity, TextView tvAmount) {
-        showNumberDialog(lstSaleTran.get(position).getProductName(),position,tvQuantity,tvAmount);
+        showNumberDialog(lstSaleTran.get(position).getProductName(),lstSaleTran.get(position).getQuantity(),position,tvQuantity,tvAmount);
     }
 
     @Override
@@ -207,7 +207,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         setSaleTranAdapter();
     }
 
-    private void showNumberDialog(String productName,int position,TextView tvQuantity, TextView tvAmount) {
+    private void showNumberDialog(String productName,int quantity,int position,TextView tvQuantity, TextView tvAmount) {
         LayoutInflater reg = LayoutInflater.from(context);
         View v = reg.inflate(R.layout.dialog_number, null);
         android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(context);
@@ -230,6 +230,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         final Button btnNine = v.findViewById(R.id.btnNine);
 
         tvTitle.setText(productName);
+        tvInput.setText(String.valueOf(quantity));
 
         dialog.setCancelable(true);
         final android.app.AlertDialog alertDialog = dialog.create();
@@ -496,11 +497,11 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         while (rvItemSale.getItemDecorationCount() > 0) {
             rvItemSale.removeItemDecorationAt(0);
         }
-        listItemSaleAdapterR = new ListItemSaleAdapterR(this, lstSaleTran, true);
-        rvItemSale.setAdapter(listItemSaleAdapterR);
+        listItemSaleAdapter = new ListItemSaleAdapter(this, lstSaleTran, true);
+        rvItemSale.setAdapter(listItemSaleAdapter);
         rvItemSale.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rvItemSale.addItemDecoration(new DividerItemDecoration(rvItemSale.getContext(), DividerItemDecoration.VERTICAL));
-        listItemSaleAdapterR.setOnListener(this);
+        listItemSaleAdapter.setOnListener(this);
         etSearch.setText("");
         calculateAmount();
     }

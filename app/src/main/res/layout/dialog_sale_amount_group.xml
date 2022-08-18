@@ -29,7 +29,7 @@
             <TextView style="@style/AmountGroupTextView"
                 android:layout_width="0dp"
                 android:layout_weight="2"
-                android:text="@string/total"
+                android:text="@string/total_colon"
                 android:gravity="left"/>
 
             <TextView android:id="@+id/tvTotal"
@@ -48,7 +48,7 @@
             <TextView style="@style/AmountGroupTextView"
                 android:layout_width="0dp"
                 android:layout_weight="2"
-                android:text="@string/advanced_pay"
+                android:text="@string/advanced_pay_colon"
                 android:gravity="left"/>
 
             <TextView android:id="@+id/tvAdvancedPay"
@@ -68,7 +68,7 @@
                 style="@style/AmountGroupTextView"
                 android:layout_width="0dp"
                 android:layout_weight="2"
-                android:text="@string/voucher_discount"
+                android:text="@string/voucher_discount_colon"
                 android:gravity="left"/>
 
             <TextView android:id="@+id/tvVoucherDiscount"
@@ -89,7 +89,7 @@
             <TextView style="@style/AmountGroupTextView"
                 android:layout_width="0dp"
                 android:layout_weight="2"
-                android:text="@string/grandtotal"
+                android:text="@string/grandtotal_colon"
                 android:textColor="@color/primary_500"
                 android:textSize="@dimen/text_large"
                 android:gravity="left"/>

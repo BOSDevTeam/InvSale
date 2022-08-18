@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -43,8 +44,10 @@ public class ProductActivity extends AppCompatActivity implements ListItemProduc
     DatabaseAccess db;
     private ProgressDialog progressDialog;
     String mainMenuName,subMenuName;
-    int subMenuId,productId;
+    int subMenuId,productId,salePrice,productPosition;
+    String productName;
     AppSetting appSetting=new AppSetting();
+    public static Activity activity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +106,14 @@ public class ProductActivity extends AppCompatActivity implements ListItemProduc
                 if(db.insertUpdateTranSaleOrder(productId,quantity)){
                     setFab();
                     sheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    ProductData productData=new ProductData();
+                    productData.setProductID(productId);
+                    productData.setProductName(productName);
+                    productData.setSalePrice(salePrice);
+                    productData.setQuantity(quantity);
+                    lstProduct.set(productPosition,productData);
+                    listItemProductAdapter.setItem(lstProduct);
+                    listItemProductAdapter.notifyDataSetChanged();
                     Toast.makeText(context,getResources().getString(R.string.added),Toast.LENGTH_LONG).show();
                 }
             }
@@ -123,6 +134,8 @@ public class ProductActivity extends AppCompatActivity implements ListItemProduc
     @Override
     protected void onResume() {
         super.onResume();
+        getProductBySubMenu(subMenuId);
+        setAdapter();
         setFab();
     }
 
@@ -135,6 +148,7 @@ public class ProductActivity extends AppCompatActivity implements ListItemProduc
     }
 
     private void init(){
+        activity=this;
         db=new DatabaseAccess(context);
         progressDialog =new ProgressDialog(context);
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
@@ -176,9 +190,12 @@ public class ProductActivity extends AppCompatActivity implements ListItemProduc
 
     @Override
     public void onProductClicked(int position) {
+        productPosition=position;
         productId = lstProduct.get(position).getProductID();
-        tvProductName.setText(lstProduct.get(position).getProductName());
-        tvPrice.setText(context.getResources().getString(R.string.mmk) + appSetting.df.format(lstProduct.get(position).getSalePrice()));
+        productName=lstProduct.get(position).getProductName();
+        salePrice=lstProduct.get(position).getSalePrice();
+        tvProductName.setText(productName);
+        tvPrice.setText(context.getResources().getString(R.string.mmk) + appSetting.df.format(salePrice));
         int quantity = db.getSaleOrderQuantityByProduct(productId);
         if (quantity == 0) {
             tvAlreadyInOrder.setVisibility(View.GONE);
