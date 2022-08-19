@@ -10,7 +10,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp">
+        android:padding="10dp"
+        android:background="@color/gray">
 
         <LinearLayout android:layout_width="0dp"
             android:layout_weight="1"
@@ -28,13 +29,16 @@
             <TextView android:id="@+id/tvCategory"
                 style="@style/SmallTextView"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:drawablePadding="5dp"
                 android:drawableRight="@drawable/ic_arrow_drop_down_24"
                 android:gravity="center"
                 android:text="All"
-                android:textColor="@color/black"/>
+                android:textColor="@color/black"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:background="@drawable/btn_transparent"/>
 
         </LinearLayout>
 
@@ -54,13 +58,16 @@
             <TextView android:id="@+id/tvDate"
                 style="@style/SmallTextView"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:drawablePadding="5dp"
                 android:drawableRight="@drawable/ic_arrow_drop_down_24"
-                android:gravity="center"
-                android:text="07/07/2022"
-                android:textColor="@color/black"/>
+                android:gravity="center|left"
+                tools:text="07/07/2022-07/07/2022"
+                android:textColor="@color/black"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:background="@drawable/btn_transparent"/>
 
         </LinearLayout>
 
@@ -74,13 +81,11 @@
         android:padding="10dp"
         android:gravity="center">
 
-        <TextView android:id="@+id/tvProductName"
-            android:layout_width="0dp"
+        <TextView android:layout_width="0dp"
             android:layout_weight="2"
             style="@style/SmallTextView"
             android:text="@string/product" />
-        <TextView android:id="@+id/tvQuantity"
-            android:layout_width="0dp"
+        <TextView android:layout_width="0dp"
             android:layout_weight="1"
             style="@style/SmallTextView"
             android:text="@string/quantity"
@@ -90,8 +95,7 @@
 
     <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvSaleOrderItem"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_height="wrap_content"
         tools:listitem="@layout/item_sale_order_tran"
         android:padding="5dp"/>
 

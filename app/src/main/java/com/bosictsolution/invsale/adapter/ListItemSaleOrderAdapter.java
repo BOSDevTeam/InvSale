@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.bosictsolution.invsale.R;
 import com.bosictsolution.invsale.SaleOrderDetailActivity;
 import com.bosictsolution.invsale.common.AppSetting;
+import com.bosictsolution.invsale.common.DatabaseAccess;
 import com.bosictsolution.invsale.data.SaleOrderMasterData;
 
 import java.util.List;
@@ -21,10 +22,12 @@ public class ListItemSaleOrderAdapter extends RecyclerView.Adapter<ListItemSaleO
     private Context context;
     List<SaleOrderMasterData> list;
     AppSetting appSetting=new AppSetting();
+    DatabaseAccess db;
 
     public ListItemSaleOrderAdapter(List<SaleOrderMasterData> list, Context context) {
         this.list = list;
         this.context = context;
+        this.db=new DatabaseAccess(context);
     }
 
     @Override
@@ -42,7 +45,7 @@ public class ListItemSaleOrderAdapter extends RecyclerView.Adapter<ListItemSaleO
         holder.tvMonth.setText(list.get(position).getMonth());
         holder.tvCustomer.setText(list.get(position).getCustomerName());
         holder.tvOrderNumber.setText(context.getResources().getString(R.string.space)+context.getResources().getString(R.string.hash)+list.get(position).getOrderNumber());
-        holder.tvGrandTotal.setText(context.getResources().getString(R.string.mmk)+appSetting.df.format(list.get(position).getTotal()));
+        holder.tvGrandTotal.setText(db.getHomeCurrency()+context.getResources().getString(R.string.space)+appSetting.df.format(list.get(position).getTotal()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

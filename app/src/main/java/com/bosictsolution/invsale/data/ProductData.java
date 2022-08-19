@@ -1,7 +1,7 @@
 package com.bosictsolution.invsale.data;
 
 public class ProductData {
-    private String ProductName, Code;
+    private String Code,ProductName,PhotoUrl;
     private int ProductID,SalePrice,SubMenuID,Quantity;
 
     public String getProductName() {
@@ -50,5 +50,13 @@ public class ProductData {
 
     public void setQuantity(int quantity) {
         Quantity = quantity;
+    }
+
+    public String getPhotoUrl() {
+        return PhotoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        PhotoUrl = photoUrl;
     }
 }

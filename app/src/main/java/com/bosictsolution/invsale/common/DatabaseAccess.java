@@ -164,6 +164,7 @@ public class DatabaseAccess {
             ContentValues cv = new ContentValues();
             cv.put("MainMenuID", list.get(i).getMainMenuID());
             cv.put("MainMenuName", list.get(i).getMainMenuName());
+            cv.put("PhotoUrl", list.get(i).getPhotoUrl());
             database.insert("MainMenuTemp", null, cv);
         }
         return true;
@@ -176,6 +177,7 @@ public class DatabaseAccess {
             MainMenuData data = new MainMenuData();
             data.setMainMenuID(cur.getInt(0));
             data.setMainMenuName(cur.getString(1));
+            data.setPhotoUrl(cur.getString(2));
             list.add(data);
         }
         return list;
@@ -188,6 +190,7 @@ public class DatabaseAccess {
             cv.put("SubMenuID", list.get(i).getSubMenuID());
             cv.put("MainMenuID", list.get(i).getMainMenuID());
             cv.put("SubMenuName", list.get(i).getSubMenuName());
+            cv.put("PhotoUrl", list.get(i).getPhotoUrl());
             database.insert("SubMenuTemp", null, cv);
         }
         return true;
@@ -201,6 +204,7 @@ public class DatabaseAccess {
             data.setSubMenuID(cur.getInt(0));
             data.setMainMenuID(cur.getInt(1));
             data.setSubMenuName(cur.getString(2));
+            data.setPhotoUrl(cur.getString(3));
             list.add(data);
         }
         return list;
@@ -250,6 +254,7 @@ public class DatabaseAccess {
             cv.put("Code", list.get(i).getCode());
             cv.put("ProductName", list.get(i).getProductName());
             cv.put("SalePrice", list.get(i).getSalePrice());
+            cv.put("PhotoUrl", list.get(i).getPhotoUrl());
             database.insert("ProductTemp", null, cv);
         }
         return true;
@@ -285,7 +290,7 @@ public class DatabaseAccess {
     public List<ProductData> getProductBySubMenu(int subMenuId) {
         database = openHelper.getReadableDatabase();
         List<ProductData> list = new ArrayList<>();
-        Cursor cur = database.rawQuery("SELECT p.ProductID,ProductName,SalePrice,SubMenuID,Quantity FROM ProductTemp p LEFT JOIN TranSaleOrderTemp ts ON p.ProductID=ts.ProductID WHERE SubMenuID =" + subMenuId, null);
+        Cursor cur = database.rawQuery("SELECT p.ProductID,ProductName,SalePrice,SubMenuID,Quantity,PhotoUrl FROM ProductTemp p LEFT JOIN TranSaleOrderTemp ts ON p.ProductID=ts.ProductID WHERE SubMenuID =" + subMenuId, null);
         while (cur.moveToNext()) {
             ProductData data = new ProductData();
             data.setProductID(cur.getInt(0));
@@ -293,6 +298,7 @@ public class DatabaseAccess {
             data.setSalePrice(cur.getInt(2));
             data.setSubMenuID(cur.getInt(3));
             data.setQuantity(cur.getInt(4));
+            data.setPhotoUrl(cur.getString(5));
             list.add(data);
         }
         return list;
@@ -304,19 +310,28 @@ public class DatabaseAccess {
             ContentValues cv = new ContentValues();
             cv.put("Tax", data.getTax());
             cv.put("ServiceCharges", data.getServiceCharges());
+            cv.put("HomeCurrency",data.getHomeCurrency());
             database.insert("CompanySettingTemp", null, cv);
         }
         return true;
     }
-    public CompanySettingData getCompanySetting() {
+    public CompanySettingData getTaxServiceCharges() {
         database = openHelper.getReadableDatabase();
         CompanySettingData data = new CompanySettingData();
-        Cursor cur = database.rawQuery("SELECT * FROM CompanySettingTemp", null);
+        Cursor cur = database.rawQuery("SELECT Tax,ServiceCharges FROM CompanySettingTemp", null);
         if (cur.moveToFirst()) {
             data.setTax(cur.getInt(0));
             data.setServiceCharges(cur.getInt(1));
         }
         return data;
+    }
+    public String getHomeCurrency() {
+        database = openHelper.getReadableDatabase();
+        String homeCurrency = "";
+        Cursor cur = database.rawQuery("SELECT HomeCurrency FROM CompanySettingTemp", null);
+        if (cur.moveToFirst())
+            homeCurrency = cur.getString(0);
+        return homeCurrency;
     }
     public boolean insertLocation(List<LocationData> list){
         deleteLocation();

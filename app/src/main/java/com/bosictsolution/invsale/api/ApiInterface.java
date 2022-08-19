@@ -19,7 +19,6 @@ import com.bosictsolution.invsale.data.SubMenuData;
 import com.bosictsolution.invsale.data.TownshipData;
 import com.bosictsolution.invsale.data.VoucherSettingData;
 
-import java.util.Date;
 import java.util.List;
 
 import retrofit2.Call;
@@ -126,4 +125,13 @@ public interface ApiInterface {
 
     @GET("saleorder/GetTranSaleOrderBySaleOrderID")
     Call<List<SaleOrderTranData>> getTranSaleOrderBySaleOrderID(@Query("saleOrderId") int saleOrderId);
+
+    @GET("saleorder/GetSaleOrderItemByDate")
+    Call<List<SaleOrderTranData>> getSaleOrderItemByDate(@Query("date") String date, @Query("clientId") int clientId, @Query("mainMenuId") int mainMenuId, @Query("subMenuId") int subMenuId);
+
+    @GET("saleorder/GetSaleOrderItemByFromToDate")
+    Call<List<SaleOrderTranData>> getSaleOrderItemByFromToDate(@Query("fromDate") String fromDate,@Query("toDate") String toDate,@Query("clientId") int clientId, @Query("mainMenuId") int mainMenuId, @Query("subMenuId") int subMenuId);
+
+    @GET("saleorder/GetSaleOrderItemByValue")
+    Call<List<SaleOrderTranData>> getSaleOrderItemByValue(@Query("value") String value, @Query("clientId") int clientId);
 }

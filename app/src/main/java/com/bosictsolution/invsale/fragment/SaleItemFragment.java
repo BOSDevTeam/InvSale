@@ -362,7 +362,7 @@ public class SaleItemFragment extends Fragment implements SaleFragment.onFragmen
                 progressDialog.dismiss();
                 List<SaleTranData> list=response.body();
                 setAdapter(list);
-                tvTotal.setText(getResources().getString(R.string.mmk)+calculateAmountTotal(list));
+                tvTotal.setText(db.getHomeCurrency()+getResources().getString(R.string.space)+calculateAmountTotal(list));
             }
 
             @Override
@@ -383,7 +383,7 @@ public class SaleItemFragment extends Fragment implements SaleFragment.onFragmen
                 progressDialog.dismiss();
                 List<SaleTranData> list=response.body();
                 setAdapter(list);
-                tvTotal.setText(getResources().getString(R.string.mmk)+calculateAmountTotal(list));
+                tvTotal.setText(db.getHomeCurrency()+getResources().getString(R.string.space)+calculateAmountTotal(list));
             }
 
             @Override
@@ -395,13 +395,15 @@ public class SaleItemFragment extends Fragment implements SaleFragment.onFragmen
     }
 
     private void getSaleItemByValue(String value){
+        progressDialog.show();
+        progressDialog.setMessage(getResources().getString(R.string.loading));
         Api.getClient().getSaleItemByValue(value,clientId).enqueue(new Callback<List<SaleTranData>>() {
             @Override
             public void onResponse(Call<List<SaleTranData>> call, Response<List<SaleTranData>> response) {
                 progressDialog.dismiss();
                 List<SaleTranData> list=response.body();
                 setAdapter(list);
-                tvTotal.setText(getResources().getString(R.string.mmk)+calculateAmountTotal(list));
+                tvTotal.setText(db.getHomeCurrency()+getResources().getString(R.string.space)+calculateAmountTotal(list));
             }
 
             @Override

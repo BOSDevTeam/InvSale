@@ -27,8 +27,8 @@ public class CategoryActivity extends AppCompatActivity {
 
     ExpandableListView expList;
     ExtendedFloatingActionButton fab;
-    List<String> listDataHeader;
-    HashMap<String,List<String>> listDataChild;
+    List<MainMenuData> listDataHeader;
+    HashMap<MainMenuData,List<SubMenuData>> listDataChild;
     ExpandableListAdapter expListAdapter;
     List<MainMenuData> lstMainMenu=new ArrayList<>();
     List<SubMenuData> lstSubMenu=new ArrayList<>();
@@ -60,7 +60,7 @@ public class CategoryActivity extends AppCompatActivity {
 
                 mainMenuId = lstMainMenu.get(groupPosition).getMainMenuID();
                 mainMenuName=lstMainMenu.get(groupPosition).getMainMenuName();
-                subMenuName = listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition);
+                subMenuName = listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition).getSubMenuName();
                 for (int i = 0; i < lstSubMenu.size(); i++) {
                     if (lstSubMenu.get(i).getMainMenuID() == mainMenuId) {
                         lstSubMenuID.add(lstSubMenu.get(i).getSubMenuID());
@@ -119,7 +119,7 @@ public class CategoryActivity extends AppCompatActivity {
     private void setFab() {
         int totalSaleOrderItem = db.getTotalSaleOrderItem();
         if (totalSaleOrderItem != 0) {
-            fab.setText("Order:" + totalSaleOrderItem + " Items - " + getResources().getString(R.string.mmk) + appSetting.df.format(db.getTotalSaleOrderAmount()));
+            fab.setText("Order:" + totalSaleOrderItem + " Items - " + db.getHomeCurrency() + getResources().getString(R.string.space) + appSetting.df.format(db.getTotalSaleOrderAmount()));
             fab.setVisibility(View.VISIBLE);
         } else fab.setVisibility(View.GONE);
     }
@@ -137,16 +137,22 @@ public class CategoryActivity extends AppCompatActivity {
         listDataChild = new HashMap<>();
         for (int i = 0; i < lstMainMenu.size(); i++) {
             int mainMenuID = lstMainMenu.get(i).getMainMenuID();
-            String mainMenuName = lstMainMenu.get(i).getMainMenuName();
 
-            List<String> lstSubMenuName = new ArrayList<>();
+            MainMenuData mainMenuData=new MainMenuData();
+            mainMenuData.setMainMenuName(lstMainMenu.get(i).getMainMenuName());
+            mainMenuData.setPhotoUrl(lstMainMenu.get(i).getPhotoUrl());
+
+            List<SubMenuData> lstSubMenuData = new ArrayList<>();
             for (int j = 0; j < lstSubMenu.size(); j++) {
                 if (lstSubMenu.get(j).getMainMenuID() == mainMenuID) {
-                    lstSubMenuName.add(lstSubMenu.get(j).getSubMenuName());
+                    SubMenuData subMenuData=new SubMenuData();
+                    subMenuData.setSubMenuName(lstSubMenu.get(j).getSubMenuName());
+                    subMenuData.setPhotoUrl(lstSubMenu.get(i).getPhotoUrl());
+                    lstSubMenuData.add(subMenuData);
                 }
             }
-            listDataChild.put(mainMenuName, lstSubMenuName);
-            listDataHeader.add(mainMenuName);
+            listDataChild.put(mainMenuData, lstSubMenuData);
+            listDataHeader.add(mainMenuData);
         }
         expListAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild);
         expList.setAdapter(expListAdapter);

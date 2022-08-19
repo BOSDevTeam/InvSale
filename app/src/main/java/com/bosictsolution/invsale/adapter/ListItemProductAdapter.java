@@ -10,7 +10,9 @@ import android.widget.TextView;
 
 import com.bosictsolution.invsale.R;
 import com.bosictsolution.invsale.common.AppSetting;
+import com.bosictsolution.invsale.common.DatabaseAccess;
 import com.bosictsolution.invsale.data.ProductData;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -21,10 +23,12 @@ public class ListItemProductAdapter extends RecyclerView.Adapter<ListItemProduct
     List<ProductData> list;
     AppSetting appSetting=new AppSetting();
     IListener iListener;
+    DatabaseAccess db;
 
     public ListItemProductAdapter(List<ProductData> list, Context context) {
         this.list = list;
         this.context = context;
+        this.db=new DatabaseAccess(context);
     }
 
     public void setListener(IListener iListener){
@@ -42,14 +46,18 @@ public class ListItemProductAdapter extends RecyclerView.Adapter<ListItemProduct
     @Override
     public void onBindViewHolder(ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         holder.tvProductName.setText(list.get(position).getProductName());
-        holder.tvPrice.setText(context.getResources().getString(R.string.mmk)+appSetting.df.format(list.get(position).getSalePrice()));
+        holder.tvPrice.setText(db.getHomeCurrency()+context.getResources().getString(R.string.space) + appSetting.df.format(list.get(position).getSalePrice()));
 
-        if(list.get(position).getQuantity()!=0)holder.tvQuantity.setText(String.valueOf(list.get(position).getQuantity()));
+        if (list.get(position).getQuantity() != 0)
+            holder.tvQuantity.setText(String.valueOf(list.get(position).getQuantity()));
+
+        if (list.get(position).getPhotoUrl() != null && list.get(position).getPhotoUrl().length() != 0)
+            Picasso.with(context).load(list.get(position).getPhotoUrl()).into(holder.imgPhoto);
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(iListener!=null)iListener.onProductClicked(position);
+                if (iListener != null) iListener.onProductClicked(position);
             }
         });
     }

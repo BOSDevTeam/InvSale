@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.bosictsolution.invsale.common.AppSetting;
+import com.bosictsolution.invsale.common.DatabaseAccess;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class SaleOrderSuccessActivity extends AppCompatActivity {
@@ -17,12 +18,14 @@ public class SaleOrderSuccessActivity extends AppCompatActivity {
     int total;
     String orderNumber;
     AppSetting appSetting=new AppSetting();
+    DatabaseAccess db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sale_order_success);
         setLayoutResource();
+        init();
         getSupportActionBar().hide();
 
         Intent i=getIntent();
@@ -42,10 +45,14 @@ public class SaleOrderSuccessActivity extends AppCompatActivity {
         });
     }
 
+    private void init(){
+        db=new DatabaseAccess(this);
+    }
+
     private void fillData(){
         tvDate.setText(appSetting.getTodayDate());
         tvOrderNumber.setText(orderNumber);
-        tvTotal.setText(getResources().getString(R.string.mmk)+appSetting.df.format(total));
+        tvTotal.setText(db.getHomeCurrency()+getResources().getString(R.string.space)+appSetting.df.format(total));
     }
 
     private void setLayoutResource(){

@@ -185,7 +185,7 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
     }
 
     private void getCompanySetting(){
-        CompanySettingData data=db.getCompanySetting();
+        CompanySettingData data=db.getTaxServiceCharges();
         if(data!=null){
             tax=data.getTax();
             charges =data.getServiceCharges();

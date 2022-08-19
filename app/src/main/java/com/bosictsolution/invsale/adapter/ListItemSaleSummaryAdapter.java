@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.bosictsolution.invsale.R;
 import com.bosictsolution.invsale.common.AppSetting;
+import com.bosictsolution.invsale.common.DatabaseAccess;
 import com.bosictsolution.invsale.data.SaleMasterData;
 
 import java.util.List;
@@ -19,10 +20,12 @@ public class ListItemSaleSummaryAdapter extends RecyclerView.Adapter<ListItemSal
     private Context context;
     List<SaleMasterData> list;
     AppSetting appSetting=new AppSetting();
+    DatabaseAccess db;
 
     public ListItemSaleSummaryAdapter(List<SaleMasterData> list, Context context) {
         this.list = list;
         this.context = context;
+        this.db=new DatabaseAccess(context);
     }
 
     @Override
@@ -38,7 +41,7 @@ public class ListItemSaleSummaryAdapter extends RecyclerView.Adapter<ListItemSal
         holder.tvDate.setText(list.get(position).getDate());
         holder.tvCustomer.setText(list.get(position).getCustomerName());
         holder.tvSaleNo.setText(context.getResources().getString(R.string.hash)+list.get(position).getUserVoucherNo());
-        holder.tvGrandTotal.setText(context.getResources().getString(R.string.mmk)+appSetting.df.format(list.get(position).getNetAmt()));
+        holder.tvGrandTotal.setText(db.getHomeCurrency()+context.getResources().getString(R.string.space)+appSetting.df.format(list.get(position).getNetAmt()));
     }
 
     @Override

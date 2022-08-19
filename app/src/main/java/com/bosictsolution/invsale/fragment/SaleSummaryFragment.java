@@ -31,6 +31,7 @@ import com.bosictsolution.invsale.adapter.ListItemSaleSummaryAdapter;
 import com.bosictsolution.invsale.api.Api;
 import com.bosictsolution.invsale.common.AppConstant;
 import com.bosictsolution.invsale.common.AppSetting;
+import com.bosictsolution.invsale.common.DatabaseAccess;
 import com.bosictsolution.invsale.data.SaleMasterData;
 import com.bosictsolution.invsale.ui.sale.SaleFragment;
 
@@ -66,6 +67,7 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
     SharedPreferences sharedpreferences;
     private SaleFragment.onFragmentInteractionListener listener;
     List<SaleMasterData> list=new ArrayList<>();
+    DatabaseAccess db;
 
     public SaleSummaryFragment() {
         // Required empty public constructor
@@ -134,7 +136,7 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
                 progressDialog.dismiss();
                 list=response.body();
                 setAdapter(list);
-                tvTotal.setText(getResources().getString(R.string.mmk)+calculateNetAmtTotal(list));
+                tvTotal.setText(db.getHomeCurrency()+getResources().getString(R.string.space)+calculateNetAmtTotal(list));
             }
 
             @Override
@@ -154,7 +156,7 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
                 progressDialog.dismiss();
                 list=response.body();
                 setAdapter(list);
-                tvTotal.setText(getResources().getString(R.string.mmk)+calculateNetAmtTotal(list));
+                tvTotal.setText(db.getHomeCurrency()+getResources().getString(R.string.space)+calculateNetAmtTotal(list));
             }
 
             @Override
@@ -174,7 +176,7 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
                 progressDialog.dismiss();
                 list=response.body();
                 setAdapter(list);
-                tvTotal.setText(getResources().getString(R.string.mmk)+calculateNetAmtTotal(list));
+                tvTotal.setText(db.getHomeCurrency()+getResources().getString(R.string.space)+calculateNetAmtTotal(list));
             }
 
             @Override
@@ -337,7 +339,7 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(false);
-
+        db=new DatabaseAccess(getContext());
         sharedpreferences = getContext().getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
     }
 

@@ -2,7 +2,7 @@ package com.bosictsolution.invsale.data;
 
 public class SubMenuData {
     private int SubMenuID,MainMenuID;
-    private String SubMenuName;
+    private String SubMenuName,PhotoUrl;
 
     public int getSubMenuID() {
         return SubMenuID;
@@ -26,5 +26,13 @@ public class SubMenuData {
 
     public void setSubMenuName(String subMenuName) {
         SubMenuName = subMenuName;
+    }
+
+    public String getPhotoUrl() {
+        return PhotoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        PhotoUrl = photoUrl;
     }
 }

@@ -7,6 +7,10 @@ public class AppConstant {
 
     public static final String DATE_FORMAT="dd/MM/yyyy";
 
+    public static final int SPECIFIC_DATE_REQUEST_CODE = 11;
+    public static final int FROM_DATE_REQUEST_CODE = 12;
+    public static final int TO_DATE_REQUEST_CODE = 13;
+
     public static final String MyPREFERENCES = "InvSalePref";
     public static final String ClientID = "ClientID";
     public static final String ClientName = "ClientNameKey";

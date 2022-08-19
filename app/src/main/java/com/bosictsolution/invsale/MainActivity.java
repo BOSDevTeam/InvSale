@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.bosictsolution.invsale.common.AppConstant;
+import com.bosictsolution.invsale.common.Confirmation;
+import com.bosictsolution.invsale.listener.IConfirmation;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.NonNull;
@@ -21,12 +23,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bosictsolution.invsale.databinding.ActivityMainBinding;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements IConfirmation {
 
     private AppBarConfiguration mAppBarConfiguration;
     private ActivityMainBinding binding;
     TextView tvUserName, tvPhone;
     SharedPreferences sharedpreferences;
+    Confirmation confirmation=new Confirmation(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +62,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 NavigationUI.onNavDestinationSelected(item, navController);
+                if(item.getItemId()==R.id.nav_logout){
+                    confirmation.showConfirmDialog(MainActivity.this,getResources().getString(R.string.exit_confirm_message));
+                    return true;
+                }
                 drawer.closeDrawer(GravityCompat.START);
                 return true;
             }
@@ -70,5 +77,11 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         return NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp();
+    }
+
+    @Override
+    public void setOnConfirmOKClick() {
+        finish();
+        System.exit(0);
     }
 }

@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.bosictsolution.invsale.R;
-import com.bosictsolution.invsale.common.AppSetting;
 import com.bosictsolution.invsale.data.SaleOrderTranData;
 
 import java.util.List;
@@ -18,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 public class ListItemSaleOrderTranAdapter extends RecyclerView.Adapter<ListItemSaleOrderTranAdapter.ViewHolder> {
     private Context context;
     List<SaleOrderTranData> list;
-    AppSetting appSetting=new AppSetting();
 
     public ListItemSaleOrderTranAdapter(List<SaleOrderTranData> list, Context context) {
         this.list = list;

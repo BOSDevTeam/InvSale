@@ -142,7 +142,7 @@ public class ProductActivity extends AppCompatActivity implements ListItemProduc
     private void setFab() {
         int totalSaleOrderItem = db.getTotalSaleOrderItem();
         if (totalSaleOrderItem != 0) {
-            fab.setText("Order:" + totalSaleOrderItem + " Items - " + getResources().getString(R.string.mmk) + appSetting.df.format(db.getTotalSaleOrderAmount()));
+            fab.setText("Order:" + totalSaleOrderItem + " Items - " + db.getHomeCurrency()+ getResources().getString(R.string.space) + appSetting.df.format(db.getTotalSaleOrderAmount()));
             fab.setVisibility(View.VISIBLE);
         } else fab.setVisibility(View.GONE);
     }
@@ -195,7 +195,7 @@ public class ProductActivity extends AppCompatActivity implements ListItemProduc
         productName=lstProduct.get(position).getProductName();
         salePrice=lstProduct.get(position).getSalePrice();
         tvProductName.setText(productName);
-        tvPrice.setText(context.getResources().getString(R.string.mmk) + appSetting.df.format(salePrice));
+        tvPrice.setText(db.getHomeCurrency()+context.getResources().getString(R.string.space) + appSetting.df.format(salePrice));
         int quantity = db.getSaleOrderQuantityByProduct(productId);
         if (quantity == 0) {
             tvAlreadyInOrder.setVisibility(View.GONE);

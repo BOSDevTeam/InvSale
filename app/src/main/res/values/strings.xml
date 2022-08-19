@@ -15,7 +15,7 @@
     <string name="menu_profile">Profile</string>
     <string name="menu_setting">Setting</string>
     <string name="menu_report">Report</string>
-    <string name="menu_logout">Logout</string>
+    <string name="menu_logout">Exit</string>
 
     <string name="report_sale_order_item">Sale Order Item Report</string>
 
@@ -155,10 +155,10 @@
     <string name="slip_no">Slip No.</string>
     <string name="back">Back</string>
     <string name="all">All</string>
-    <string name="mmk">MMK\u0020</string>
     <string name="added">Added</string>
     <string name="already_in_order">Already in your order!</string>
     <string name="order_date">Order Date</string>
     <string name="summary">Summary</string>
+    <string name="exit_confirm_message">Are you sure you want to exit?</string>
 
 </resources>
