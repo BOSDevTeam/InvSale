@@ -1,14 +1,18 @@
 package com.bosictsolution.invsale;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
 import com.bosictsolution.invsale.common.AppSetting;
+import com.bosictsolution.invsale.common.ConnectionLiveData;
 import com.bosictsolution.invsale.common.DatabaseAccess;
+import com.bosictsolution.invsale.data.ConnectionData;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class SaleOrderSuccessActivity extends AppCompatActivity {
@@ -19,6 +23,8 @@ public class SaleOrderSuccessActivity extends AppCompatActivity {
     String orderNumber;
     AppSetting appSetting=new AppSetting();
     DatabaseAccess db;
+    ConnectionLiveData connectionLiveData;
+    private Context context=this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +38,7 @@ public class SaleOrderSuccessActivity extends AppCompatActivity {
         orderNumber=i.getStringExtra("OrderNumber");
         total=i.getIntExtra("Total",0);
 
+        checkConnection();
         fillData();
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -46,7 +53,18 @@ public class SaleOrderSuccessActivity extends AppCompatActivity {
     }
 
     private void init(){
+        connectionLiveData = new ConnectionLiveData(context);
         db=new DatabaseAccess(this);
+    }
+
+    private void checkConnection(){
+        connectionLiveData.observe(this, new Observer<ConnectionData>() {
+            @Override
+            public void onChanged(ConnectionData connectionData) {
+                if (!connectionData.getIsConnected())
+                    appSetting.showSnackBar(findViewById(R.id.layoutRoot));
+            }
+        });
     }
 
     private void fillData(){

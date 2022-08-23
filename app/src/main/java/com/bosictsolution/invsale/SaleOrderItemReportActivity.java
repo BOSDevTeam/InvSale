@@ -5,6 +5,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.view.MenuItemCompat;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import retrofit2.Call;
@@ -24,18 +25,19 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.ExpandableListView;
 import android.widget.ImageButton;
-import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bosictsolution.invsale.adapter.GeneralExpandableListAdapter;
 import com.bosictsolution.invsale.adapter.ListItemSaleOrderTranAdapter;
 import com.bosictsolution.invsale.api.Api;
 import com.bosictsolution.invsale.common.AppConstant;
 import com.bosictsolution.invsale.common.AppSetting;
+import com.bosictsolution.invsale.common.CategoryFilter;
+import com.bosictsolution.invsale.common.ConnectionLiveData;
 import com.bosictsolution.invsale.common.DatabaseAccess;
+import com.bosictsolution.invsale.common.DateFilter;
+import com.bosictsolution.invsale.data.ConnectionData;
 import com.bosictsolution.invsale.data.MainMenuData;
 import com.bosictsolution.invsale.data.SaleOrderTranData;
 import com.bosictsolution.invsale.data.SubMenuData;
@@ -43,11 +45,10 @@ import com.bosictsolution.invsale.data.SubMenuData;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-public class SaleOrderItemReportActivity extends AppCompatActivity {
+public class SaleOrderItemReportActivity extends AppCompatActivity implements CategoryFilter.ICategoryFilter, DateFilter.IDateFilter {
 
     RecyclerView rvSaleOrderItem;
     TextView tvDate,tvCategory,tvFromDate,tvToDate;
@@ -61,10 +62,10 @@ public class SaleOrderItemReportActivity extends AppCompatActivity {
     int clientId,mainMenuId,subMenuId,date_filter_type,date_filter=1,from_to_date_filter=2,date_dialog_code;
     List<MainMenuData> lstMainMenu=new ArrayList<>();
     List<SubMenuData> lstSubMenu=new ArrayList<>();
-    List<String> listDataHeader;
-    HashMap<String,List<String>> listDataChild;
-    GeneralExpandableListAdapter generalExpandableListAdapter;
     private final int DATE_PICKER_DIALOG=1;
+    ConnectionLiveData connectionLiveData;
+    CategoryFilter categoryFilter=new CategoryFilter(this);
+    DateFilter dateFilter=new DateFilter(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,19 +78,22 @@ public class SaleOrderItemReportActivity extends AppCompatActivity {
         actionbar.setDisplayShowTitleEnabled(true);
         setTitle(getResources().getString(R.string.report_sale_order_item));
 
+        checkConnection();
         fillData();
 
         tvDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showDateFilterDialog();
+                dateFilter.showDateFilterDialog(context);
             }
         });
 
         tvCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showCategoryFilterDialog();
+                getMainMenu();
+                getSubMenuForCategoryFilter();
+                categoryFilter.showCategoryFilterDialog(context,lstMainMenu,lstSubMenu);
             }
         });
     }
@@ -229,12 +233,21 @@ public class SaleOrderItemReportActivity extends AppCompatActivity {
     }
 
     private void init(){
+        connectionLiveData = new ConnectionLiveData(context);
         progressDialog = new ProgressDialog(context);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(false);
+        appSetting.setupProgress(progressDialog);
         db=new DatabaseAccess(context);
         sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
+    }
+
+    private void checkConnection(){
+        connectionLiveData.observe(this, new Observer<ConnectionData>() {
+            @Override
+            public void onChanged(ConnectionData connectionData) {
+                if (!connectionData.getIsConnected())
+                    appSetting.showSnackBar(findViewById(R.id.layoutRoot));
+            }
+        });
     }
 
     private void fillData(){
@@ -245,67 +258,6 @@ public class SaleOrderItemReportActivity extends AppCompatActivity {
         getSaleOrderItemByDate();
     }
 
-    private void showCategoryFilterDialog() {
-        LayoutInflater reg = LayoutInflater.from(context);
-        View v = reg.inflate(R.layout.dialog_category_filter, null);
-        android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(context);
-        dialog.setView(v);
-
-        final ImageButton btnClose = v.findViewById(R.id.btnClose);
-        final ExpandableListView expList = v.findViewById(R.id.list);
-        final TextView tvAll = v.findViewById(R.id.tvAll);
-
-        getMainMenu();
-        getSubMenuForCategoryFilter();
-        setDataToExpList(expList);
-
-        dialog.setCancelable(true);
-        final android.app.AlertDialog alertDialog = dialog.create();
-        alertDialog.show();
-
-        btnClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                alertDialog.dismiss();
-            }
-        });
-        tvAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mainMenuId=0;
-                subMenuId=0;
-                tvCategory.setText(getResources().getString(R.string.all));
-                if(date_filter_type==date_filter)getSaleOrderItemByDate();
-                else if(date_filter_type==from_to_date_filter)getSaleOrderItemByFromToDate();
-                alertDialog.dismiss();
-            }
-        });
-        expList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-            @Override
-            public boolean onChildClick(ExpandableListView expandableListView, View view, int groupPosition, int childPosition, long l) {
-                List<SubMenuData> list=new ArrayList<>();
-                String subMenuName="";
-                mainMenuId = lstMainMenu.get(groupPosition).getMainMenuID();
-                String mainMenuName=lstMainMenu.get(groupPosition).getMainMenuName();
-                for (int i = 0; i < lstSubMenu.size(); i++) {
-                    if (lstSubMenu.get(i).getMainMenuID() == mainMenuId) {
-                        list.add(lstSubMenu.get(i));
-                    }
-                }
-                if(list.size()!=0) {
-                    subMenuId = list.get(childPosition).getSubMenuID();
-                    subMenuName = list.get(childPosition).getSubMenuName();
-                }
-                if(subMenuId==0)tvCategory.setText(mainMenuName);
-                else tvCategory.setText(subMenuName);
-                if(date_filter_type==date_filter)getSaleOrderItemByDate();
-                else if(date_filter_type==from_to_date_filter)getSaleOrderItemByFromToDate();
-                alertDialog.dismiss();
-                return false;
-            }
-        });
-    }
-
     private void getMainMenu(){
         lstMainMenu=new ArrayList<>();
         lstMainMenu=db.getMainMenu();
@@ -314,65 +266,6 @@ public class SaleOrderItemReportActivity extends AppCompatActivity {
     private void getSubMenuForCategoryFilter(){
         lstSubMenu=new ArrayList<>();
         lstSubMenu=db.getSubMenuForCategoryFilter();
-    }
-
-    private void setDataToExpList(ExpandableListView expList) {
-        listDataHeader = new ArrayList<>();
-        listDataChild = new HashMap<>();
-        for (int i = 0; i < lstMainMenu.size(); i++) {
-            int mainMenuID = lstMainMenu.get(i).getMainMenuID();
-            String mainMenuName = lstMainMenu.get(i).getMainMenuName();
-
-            List<String> lstSubMenuName = new ArrayList<>();
-            for (int j = 0; j < lstSubMenu.size(); j++) {
-                if (lstSubMenu.get(j).getMainMenuID() == mainMenuID) {
-                    lstSubMenuName.add(lstSubMenu.get(j).getSubMenuName());
-                }
-            }
-            listDataChild.put(mainMenuName, lstSubMenuName);
-            listDataHeader.add(mainMenuName);
-        }
-        generalExpandableListAdapter = new GeneralExpandableListAdapter(context, listDataHeader, listDataChild);
-        expList.setAdapter(generalExpandableListAdapter);
-    }
-
-    private void showDateFilterDialog() {
-        LayoutInflater reg = LayoutInflater.from(context);
-        View v = reg.inflate(R.layout.dialog_date_filter, null);
-        android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(context);
-        dialog.setView(v);
-
-        final ImageButton btnClose = v.findViewById(R.id.btnClose);
-        final RadioButton rdoDate = v.findViewById(R.id.rdoDate);
-        final RadioButton rdoFromToDate=v.findViewById(R.id.rdoFromToDate);
-
-        dialog.setCancelable(true);
-        final android.app.AlertDialog alertDialog = dialog.create();
-        alertDialog.show();
-
-        btnClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                alertDialog.dismiss();
-            }
-        });
-        rdoDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                date_dialog_code=AppConstant.SPECIFIC_DATE_REQUEST_CODE;
-                showDialog(DATE_PICKER_DIALOG);
-                alertDialog.dismiss();
-            }
-        });
-        rdoFromToDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(rdoFromToDate.isChecked()){
-                    showFromToDateDialog();
-                    alertDialog.dismiss();
-                }
-            }
-        });
     }
 
     private void showFromToDateDialog() {
@@ -472,5 +365,46 @@ public class SaleOrderItemReportActivity extends AppCompatActivity {
         rvSaleOrderItem=findViewById(R.id.rvSaleOrderItem);
         tvDate=findViewById(R.id.tvDate);
         tvCategory=findViewById(R.id.tvCategory);
+    }
+
+    @Override
+    public void setOnAllClick() {
+        mainMenuId=0;
+        subMenuId=0;
+        tvCategory.setText(getResources().getString(R.string.all));
+        if(date_filter_type==date_filter)getSaleOrderItemByDate();
+        else if(date_filter_type==from_to_date_filter)getSaleOrderItemByFromToDate();
+    }
+
+    @Override
+    public void setOnChildMenuClick(int groupPosition, int childPosition) {
+        List<SubMenuData> list=new ArrayList<>();
+        String subMenuName="";
+        mainMenuId = lstMainMenu.get(groupPosition).getMainMenuID();
+        String mainMenuName=lstMainMenu.get(groupPosition).getMainMenuName();
+        for (int i = 0; i < lstSubMenu.size(); i++) {
+            if (lstSubMenu.get(i).getMainMenuID() == mainMenuId) {
+                list.add(lstSubMenu.get(i));
+            }
+        }
+        if(list.size()!=0) {
+            subMenuId = list.get(childPosition).getSubMenuID();
+            subMenuName = list.get(childPosition).getSubMenuName();
+        }
+        if(subMenuId==0)tvCategory.setText(mainMenuName);
+        else tvCategory.setText(subMenuName);
+        if(date_filter_type==date_filter)getSaleOrderItemByDate();
+        else if(date_filter_type==from_to_date_filter)getSaleOrderItemByFromToDate();
+    }
+
+    @Override
+    public void setOnDateClick() {
+        date_dialog_code=AppConstant.SPECIFIC_DATE_REQUEST_CODE;
+        showDialog(DATE_PICKER_DIALOG);
+    }
+
+    @Override
+    public void setOnFromToDateClick() {
+        showFromToDateDialog();
     }
 }

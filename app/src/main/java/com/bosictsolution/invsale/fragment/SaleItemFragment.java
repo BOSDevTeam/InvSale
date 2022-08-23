@@ -21,26 +21,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ExpandableListView;
 import android.widget.ImageButton;
-import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bosictsolution.invsale.R;
-import com.bosictsolution.invsale.adapter.GeneralExpandableListAdapter;
 import com.bosictsolution.invsale.adapter.ListItemSaleTranAdapter;
 import com.bosictsolution.invsale.api.Api;
 import com.bosictsolution.invsale.common.AppConstant;
 import com.bosictsolution.invsale.common.AppSetting;
+import com.bosictsolution.invsale.common.CategoryFilter;
 import com.bosictsolution.invsale.common.DatabaseAccess;
+import com.bosictsolution.invsale.common.DateFilter;
 import com.bosictsolution.invsale.data.MainMenuData;
 import com.bosictsolution.invsale.data.SaleTranData;
 import com.bosictsolution.invsale.data.SubMenuData;
 import com.bosictsolution.invsale.ui.sale.SaleFragment;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -48,7 +46,7 @@ import java.util.List;
  * Use the {@link SaleItemFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SaleItemFragment extends Fragment implements SaleFragment.onFragmentInteractionListener {
+public class SaleItemFragment extends Fragment implements SaleFragment.onFragmentInteractionListener,CategoryFilter.ICategoryFilter, DateFilter.IDateFilter  {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -67,16 +65,12 @@ public class SaleItemFragment extends Fragment implements SaleFragment.onFragmen
     int clientId,mainMenuId,subMenuId,date_filter_type,date_filter=1,from_to_date_filter=2;
     List<MainMenuData> lstMainMenu=new ArrayList<>();
     List<SubMenuData> lstSubMenu=new ArrayList<>();
-    List<String> listDataHeader;
-    HashMap<String,List<String>> listDataChild;
-    GeneralExpandableListAdapter generalExpandableListAdapter;
     private ProgressDialog progressDialog;
     SharedPreferences sharedpreferences;
-    public static final int SPECIFIC_DATE_REQUEST_CODE = 11; // Used to identify the result
-    public static final int FROM_DATE_REQUEST_CODE = 12;
-    public static final int TO_DATE_REQUEST_CODE = 13;
     DatabaseAccess db;
     private SaleFragment.onFragmentInteractionListener listener;
+    CategoryFilter categoryFilter=new CategoryFilter(this);
+    DateFilter dateFilter=new DateFilter(this);
 
     public SaleItemFragment() {
         // Required empty public constructor
@@ -121,14 +115,16 @@ public class SaleItemFragment extends Fragment implements SaleFragment.onFragmen
         tvDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showDateFilterDialog();
+                dateFilter.showDateFilterDialog(getContext());
             }
         });
 
         tvCategory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showCategoryFilterDialog();
+                getMainMenu();
+                getSubMenuForCategoryFilter();
+                categoryFilter.showCategoryFilterDialog(getContext(),lstMainMenu,lstSubMenu);
             }
         });
 
@@ -149,67 +145,6 @@ public class SaleItemFragment extends Fragment implements SaleFragment.onFragmen
         rvSaleItem.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
     }
 
-    private void showCategoryFilterDialog() {
-        LayoutInflater reg = LayoutInflater.from(getContext());
-        View v = reg.inflate(R.layout.dialog_category_filter, null);
-        android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(getContext());
-        dialog.setView(v);
-
-        final ImageButton btnClose = v.findViewById(R.id.btnClose);
-        final ExpandableListView expList = v.findViewById(R.id.list);
-        final TextView tvAll = v.findViewById(R.id.tvAll);
-
-        getMainMenu();
-        getSubMenuForCategoryFilter();
-        setDataToExpList(expList);
-
-        dialog.setCancelable(true);
-        final android.app.AlertDialog alertDialog = dialog.create();
-        alertDialog.show();
-
-        btnClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                alertDialog.dismiss();
-            }
-        });
-        tvAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mainMenuId=0;
-                subMenuId=0;
-                tvCategory.setText(getResources().getString(R.string.all));
-                if(date_filter_type==date_filter)getSaleItemByDate();
-                else if(date_filter_type==from_to_date_filter)getSaleItemByFromToDate();
-                alertDialog.dismiss();
-            }
-        });
-        expList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-            @Override
-            public boolean onChildClick(ExpandableListView expandableListView, View view, int groupPosition, int childPosition, long l) {
-                List<SubMenuData> list=new ArrayList<>();
-                String subMenuName="";
-                mainMenuId = lstMainMenu.get(groupPosition).getMainMenuID();
-                String mainMenuName=lstMainMenu.get(groupPosition).getMainMenuName();
-                for (int i = 0; i < lstSubMenu.size(); i++) {
-                    if (lstSubMenu.get(i).getMainMenuID() == mainMenuId) {
-                        list.add(lstSubMenu.get(i));
-                    }
-                }
-                if(list.size()!=0) {
-                    subMenuId = list.get(childPosition).getSubMenuID();
-                    subMenuName = list.get(childPosition).getSubMenuName();
-                }
-                if(subMenuId==0)tvCategory.setText(mainMenuName);
-                else tvCategory.setText(subMenuName);
-                if(date_filter_type==date_filter)getSaleItemByDate();
-                else if(date_filter_type==from_to_date_filter)getSaleItemByFromToDate();
-                alertDialog.dismiss();
-                return false;
-            }
-        });
-    }
-
     private void getMainMenu(){
         lstMainMenu=new ArrayList<>();
         lstMainMenu=db.getMainMenu();
@@ -218,64 +153,6 @@ public class SaleItemFragment extends Fragment implements SaleFragment.onFragmen
     private void getSubMenuForCategoryFilter(){
         lstSubMenu=new ArrayList<>();
         lstSubMenu=db.getSubMenuForCategoryFilter();
-    }
-
-    private void setDataToExpList(ExpandableListView expList) {
-        listDataHeader = new ArrayList<>();
-        listDataChild = new HashMap<>();
-        for (int i = 0; i < lstMainMenu.size(); i++) {
-            int mainMenuID = lstMainMenu.get(i).getMainMenuID();
-            String mainMenuName = lstMainMenu.get(i).getMainMenuName();
-
-            List<String> lstSubMenuName = new ArrayList<>();
-            for (int j = 0; j < lstSubMenu.size(); j++) {
-                if (lstSubMenu.get(j).getMainMenuID() == mainMenuID) {
-                    lstSubMenuName.add(lstSubMenu.get(j).getSubMenuName());
-                }
-            }
-            listDataChild.put(mainMenuName, lstSubMenuName);
-            listDataHeader.add(mainMenuName);
-        }
-        generalExpandableListAdapter = new GeneralExpandableListAdapter(getContext(), listDataHeader, listDataChild);
-        expList.setAdapter(generalExpandableListAdapter);
-    }
-
-    private void showDateFilterDialog() {
-        LayoutInflater reg = LayoutInflater.from(getContext());
-        View v = reg.inflate(R.layout.dialog_date_filter, null);
-        android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(getContext());
-        dialog.setView(v);
-
-        final ImageButton btnClose = v.findViewById(R.id.btnClose);
-        final RadioButton rdoDate = v.findViewById(R.id.rdoDate);
-        final RadioButton rdoFromToDate=v.findViewById(R.id.rdoFromToDate);
-
-        dialog.setCancelable(true);
-        final android.app.AlertDialog alertDialog = dialog.create();
-        alertDialog.show();
-
-        btnClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                alertDialog.dismiss();
-            }
-        });
-        rdoDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showDatePicker(SPECIFIC_DATE_REQUEST_CODE);
-                alertDialog.dismiss();
-            }
-        });
-        rdoFromToDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(rdoFromToDate.isChecked()){
-                    showFromToDateDialog();
-                    alertDialog.dismiss();
-                }
-            }
-        });
     }
 
     private void showFromToDateDialog() {
@@ -323,13 +200,13 @@ public class SaleItemFragment extends Fragment implements SaleFragment.onFragmen
         tvFromDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showDatePicker(FROM_DATE_REQUEST_CODE);
+                showDatePicker(AppConstant.FROM_DATE_REQUEST_CODE);
             }
         });
         tvToDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showDatePicker(TO_DATE_REQUEST_CODE);
+                showDatePicker(AppConstant.TO_DATE_REQUEST_CODE);
             }
         });
     }
@@ -337,16 +214,16 @@ public class SaleItemFragment extends Fragment implements SaleFragment.onFragmen
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         // check for the results
-        if (requestCode == SPECIFIC_DATE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        if (requestCode == AppConstant.SPECIFIC_DATE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             // get date from string
             selectedDate = data.getStringExtra("selectedDate");
             // set the value of the editText
             tvDate.setText(selectedDate);
             getSaleItemByDate();
-        }else if (requestCode == FROM_DATE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        }else if (requestCode == AppConstant.FROM_DATE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             fromDate = data.getStringExtra("selectedDate");
             tvFromDate.setText(fromDate);
-        }else if (requestCode == TO_DATE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        }else if (requestCode == AppConstant.TO_DATE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             toDate = data.getStringExtra("selectedDate");
             tvToDate.setText(toDate);
         }
@@ -476,5 +353,45 @@ public class SaleItemFragment extends Fragment implements SaleFragment.onFragmen
     public void search(String value) {
         if (value.length() != 0)
             getSaleItemByValue(value);
+    }
+
+    @Override
+    public void setOnAllClick() {
+        mainMenuId=0;
+        subMenuId=0;
+        tvCategory.setText(getResources().getString(R.string.all));
+        if(date_filter_type==date_filter)getSaleItemByDate();
+        else if(date_filter_type==from_to_date_filter)getSaleItemByFromToDate();
+    }
+
+    @Override
+    public void setOnChildMenuClick(int groupPosition,int childPosition) {
+        List<SubMenuData> list = new ArrayList<>();
+        String subMenuName = "";
+        mainMenuId = lstMainMenu.get(groupPosition).getMainMenuID();
+        String mainMenuName = lstMainMenu.get(groupPosition).getMainMenuName();
+        for (int i = 0; i < lstSubMenu.size(); i++) {
+            if (lstSubMenu.get(i).getMainMenuID() == mainMenuId) {
+                list.add(lstSubMenu.get(i));
+            }
+        }
+        if (list.size() != 0) {
+            subMenuId = list.get(childPosition).getSubMenuID();
+            subMenuName = list.get(childPosition).getSubMenuName();
+        }
+        if (subMenuId == 0) tvCategory.setText(mainMenuName);
+        else tvCategory.setText(subMenuName);
+        if (date_filter_type == date_filter) getSaleItemByDate();
+        else if (date_filter_type == from_to_date_filter) getSaleItemByFromToDate();
+    }
+
+    @Override
+    public void setOnDateClick() {
+        showDatePicker(AppConstant.SPECIFIC_DATE_REQUEST_CODE);
+    }
+
+    @Override
+    public void setOnFromToDateClick() {
+        showFromToDateDialog();
     }
 }

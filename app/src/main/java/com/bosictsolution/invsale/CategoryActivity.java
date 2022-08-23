@@ -2,6 +2,7 @@ package com.bosictsolution.invsale;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -14,7 +15,9 @@ import android.widget.ExpandableListView;
 
 import com.bosictsolution.invsale.adapter.ExpandableListAdapter;
 import com.bosictsolution.invsale.common.AppSetting;
+import com.bosictsolution.invsale.common.ConnectionLiveData;
 import com.bosictsolution.invsale.common.DatabaseAccess;
+import com.bosictsolution.invsale.data.ConnectionData;
 import com.bosictsolution.invsale.data.MainMenuData;
 import com.bosictsolution.invsale.data.SubMenuData;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
@@ -37,6 +40,7 @@ public class CategoryActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     AppSetting appSetting=new AppSetting();
     public static Activity activity;
+    ConnectionLiveData connectionLiveData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +53,7 @@ public class CategoryActivity extends AppCompatActivity {
         actionbar.setDisplayShowTitleEnabled(true);
         setTitle(getResources().getString(R.string.categories));
 
+        checkConnection();
         fillData();
 
         expList.setOnChildClickListener(new ExpandableListView.OnChildClickListener(){
@@ -101,13 +106,22 @@ public class CategoryActivity extends AppCompatActivity {
         setFab();
     }
 
+    private void checkConnection(){
+        connectionLiveData.observe(this, new Observer<ConnectionData>() {
+            @Override
+            public void onChanged(ConnectionData connectionData) {
+                if (!connectionData.getIsConnected())
+                    appSetting.showSnackBar(findViewById(R.id.layoutRoot));
+            }
+        });
+    }
+
     private void init(){
+        connectionLiveData = new ConnectionLiveData(context);
         activity=this;
         db=new DatabaseAccess(context);
         progressDialog =new ProgressDialog(context);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(false);
+        appSetting.setupProgress(progressDialog);
     }
 
     private void fillData() {

@@ -2,6 +2,7 @@ package com.bosictsolution.invsale;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -19,7 +20,9 @@ import android.widget.TextView;
 
 import com.bosictsolution.invsale.common.AppConstant;
 import com.bosictsolution.invsale.common.AppSetting;
+import com.bosictsolution.invsale.common.ConnectionLiveData;
 import com.bosictsolution.invsale.common.DatabaseAccess;
+import com.bosictsolution.invsale.data.ConnectionData;
 import com.bosictsolution.invsale.data.SaleMasterData;
 import com.bosictsolution.invsale.data.SaleTranData;
 import com.bosictsolution.invsale.data.VoucherSettingData;
@@ -43,6 +46,7 @@ public class SaleBillActivity extends AppCompatActivity {
     private Context context=this;
     DatabaseAccess db;
     SharedPreferences sharedpreferences;
+    ConnectionLiveData connectionLiveData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +64,7 @@ public class SaleBillActivity extends AppCompatActivity {
         customerName=intent.getStringExtra("CustomerName");
         slipId=intent.getIntExtra("SlipID",0);
 
+        checkConnection();
         fillData();
 
         btnBack.setOnClickListener(new View.OnClickListener() {
@@ -77,12 +82,21 @@ public class SaleBillActivity extends AppCompatActivity {
     }
 
     private void init(){
+        connectionLiveData = new ConnectionLiveData(context);
         sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
         db=new DatabaseAccess(context);
         progressDialog =new ProgressDialog(context);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(false);
+        appSetting.setupProgress(progressDialog);
+    }
+
+    private void checkConnection(){
+        connectionLiveData.observe(this, new Observer<ConnectionData>() {
+            @Override
+            public void onChanged(ConnectionData connectionData) {
+                if (!connectionData.getIsConnected())
+                    appSetting.showSnackBar(findViewById(R.id.layoutRoot));
+            }
+        });
     }
 
     private void fillData(){

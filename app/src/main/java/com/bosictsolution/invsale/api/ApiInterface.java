@@ -21,6 +21,7 @@ import com.bosictsolution.invsale.data.VoucherSettingData;
 
 import java.util.List;
 
+import io.reactivex.Observable;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -51,35 +52,23 @@ public interface ApiInterface {
     @POST("client/UpdateClient")
     Call<Void> updateClient(@Query("clientId") int clientId,@Body ClientData clientData);
 
-    @GET("companysetting")
-    Call<CompanySettingData> getCompanySetting();
-
-    @GET("mainmenu")
-    Call<List<MainMenuData>> getMainMenu();
-
-    @GET("submenu/GetSubMenu")
-    Call<List<SubMenuData>> getSubMenu();
-
-    @GET("product/GetProduct")
-    Call<List<ProductData>> getProduct();
-
     @GET("customer")
     Call<List<CustomerData>> getCustomer();
 
     @GET("location")
-    Call<List<LocationData>> getLocation();
+    Observable<List<LocationData>> getLocation();
 
     @GET("payment")
-    Call<List<PaymentData>> getPayment();
+    Observable<List<PaymentData>> getPayment();
 
     @GET("paymentmethod")
-    Call<List<PaymentMethodData>> getPaymentMethod();
+    Observable<List<PaymentMethodData>> getPaymentMethod();
 
     @GET("bankpayment")
-    Call<List<BankPaymentData>> getBankPayment();
+    Observable<List<BankPaymentData>> getBankPayment();
 
     @GET("limitedday")
-    Call<List<LimitedDayData>> getLimitedDay();
+    Observable<List<LimitedDayData>> getLimitedDay();
 
     @Headers("Content-type: application/json")
     @POST("customer")
@@ -90,7 +79,7 @@ public interface ApiInterface {
     Call<Integer> insertSale(@Body SaleMasterData model);
 
     @GET("vouchersetting")
-    Call<List<VoucherSettingData>> getVoucherSetting();
+    Observable<List<VoucherSettingData>> getVoucherSetting();
 
     @GET("sale/GetMasterSaleByDate")
     Call<List<SaleMasterData>> getMasterSaleByDate(@Query("date") String date,@Query("clientId") int clientId);
@@ -134,4 +123,16 @@ public interface ApiInterface {
 
     @GET("saleorder/GetSaleOrderItemByValue")
     Call<List<SaleOrderTranData>> getSaleOrderItemByValue(@Query("value") String value, @Query("clientId") int clientId);
+
+    @GET("companysetting/GetCompanySetting")
+    Observable<CompanySettingData> getCompanySetting();
+
+    @GET("mainmenu/GetMainMenu")
+    Observable<List<MainMenuData>> getMainMenu();
+
+    @GET("submenu/GetSubMenu")
+    Observable<List<SubMenuData>> getSubMenu();
+
+    @GET("product/GetProduct")
+    Observable<List<ProductData>> getProduct();
 }

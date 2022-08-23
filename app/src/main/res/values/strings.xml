@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">InvSale</string>
+    <string name="app_name">Quick POS</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Demo User</string>
@@ -160,5 +160,6 @@
     <string name="order_date">Order Date</string>
     <string name="summary">Summary</string>
     <string name="exit_confirm_message">Are you sure you want to exit?</string>
+    <string name="customer_not_found">Customer not found.Check your internet connection!</string>
 
 </resources>

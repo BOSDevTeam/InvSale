@@ -2,6 +2,7 @@ package com.bosictsolution.invsale;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,8 +33,10 @@ import com.bosictsolution.invsale.adapter.SaleOrderSummaryAdapter;
 import com.bosictsolution.invsale.api.Api;
 import com.bosictsolution.invsale.common.AppConstant;
 import com.bosictsolution.invsale.common.AppSetting;
+import com.bosictsolution.invsale.common.ConnectionLiveData;
 import com.bosictsolution.invsale.common.DatabaseAccess;
 import com.bosictsolution.invsale.data.CompanySettingData;
+import com.bosictsolution.invsale.data.ConnectionData;
 import com.bosictsolution.invsale.data.CustomerData;
 import com.bosictsolution.invsale.data.SaleOrderMasterData;
 import com.bosictsolution.invsale.data.SaleOrderTranData;
@@ -60,6 +63,7 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
     int tax, charges, total, subtotal , taxAmount, chargesAmount,clientId;
     SharedPreferences sharedpreferences;
     public static Activity activity;
+    ConnectionLiveData connectionLiveData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,14 +76,19 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
         actionbar.setDisplayShowTitleEnabled(true);
         setTitle(getResources().getString(R.string.order_summary));
 
+        checkConnection();
         fillData();
 
         btnContinue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(lstSaleOrderTran.size()==0)return;
+                if (lstSaleOrderTran.size() == 0) return;
+                if (lstCustomer.size() == 0) {
+                    Toast.makeText(context, getResources().getString(R.string.customer_not_found), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 SaleOrderMasterData data = prepareSaleOrderMasterData();
-                db.insertMasterSaleOrder(data); // think about this line (require or not)
+                db.insertMasterSaleOrder(data);
                 if (data.getCustomerID() == 0) {
                     Intent i = new Intent(SaleOrderSummaryActivity.this, CustomerActivity.class);
                     i.putExtra(AppConstant.extra_module_type, AppConstant.sale_order_module_type);
@@ -139,13 +148,22 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
     }
 
     private void init(){
+        connectionLiveData = new ConnectionLiveData(context);
         activity=this;
         db=new DatabaseAccess(context);
         sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
         progressDialog =new ProgressDialog(context);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(false);
+        appSetting.setupProgress(progressDialog);
+    }
+
+    private void checkConnection(){
+        connectionLiveData.observe(this, new Observer<ConnectionData>() {
+            @Override
+            public void onChanged(ConnectionData connectionData) {
+                if (!connectionData.getIsConnected())
+                    appSetting.showSnackBar(findViewById(R.id.layoutRoot));
+            }
+        });
     }
 
     private void fillData(){
@@ -154,8 +172,6 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
         lstSaleOrderTran =db.getTranSaleOrder();
         setSaleOrderAdapter();
         calculateAmount();
-        progressDialog.show();
-        progressDialog.setMessage(getResources().getString(R.string.loading));
         getCustomer();
     }
 
@@ -207,6 +223,8 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
     }
 
     private void getCustomer() {
+        progressDialog.show();
+        progressDialog.setMessage(getResources().getString(R.string.loading));
         Api.getClient().getCustomer().enqueue(new Callback<List<CustomerData>>() {
             @Override
             public void onResponse(Call<List<CustomerData>> call, Response<List<CustomerData>> response) {

@@ -2,6 +2,7 @@ package com.bosictsolution.invsale;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,7 +21,9 @@ import android.widget.Toast;
 
 import com.bosictsolution.invsale.adapter.ListItemProductAdapter;
 import com.bosictsolution.invsale.common.AppSetting;
+import com.bosictsolution.invsale.common.ConnectionLiveData;
 import com.bosictsolution.invsale.common.DatabaseAccess;
+import com.bosictsolution.invsale.data.ConnectionData;
 import com.bosictsolution.invsale.data.ProductData;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
@@ -48,6 +51,7 @@ public class ProductActivity extends AppCompatActivity implements ListItemProduc
     String productName;
     AppSetting appSetting=new AppSetting();
     public static Activity activity;
+    ConnectionLiveData connectionLiveData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +69,7 @@ public class ProductActivity extends AppCompatActivity implements ListItemProduc
         subMenuId=i.getIntExtra("SubMenuID",subMenuId);
 
         setTitle(mainMenuName);
+        checkConnection();
         fillData();
 
         sheetBehavior=BottomSheetBehavior.from(bottom_sheet);
@@ -148,12 +153,21 @@ public class ProductActivity extends AppCompatActivity implements ListItemProduc
     }
 
     private void init(){
+        connectionLiveData = new ConnectionLiveData(context);
         activity=this;
         db=new DatabaseAccess(context);
         progressDialog =new ProgressDialog(context);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(false);
+        appSetting.setupProgress(progressDialog);
+    }
+
+    private void checkConnection(){
+        connectionLiveData.observe(this, new Observer<ConnectionData>() {
+            @Override
+            public void onChanged(ConnectionData connectionData) {
+                if (!connectionData.getIsConnected())
+                    appSetting.showSnackBar(findViewById(R.id.layoutRoot));
+            }
+        });
     }
 
     private void fillData(){

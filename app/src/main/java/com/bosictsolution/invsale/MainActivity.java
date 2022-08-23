@@ -8,12 +8,16 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.bosictsolution.invsale.common.AppConstant;
+import com.bosictsolution.invsale.common.AppSetting;
 import com.bosictsolution.invsale.common.Confirmation;
+import com.bosictsolution.invsale.common.ConnectionLiveData;
+import com.bosictsolution.invsale.data.ConnectionData;
 import com.bosictsolution.invsale.listener.IConfirmation;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.annotation.NonNull;
 import androidx.core.view.GravityCompat;
+import androidx.lifecycle.Observer;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -30,6 +34,8 @@ public class MainActivity extends AppCompatActivity implements IConfirmation {
     TextView tvUserName, tvPhone;
     SharedPreferences sharedpreferences;
     Confirmation confirmation=new Confirmation(this);
+    ConnectionLiveData connectionLiveData;
+    AppSetting appSetting=new AppSetting();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +44,15 @@ public class MainActivity extends AppCompatActivity implements IConfirmation {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
+        connectionLiveData = new ConnectionLiveData(this);
+
+        connectionLiveData.observe(this, new Observer<ConnectionData>() {
+            @Override
+            public void onChanged(ConnectionData connectionData) {
+                if (!connectionData.getIsConnected())
+                    appSetting.showSnackBar(findViewById(R.id.drawer_layout));
+            }
+        });
 
         setSupportActionBar(binding.appBarMain.toolbar);
         /*binding.appBarMain.toolbar.setTitleTextColor(Color.WHITE);*/

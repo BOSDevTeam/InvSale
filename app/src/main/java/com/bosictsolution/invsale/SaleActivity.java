@@ -1,18 +1,23 @@
 package com.bosictsolution.invsale;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function6;
+import io.reactivex.schedulers.Schedulers;
 
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -36,9 +41,11 @@ import com.bosictsolution.invsale.adapter.ListItemSaleAdapter;
 import com.bosictsolution.invsale.api.Api;
 import com.bosictsolution.invsale.common.AppSetting;
 import com.bosictsolution.invsale.common.Confirmation;
+import com.bosictsolution.invsale.common.ConnectionLiveData;
 import com.bosictsolution.invsale.common.DatabaseAccess;
 import com.bosictsolution.invsale.data.BankPaymentData;
 import com.bosictsolution.invsale.data.CompanySettingData;
+import com.bosictsolution.invsale.data.ConnectionData;
 import com.bosictsolution.invsale.data.LimitedDayData;
 import com.bosictsolution.invsale.data.LocationData;
 import com.bosictsolution.invsale.data.MainMenuData;
@@ -80,6 +87,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
     Confirmation confirmation=new Confirmation(this);
     DatabaseAccess db;
     public static boolean isSaleCompleted;
+    ConnectionLiveData connectionLiveData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +101,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         setTitle(getResources().getString(R.string.menu_sale));
 
         getCompanySetting();
+        checkConnection();
         loadData();
 
         btnPay.setOnClickListener(new View.OnClickListener() {
@@ -158,13 +167,21 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         }
     }
 
-    private void init(){
-        db=new DatabaseAccess(context);
+    private void checkConnection(){
+        connectionLiveData.observe(this, new Observer<ConnectionData>() {
+            @Override
+            public void onChanged(ConnectionData connectionData) {
+                if (!connectionData.getIsConnected())
+                    appSetting.showSnackBar(findViewById(R.id.layoutRoot));
+            }
+        });
+    }
 
+    private void init(){
+        connectionLiveData = new ConnectionLiveData(context);
+        db=new DatabaseAccess(context);
         progressDialog =new ProgressDialog(context);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(false);
+        appSetting.setupProgress(progressDialog);
     }
 
     @Override
@@ -591,108 +608,6 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         }
     }
 
-    private void loadData(){
-        progressDialog.show();
-        progressDialog.setMessage(getResources().getString(R.string.loading));
-        getLocation();
-    }
-
-    private void getLocation() {
-        Api.getClient().getLocation().enqueue(new Callback<List<LocationData>>() {
-            @Override
-            public void onResponse(Call<List<LocationData>> call, Response<List<LocationData>> response) {
-                db.insertLocation(response.body());
-                getPayment();
-            }
-
-            @Override
-            public void onFailure(Call<List<LocationData>> call, Throwable t) {
-                progressDialog.dismiss();
-                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    private void getPayment() {
-        Api.getClient().getPayment().enqueue(new Callback<List<PaymentData>>() {
-            @Override
-            public void onResponse(Call<List<PaymentData>> call, Response<List<PaymentData>> response) {
-                db.insertPayment(response.body());
-                getPaymentMethod();
-            }
-
-            @Override
-            public void onFailure(Call<List<PaymentData>> call, Throwable t) {
-                progressDialog.dismiss();
-                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    private void getPaymentMethod() {
-        Api.getClient().getPaymentMethod().enqueue(new Callback<List<PaymentMethodData>>() {
-            @Override
-            public void onResponse(Call<List<PaymentMethodData>> call, Response<List<PaymentMethodData>> response) {
-                db.insertPaymentMethod(response.body());
-                getBankPayment();
-            }
-
-            @Override
-            public void onFailure(Call<List<PaymentMethodData>> call, Throwable t) {
-                progressDialog.dismiss();
-                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    private void getBankPayment() {
-        Api.getClient().getBankPayment().enqueue(new Callback<List<BankPaymentData>>() {
-            @Override
-            public void onResponse(Call<List<BankPaymentData>> call, Response<List<BankPaymentData>> response) {
-                db.insertBankPayment(response.body());
-                getLimitedDay();
-            }
-
-            @Override
-            public void onFailure(Call<List<BankPaymentData>> call, Throwable t) {
-                progressDialog.dismiss();
-                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    private void getLimitedDay() {
-        Api.getClient().getLimitedDay().enqueue(new Callback<List<LimitedDayData>>() {
-            @Override
-            public void onResponse(Call<List<LimitedDayData>> call, Response<List<LimitedDayData>> response) {
-                db.insertLimitedDay(response.body());
-                getVoucherSetting();
-            }
-
-            @Override
-            public void onFailure(Call<List<LimitedDayData>> call, Throwable t) {
-                progressDialog.dismiss();
-                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    private void getVoucherSetting(){
-        Api.getClient().getVoucherSetting().enqueue(new Callback<List<VoucherSettingData>>() {
-            @Override
-            public void onResponse(Call<List<VoucherSettingData>> call, Response<List<VoucherSettingData>> response) {
-                progressDialog.dismiss();
-                db.insertVoucherSetting(response.body());
-            }
-
-            @Override
-            public void onFailure(Call<List<VoucherSettingData>> call, Throwable t) {
-                progressDialog.dismiss();
-                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
     private void setLayoutResource(){
         btnPay=findViewById(R.id.btnPay);
         rvItemSale =findViewById(R.id.rvItemSale);
@@ -705,4 +620,55 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         btnRemove=findViewById(R.id.btnRemove);
     }
 
+    private void loadData() {
+        progressDialog.show();
+        progressDialog.setMessage(getResources().getString(R.string.loading));
+        Observable<List<LocationData>> obLocation = Api.getClient().getLocation();
+        Observable<List<PaymentData>> obPayment = Api.getClient().getPayment();
+        Observable<List<PaymentMethodData>> obPaymentMethod = Api.getClient().getPaymentMethod();
+        Observable<List<BankPaymentData>> obBankPayment = Api.getClient().getBankPayment();
+        Observable<List<LimitedDayData>> obLimitedDay = Api.getClient().getLimitedDay();
+        Observable<List<VoucherSettingData>> obVoucherSetting = Api.getClient().getVoucherSetting();
+
+        Observable<Boolean> result = io.reactivex.Observable.zip(obLocation.subscribeOn(Schedulers.io()),
+                obPayment.subscribeOn(Schedulers.io()), obPaymentMethod.subscribeOn(Schedulers.io()), obBankPayment.subscribeOn(Schedulers.io()),
+                obLimitedDay.subscribeOn(Schedulers.io()), obVoucherSetting.subscribeOn(Schedulers.io()),
+                new Function6<List<LocationData>, List<PaymentData>, List<PaymentMethodData>, List<BankPaymentData>, List<LimitedDayData>, List<VoucherSettingData>, Boolean>() {
+                    @NonNull
+                    @Override
+                    public Boolean apply(@NonNull List<LocationData> locationData, @NonNull List<PaymentData> paymentData, @NonNull List<PaymentMethodData> paymentMethodData, @NonNull List<BankPaymentData> bankPaymentData, @NonNull List<LimitedDayData> limitedDayData, @NonNull List<VoucherSettingData> voucherSettingData) throws Exception {
+                        db.insertLocation(locationData);
+                        db.insertPayment(paymentData);
+                        db.insertPaymentMethod(paymentMethodData);
+                        db.insertBankPayment(bankPaymentData);
+                        db.insertLimitedDay(limitedDayData);
+                        db.insertVoucherSetting(voucherSettingData);
+                        progressDialog.dismiss();
+                        return true;
+                    }
+                });
+
+        result.observeOn(AndroidSchedulers.mainThread()).subscribeWith(new io.reactivex.Observer<Boolean>() {
+            @Override
+            public void onSubscribe(@NonNull Disposable d) {
+                Log.i("SaleActivity", "subscribe");
+            }
+
+            @Override
+            public void onNext(@NonNull Boolean aBoolean) {
+                Log.i("SaleActivity", "next");
+            }
+
+            @Override
+            public void onError(@NonNull Throwable e) {
+                progressDialog.dismiss();
+                Log.e("SaleActivity", e.getMessage());
+            }
+
+            @Override
+            public void onComplete() {
+                Log.i("SaleActivity", "complete");
+            }
+        });
+    }
 }

@@ -3,6 +3,7 @@ package com.bosictsolution.invsale;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import androidx.lifecycle.Observer;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -31,8 +32,10 @@ import android.widget.Toast;
 import com.bosictsolution.invsale.api.Api;
 import com.bosictsolution.invsale.common.AppConstant;
 import com.bosictsolution.invsale.common.AppSetting;
+import com.bosictsolution.invsale.common.ConnectionLiveData;
 import com.bosictsolution.invsale.common.DatabaseAccess;
 import com.bosictsolution.invsale.data.BankPaymentData;
+import com.bosictsolution.invsale.data.ConnectionData;
 import com.bosictsolution.invsale.data.CustomerData;
 import com.bosictsolution.invsale.data.LimitedDayData;
 import com.bosictsolution.invsale.data.LocationData;
@@ -66,6 +69,7 @@ public class PayDetailActivity extends AppCompatActivity {
     DatabaseAccess db;
     SharedPreferences sharedpreferences;
     public static Activity activity;
+    ConnectionLiveData connectionLiveData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +88,7 @@ public class PayDetailActivity extends AppCompatActivity {
         chargesAmount = i.getIntExtra("ChargesAmount", 0);
         total = i.getIntExtra("Total", 0);
 
+        checkConnection();
         fillData();
         setLayoutPaymentCredit();
         setLayoutPaymentMethod();
@@ -151,14 +156,12 @@ public class PayDetailActivity extends AppCompatActivity {
     }
 
     private void init(){
+        connectionLiveData = new ConnectionLiveData(context);
         sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
         db=new DatabaseAccess(context);
         activity=this;
-
         progressDialog = new ProgressDialog(context);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(false);
+        appSetting.setupProgress(progressDialog);
     }
 
     private void showAmountGroupDialog(SaleMasterData saleMasterData) {
@@ -353,27 +356,31 @@ public class PayDetailActivity extends AppCompatActivity {
         return voucherDiscount;
     }
 
-    private boolean validateControl(){
-        if(voucherDiscountType==discountPercentType){
-            if(etVoucherDiscount.getText().toString().length()!=0){
-                if(Integer.parseInt(etVoucherDiscount.getText().toString())>100){
+    private boolean validateControl() {
+        if (lstCustomer.size() == 0) {
+            Toast.makeText(context, getResources().getString(R.string.customer_not_found), Toast.LENGTH_LONG).show();
+            return false;
+        }
+        if (voucherDiscountType == discountPercentType) {
+            if (etVoucherDiscount.getText().toString().length() != 0) {
+                if (Integer.parseInt(etVoucherDiscount.getText().toString()) > 100) {
                     inputVoucherDiscount.setError(getResources().getString(R.string.invalid_percent_value));
                     return false;
                 }
             }
         }
-        if(spPayment.getSelectedItemPosition()==1 && chkAdvancedPay.isChecked()){
-            if(etAdvancedPay.getText().toString().length()==0){
+        if (spPayment.getSelectedItemPosition() == 1 && chkAdvancedPay.isChecked()) {
+            if (etAdvancedPay.getText().toString().length() == 0) {
                 inputAdvancedPay.setError(getResources().getString(R.string.enter_value));
                 return false;
-            }else if(Integer.parseInt(etAdvancedPay.getText().toString())==0){
+            } else if (Integer.parseInt(etAdvancedPay.getText().toString()) == 0) {
                 inputAdvancedPay.setError(getResources().getString(R.string.enter_valid_value));
                 return false;
             }
         }
-        if(layoutOnlinePayment.isShown()){
-            if(etPaymentPercent.getText().toString().length()!=0){
-                if(Integer.parseInt(etPaymentPercent.getText().toString())>100){
+        if (layoutOnlinePayment.isShown()) {
+            if (etPaymentPercent.getText().toString().length() != 0) {
+                if (Integer.parseInt(etPaymentPercent.getText().toString()) > 100) {
                     inputPaymentPercent.setError(getResources().getString(R.string.invalid_percent_value));
                     return false;
                 }
@@ -442,6 +449,16 @@ public class PayDetailActivity extends AppCompatActivity {
             layoutPaymentCredit.setVisibility(View.VISIBLE);
     }
 
+    private void checkConnection(){
+        connectionLiveData.observe(this, new Observer<ConnectionData>() {
+            @Override
+            public void onChanged(ConnectionData connectionData) {
+                if (!connectionData.getIsConnected())
+                    appSetting.showSnackBar(findViewById(R.id.layoutRoot));
+            }
+        });
+    }
+
     private void fillData() {
         clientId=sharedpreferences.getInt(AppConstant.ClientID,0);
         voucherDiscountType = discountPercentType;
@@ -450,8 +467,6 @@ public class PayDetailActivity extends AppCompatActivity {
         getPaymentMethod();
         getBankPayment();
         getLimitedDay();
-        progressDialog.show();
-        progressDialog.setMessage(getResources().getString(R.string.loading));
         getCustomer();
     }
 
@@ -517,6 +532,8 @@ public class PayDetailActivity extends AppCompatActivity {
     }
 
     private void getCustomer() {
+        progressDialog.show();
+        progressDialog.setMessage(getResources().getString(R.string.loading));
         Api.getClient().getCustomer().enqueue(new Callback<List<CustomerData>>() {
             @Override
             public void onResponse(Call<List<CustomerData>> call, Response<List<CustomerData>> response) {

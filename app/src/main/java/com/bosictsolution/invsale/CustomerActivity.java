@@ -20,7 +20,10 @@ import android.widget.Toast;
 
 import com.bosictsolution.invsale.api.Api;
 import com.bosictsolution.invsale.common.AppConstant;
+import com.bosictsolution.invsale.common.AppSetting;
+import com.bosictsolution.invsale.common.ConnectionLiveData;
 import com.bosictsolution.invsale.common.DatabaseAccess;
+import com.bosictsolution.invsale.data.ConnectionData;
 import com.bosictsolution.invsale.data.CustomerData;
 import com.bosictsolution.invsale.data.DivisionData;
 import com.bosictsolution.invsale.data.SaleMasterData;
@@ -31,6 +34,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.lifecycle.Observer;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -50,6 +54,8 @@ public class CustomerActivity extends AppCompatActivity {
     int locationId,clientId;
     DatabaseAccess db;
     SharedPreferences sharedpreferences;
+    AppSetting appSetting=new AppSetting();
+    ConnectionLiveData connectionLiveData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +72,7 @@ public class CustomerActivity extends AppCompatActivity {
         moduleType=i.getShortExtra(AppConstant.extra_module_type,Short.MIN_VALUE);
         locationId=i.getIntExtra("LocationID",0);
 
+        checkConnection();
         fillData();
 
         spDivision.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -116,12 +123,11 @@ public class CustomerActivity extends AppCompatActivity {
     }
 
     private void init(){
+        connectionLiveData = new ConnectionLiveData(context);
         sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
         db=new DatabaseAccess(context);
         progressDialog =new ProgressDialog(context);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(false);
+        appSetting.setupProgress(progressDialog);
     }
 
     private void insertCustomer(CustomerData customerData) {
@@ -233,6 +239,16 @@ public class CustomerActivity extends AppCompatActivity {
             return false;
         }
         return true;
+    }
+
+    private void checkConnection(){
+        connectionLiveData.observe(this, new Observer<ConnectionData>() {
+            @Override
+            public void onChanged(ConnectionData connectionData) {
+                if (!connectionData.getIsConnected())
+                    appSetting.showSnackBar(findViewById(R.id.layoutRoot));
+            }
+        });
     }
 
     private void fillData(){

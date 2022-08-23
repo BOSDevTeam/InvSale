@@ -2,6 +2,7 @@ package com.bosictsolution.invsale;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,6 +23,8 @@ import android.widget.Toast;
 import com.bosictsolution.invsale.adapter.SaleOrderSummaryAdapter;
 import com.bosictsolution.invsale.api.Api;
 import com.bosictsolution.invsale.common.AppSetting;
+import com.bosictsolution.invsale.common.ConnectionLiveData;
+import com.bosictsolution.invsale.data.ConnectionData;
 import com.bosictsolution.invsale.data.SaleOrderTranData;
 
 import java.util.List;
@@ -37,6 +40,7 @@ public class SaleOrderDetailActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private Context context=this;
     String remark,orderNumber,orderDataTime,customerName;
+    ConnectionLiveData connectionLiveData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +64,18 @@ public class SaleOrderDetailActivity extends AppCompatActivity {
         total = i.getIntExtra("Total", 0);
         remark = i.getStringExtra("Remark");
 
+        checkConnection();
         fillData();
+    }
+
+    private void checkConnection(){
+        connectionLiveData.observe(this, new Observer<ConnectionData>() {
+            @Override
+            public void onChanged(ConnectionData connectionData) {
+                if (!connectionData.getIsConnected())
+                    appSetting.showSnackBar(findViewById(R.id.layoutRoot));
+            }
+        });
     }
 
     private void fillData() {
@@ -117,10 +132,9 @@ public class SaleOrderDetailActivity extends AppCompatActivity {
     }
 
     private void init(){
+        connectionLiveData = new ConnectionLiveData(context);
         progressDialog =new ProgressDialog(context);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(false);
+        appSetting.setupProgress(progressDialog);
     }
 
     private void setLayoutResource() {

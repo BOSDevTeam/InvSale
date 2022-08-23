@@ -1,6 +1,13 @@
 package com.bosictsolution.invsale;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function4;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -10,6 +17,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -17,8 +25,11 @@ import android.widget.Toast;
 
 import com.bosictsolution.invsale.api.Api;
 import com.bosictsolution.invsale.common.AppConstant;
+import com.bosictsolution.invsale.common.AppSetting;
+import com.bosictsolution.invsale.common.ConnectionLiveData;
 import com.bosictsolution.invsale.common.DatabaseAccess;
 import com.bosictsolution.invsale.data.CompanySettingData;
+import com.bosictsolution.invsale.data.ConnectionData;
 import com.bosictsolution.invsale.data.MainMenuData;
 import com.bosictsolution.invsale.data.ProductData;
 import com.bosictsolution.invsale.data.SubMenuData;
@@ -35,6 +46,8 @@ public class LoginActivity extends AppCompatActivity {
     private Context context=this;
     private ProgressDialog progressDialog;
     DatabaseAccess db;
+    ConnectionLiveData connectionLiveData;
+    AppSetting appSetting=new AppSetting();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +56,7 @@ public class LoginActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         setLayoutResource();
         init();
+        checkConnection();
         fillData();
 
         btnClear.setOnClickListener(new View.OnClickListener() {
@@ -189,100 +203,14 @@ public class LoginActivity extends AppCompatActivity {
         else status = status_new;
     }
 
-    private void getMainMenu(){
-        Api.getClient().getMainMenu().enqueue(new Callback<List<MainMenuData>>() {
+    private void checkConnection(){
+        connectionLiveData.observe(this, new Observer<ConnectionData>() {
             @Override
-            public void onResponse(Call<List<MainMenuData>> call, Response<List<MainMenuData>> response) {
-                if(response.isSuccessful()) {
-                    List<MainMenuData> list = response.body();
-                    db.insertMainMenu(list);
-                    getSubMenu();
-                }else{
-                    progressDialog.dismiss();
-                    Toast.makeText(context, getResources().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<MainMenuData>> call, Throwable t) {
-                progressDialog.dismiss();
-                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
+            public void onChanged(ConnectionData connectionData) {
+                if (!connectionData.getIsConnected())
+                    appSetting.showSnackBar(findViewById(R.id.layoutRoot));
             }
         });
-    }
-
-    private void getSubMenu() {
-        Api.getClient().getSubMenu().enqueue(new Callback<List<SubMenuData>>() {
-            @Override
-            public void onResponse(Call<List<SubMenuData>> call, Response<List<SubMenuData>> response) {
-                if (response.isSuccessful()) {
-                    List<SubMenuData> list = response.body();
-                    db.insertSubMenu(list);
-                    getProduct();
-                } else {
-                    progressDialog.dismiss();
-                    Toast.makeText(context, getResources().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<SubMenuData>> call, Throwable t) {
-                progressDialog.dismiss();
-                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    private void getProduct(){
-        Api.getClient().getProduct().enqueue(new Callback<List<ProductData>>() {
-            @Override
-            public void onResponse(Call<List<ProductData>> call, Response<List<ProductData>> response) {
-                if (response.isSuccessful()) {
-                    List<ProductData> list = response.body();
-                    db.insertProduct(list);
-                    getCompanySetting();
-                } else {
-                    progressDialog.dismiss();
-                    Toast.makeText(context, getResources().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<List<ProductData>> call, Throwable t) {
-                progressDialog.dismiss();
-                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    private void getCompanySetting() {
-        Api.getClient().getCompanySetting().enqueue(new Callback<CompanySettingData>() {
-            @Override
-            public void onResponse(Call<CompanySettingData> call, Response<CompanySettingData> response) {
-                if (response.isSuccessful()) {
-                    CompanySettingData data = response.body();
-                    db.insertCompanySetting(data);
-                    Intent i = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(i);
-                    finish();
-                } else {
-                    progressDialog.dismiss();
-                    Toast.makeText(context, getResources().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<CompanySettingData> call, Throwable t) {
-                progressDialog.dismiss();
-                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    private void loadData(){
-        progressDialog.show();
-        progressDialog.setMessage(getResources().getString(R.string.loading));
-        getMainMenu();
     }
 
     private void fillData() {
@@ -295,12 +223,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void init(){
+        connectionLiveData = new ConnectionLiveData(context);
         sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
         db=new DatabaseAccess(context);
         progressDialog =new ProgressDialog(context);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(false);
+        appSetting.setupProgress(progressDialog);
     }
 
     private void setLayoutResource(){
@@ -322,5 +249,54 @@ public class LoginActivity extends AppCompatActivity {
         tvCode2=findViewById(R.id.tvCode2);
         tvCode3=findViewById(R.id.tvCode3);
         tvCode4=findViewById(R.id.tvCode4);
+    }
+
+    private void loadData() {
+        progressDialog.show();
+        progressDialog.setMessage(getResources().getString(R.string.loading));
+        Observable<CompanySettingData> obCompanySetting = Api.getClient().getCompanySetting();
+        Observable<List<MainMenuData>> obMainMenu = Api.getClient().getMainMenu();
+        Observable<List<SubMenuData>> obSubMenu = Api.getClient().getSubMenu();
+        Observable<List<ProductData>> obProduct = Api.getClient().getProduct();
+
+        Observable<Boolean> result = io.reactivex.Observable.zip(obCompanySetting.subscribeOn(Schedulers.io()),
+                obMainMenu.subscribeOn(Schedulers.io()), obSubMenu.subscribeOn(Schedulers.io()), obProduct.subscribeOn(Schedulers.io()),
+                new Function4<CompanySettingData, List<MainMenuData>, List<SubMenuData>, List<ProductData>, Boolean>() {
+                    @NonNull
+                    @Override
+                    public Boolean apply(@NonNull CompanySettingData companySettingData, @NonNull List<MainMenuData> mainMenuData, @NonNull List<SubMenuData> subMenuData, @NonNull List<ProductData> productData) throws Exception {
+                        db.insertMainMenu(mainMenuData);
+                        db.insertSubMenu(subMenuData);
+                        db.insertProduct(productData);
+                        db.insertCompanySetting(companySettingData);
+                        progressDialog.dismiss();
+                        return true;
+                    }
+                });
+
+        result.observeOn(AndroidSchedulers.mainThread()).subscribeWith(new io.reactivex.Observer<Boolean>() {
+            @Override
+            public void onSubscribe(@NonNull Disposable d) {
+                Log.i("LoginActivity", "subscribe");
+            }
+
+            @Override
+            public void onNext(@NonNull Boolean aBoolean) {
+                Log.i("LoginActivity", "next");
+            }
+
+            @Override
+            public void onError(@NonNull Throwable e) {
+                progressDialog.dismiss();
+                Log.e("LoginActivity", e.getMessage());
+            }
+
+            @Override
+            public void onComplete() {
+                Intent i = new Intent(LoginActivity.this, MainActivity.class);
+                startActivity(i);
+                finish();
+            }
+        });
     }
 }

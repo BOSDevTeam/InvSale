@@ -47,6 +47,7 @@ public class RegisterActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     int clientId;
     SharedPreferences sharedpreferences;
+    ConnectionLiveData connectionLiveData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,15 +57,7 @@ public class RegisterActivity extends AppCompatActivity {
         setLayoutResource();
         init();
 
-        ConnectionLiveData connectionLiveData = new ConnectionLiveData(this);
-        connectionLiveData.observe(this, new Observer<ConnectionData>() {
-            @Override
-            public void onChanged(ConnectionData connectionData) {
-                if (!connectionData.getIsConnected())
-                    appSetting.showSnackBar(findViewById(R.id.layoutRoot));
-            }
-        });
-
+        checkConnection();
         fillData();
 
         spDivision.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -115,12 +108,11 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    private void init(){
+    private void init() {
+        connectionLiveData = new ConnectionLiveData(context);
         sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
-        progressDialog =new ProgressDialog(context);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(false);
+        progressDialog = new ProgressDialog(context);
+        appSetting.setupProgress(progressDialog);
     }
 
     private boolean validateControl(){
@@ -141,6 +133,16 @@ public class RegisterActivity extends AppCompatActivity {
             return false;
         }
         return true;
+    }
+
+    private void checkConnection(){
+        connectionLiveData.observe(this, new Observer<ConnectionData>() {
+            @Override
+            public void onChanged(ConnectionData connectionData) {
+                if (!connectionData.getIsConnected())
+                    appSetting.showSnackBar(findViewById(R.id.layoutRoot));
+            }
+        });
     }
 
     private void fillData(){

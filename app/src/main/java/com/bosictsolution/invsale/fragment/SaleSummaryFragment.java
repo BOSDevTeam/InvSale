@@ -22,7 +22,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +31,7 @@ import com.bosictsolution.invsale.api.Api;
 import com.bosictsolution.invsale.common.AppConstant;
 import com.bosictsolution.invsale.common.AppSetting;
 import com.bosictsolution.invsale.common.DatabaseAccess;
+import com.bosictsolution.invsale.common.DateFilter;
 import com.bosictsolution.invsale.data.SaleMasterData;
 import com.bosictsolution.invsale.ui.sale.SaleFragment;
 
@@ -43,7 +43,7 @@ import java.util.List;
  * Use the {@link SaleSummaryFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SaleSummaryFragment extends Fragment implements SaleFragment.onFragmentInteractionListener {
+public class SaleSummaryFragment extends Fragment implements SaleFragment.onFragmentInteractionListener, DateFilter.IDateFilter {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -60,14 +60,12 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
     TextView tvDate,tvFromDate,tvToDate,tvTotal;
     String selectedDate,fromDate,toDate;
     AppSetting appSetting=new AppSetting();
-    public static final int SPECIFIC_DATE_REQUEST_CODE = 11; // Used to identify the result
-    public static final int FROM_DATE_REQUEST_CODE = 12;
-    public static final int TO_DATE_REQUEST_CODE = 13;
     int clientId;
     SharedPreferences sharedpreferences;
     private SaleFragment.onFragmentInteractionListener listener;
     List<SaleMasterData> list=new ArrayList<>();
     DatabaseAccess db;
+    DateFilter dateFilter=new DateFilter(this);
 
     public SaleSummaryFragment() {
         // Required empty public constructor
@@ -112,7 +110,7 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
         tvDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showDateFilterDialog();
+                dateFilter.showDateFilterDialog(getContext());
             }
         });
 
@@ -201,44 +199,6 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
         return result;
     }
 
-    private void showDateFilterDialog() {
-        LayoutInflater reg = LayoutInflater.from(getContext());
-        View v = reg.inflate(R.layout.dialog_date_filter, null);
-        android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(getContext());
-        dialog.setView(v);
-
-        final ImageButton btnClose = v.findViewById(R.id.btnClose);
-        final RadioButton rdoDate = v.findViewById(R.id.rdoDate);
-        final RadioButton rdoFromToDate=v.findViewById(R.id.rdoFromToDate);
-
-        dialog.setCancelable(true);
-        final android.app.AlertDialog alertDialog = dialog.create();
-        alertDialog.show();
-
-        btnClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                alertDialog.dismiss();
-            }
-        });
-        rdoDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showDatePicker(SPECIFIC_DATE_REQUEST_CODE);
-                alertDialog.dismiss();
-            }
-        });
-        rdoFromToDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(rdoFromToDate.isChecked()){
-                    showFromToDateDialog();
-                    alertDialog.dismiss();
-                }
-            }
-        });
-    }
-
     private void showFromToDateDialog() {
         LayoutInflater reg = LayoutInflater.from(getContext());
         View v = reg.inflate(R.layout.dialog_from_to_date, null);
@@ -284,13 +244,13 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
         tvFromDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showDatePicker(FROM_DATE_REQUEST_CODE);
+                showDatePicker(AppConstant.FROM_DATE_REQUEST_CODE);
             }
         });
         tvToDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showDatePicker(TO_DATE_REQUEST_CODE);
+                showDatePicker(AppConstant.TO_DATE_REQUEST_CODE);
             }
         });
     }
@@ -298,16 +258,16 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         // check for the results
-        if (requestCode == SPECIFIC_DATE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        if (requestCode == AppConstant.SPECIFIC_DATE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             // get date from string
             selectedDate = data.getStringExtra("selectedDate");
             // set the value of the editText
             tvDate.setText(selectedDate);
             getMasterSaleByDate();
-        }else if (requestCode == FROM_DATE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        }else if (requestCode == AppConstant.FROM_DATE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             fromDate = data.getStringExtra("selectedDate");
             tvFromDate.setText(fromDate);
-        }else if (requestCode == TO_DATE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        }else if (requestCode == AppConstant.TO_DATE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             toDate = data.getStringExtra("selectedDate");
             tvToDate.setText(toDate);
         }
@@ -361,5 +321,15 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
     public void search(String value) {
         if (value.length() != 0)
             getMasterSaleByValue(value);
+    }
+
+    @Override
+    public void setOnDateClick() {
+        showDatePicker(AppConstant.SPECIFIC_DATE_REQUEST_CODE);
+    }
+
+    @Override
+    public void setOnFromToDateClick() {
+        showFromToDateDialog();
     }
 }

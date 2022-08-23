@@ -1,6 +1,7 @@
 package com.bosictsolution.invsale;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -17,7 +18,10 @@ import android.widget.Toast;
 
 import com.bosictsolution.invsale.api.Api;
 import com.bosictsolution.invsale.common.AppConstant;
+import com.bosictsolution.invsale.common.AppSetting;
+import com.bosictsolution.invsale.common.ConnectionLiveData;
 import com.bosictsolution.invsale.data.ClientData;
+import com.bosictsolution.invsale.data.ConnectionData;
 import com.google.android.material.textfield.TextInputLayout;
 
 public class SignInActivity extends AppCompatActivity {
@@ -28,6 +32,8 @@ public class SignInActivity extends AppCompatActivity {
     private Context context=this;
     private ProgressDialog progressDialog;
     SharedPreferences sharedpreferences;
+    ConnectionLiveData connectionLiveData;
+    AppSetting appSetting=new AppSetting();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +42,8 @@ public class SignInActivity extends AppCompatActivity {
         getSupportActionBar().hide();
         setLayoutResource();
         init();
+
+        checkConnection();
 
         btnContinue.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,12 +55,21 @@ public class SignInActivity extends AppCompatActivity {
         });
     }
 
+    private void checkConnection(){
+        connectionLiveData.observe(this, new Observer<ConnectionData>() {
+            @Override
+            public void onChanged(ConnectionData connectionData) {
+                if (!connectionData.getIsConnected())
+                    appSetting.showSnackBar(findViewById(R.id.layoutRoot));
+            }
+        });
+    }
+
     private void init(){
+        connectionLiveData = new ConnectionLiveData(context);
         sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
         progressDialog =new ProgressDialog(context);
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCancelable(false);
+        appSetting.setupProgress(progressDialog);
     }
 
     private void checkClient(String phone) {

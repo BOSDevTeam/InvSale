@@ -1,5 +1,6 @@
 package com.bosictsolution.invsale.common;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
@@ -45,5 +46,11 @@ public class AppSetting {
         SimpleDateFormat dateFormat = new SimpleDateFormat(AppConstant.DATE_FORMAT);
         String date = dateFormat.format(Calendar.getInstance().getTime());
         return date.trim();
+    }
+
+    public void setupProgress(ProgressDialog progressDialog) {
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCancelable(false);
     }
 }
