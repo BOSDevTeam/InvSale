@@ -10,8 +10,8 @@ public class Api {
     public static ApiInterface getClient(){  // this is manual dependency injection
         if(retrofit==null){
             retrofit=new Retrofit.Builder()
-                    .baseUrl("http://192.168.100.14/InventoryWebService/api/")
-//                    .baseUrl("http://bosasp-001-site15.gtempurl.com/api/")
+//                    .baseUrl("http://192.168.100.14/InventoryWebService/api/")
+                    .baseUrl("http://bosasp-001-site15.gtempurl.com/api/")
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
