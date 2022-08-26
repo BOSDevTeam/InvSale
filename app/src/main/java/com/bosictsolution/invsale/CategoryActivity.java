@@ -132,8 +132,9 @@ public class CategoryActivity extends AppCompatActivity {
 
     private void setFab() {
         int totalSaleOrderItem = db.getTotalSaleOrderItem();
+        int totalSaleOrderQty = db.getTotalSaleOrderQty();
         if (totalSaleOrderItem != 0) {
-            fab.setText("Order:" + totalSaleOrderItem + " Items - " + db.getHomeCurrency() + getResources().getString(R.string.space) + appSetting.df.format(db.getTotalSaleOrderAmount()));
+            fab.setText("Order:" + totalSaleOrderItem + "(" + totalSaleOrderQty + ") Items - " + db.getHomeCurrency() + getResources().getString(R.string.space) + appSetting.df.format(db.getTotalSaleOrderAmount()));
             fab.setVisibility(View.VISIBLE);
         } else fab.setVisibility(View.GONE);
     }

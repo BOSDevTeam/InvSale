@@ -65,7 +65,7 @@
     <string name="paid">Paid</string>
     <string name="change">Change</string>
     <string name="percent">Percent</string>
-    <string name="choose_online_payment">Choose Online Payment</string>
+    <string name="bank_pay">Bank/Pay</string>
     <string name="remark">Remark</string>
     <string name="categories">Categories</string>
     <string name="add_to_order">Add To Order</string>

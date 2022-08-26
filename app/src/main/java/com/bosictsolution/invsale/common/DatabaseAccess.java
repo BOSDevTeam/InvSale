@@ -547,6 +547,14 @@ public class DatabaseAccess {
             count = cur.getInt(0);
         return count;
     }
+    public int getTotalSaleOrderQty(){
+        int qty = 0;
+        database = openHelper.getReadableDatabase();
+        Cursor cur = database.rawQuery("SELECT SUM(Quantity) FROM TranSaleOrderTemp", null);
+        if (cur.moveToFirst())
+            qty = cur.getInt(0);
+        return qty;
+    }
     public int getTotalSaleOrderAmount() {
         int totalAmount = 0;
         database = openHelper.getReadableDatabase();
