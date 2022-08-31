@@ -583,6 +583,29 @@ public class DatabaseAccess {
         }
         return list;
     }
+    public boolean insertBluetoothPrinter(String printerAddress,int paperWidth) {
+        deleteBluetoothPrinter();
+        database = openHelper.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put("PrinterAddress", printerAddress);
+        cv.put("PaperWidth", paperWidth);
+        database.insert("BluetoothPrinter", null, cv);
+        return true;
+    }
+    public String getPrinterAddress() {
+        String printerAddress = "";
+        database = openHelper.getReadableDatabase();
+        Cursor cur = database.rawQuery("SELECT PrinterAddress FROM BluetoothPrinter", null);
+        if (cur.moveToFirst()) printerAddress = cur.getString(0);
+        return printerAddress;
+    }
+    public int getPaperWidth() {
+        int paperWidth = 0;
+        database = openHelper.getReadableDatabase();
+        Cursor cur = database.rawQuery("SELECT PaperWidth FROM BluetoothPrinter", null);
+        if (cur.moveToFirst()) paperWidth = cur.getInt(0);
+        return paperWidth;
+    }
     private boolean deleteMasterSale(){
         database=openHelper.getWritableDatabase();
         database.execSQL("DELETE FROM MasterSaleTemp");
@@ -656,6 +679,11 @@ public class DatabaseAccess {
     public boolean deleteTranSaleOrderByProduct(int productId){
         database=openHelper.getWritableDatabase();
         database.execSQL("DELETE FROM TranSaleOrderTemp WHERE ProductID="+productId);
+        return true;
+    }
+    public boolean deleteBluetoothPrinter(){
+        database=openHelper.getWritableDatabase();
+        database.execSQL("DELETE FROM BluetoothPrinter");
         return true;
     }
 }

@@ -68,10 +68,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/btn_transparent"
-            android:text="@string/test_print"
-            android:textColor="@color/primary_700"
             android:drawableLeft="@drawable/ic_print_24"
-            android:drawableTint="@color/primary_500"/>
+            android:drawableTint="@color/primary_500"
+            android:text="@string/test_print"
+            android:textColor="@color/primary_700" />
 
         <Button
             android:id="@+id/btnSavePrinter"

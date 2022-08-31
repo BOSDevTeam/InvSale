@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 
 import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,11 +15,15 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bosictsolution.invsale.bluetooth.BtDeviceListAdapter;
+import com.bosictsolution.invsale.bluetooth.bt.BtUtil;
+import com.bosictsolution.invsale.bluetooth.print.PrintQueue;
+import com.bosictsolution.invsale.bluetooth.print.PrintUtil;
 import com.bosictsolution.invsale.common.AppConstant;
 import com.bosictsolution.invsale.common.AppSetting;
 import com.bosictsolution.invsale.common.ConnectionLiveData;
@@ -28,7 +34,9 @@ import com.bosictsolution.invsale.data.SaleTranData;
 import com.bosictsolution.invsale.data.VoucherSettingData;
 import com.squareup.picasso.Picasso;
 
+import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Set;
 
 public class SaleBillActivity extends AppCompatActivity {
 
@@ -37,7 +45,7 @@ public class SaleBillActivity extends AppCompatActivity {
             tvSlipID,tvDate,tvCustomer,tvSalePerson,tvMessage1,tvMessage2,tvMessage3,
             tvSubtotal,tvLabelTax,tvTax,tvLabelCharges,tvCharges,tvTotal,tvLabelVoucherDiscount,tvVoucherDiscount,
             tvAdvancedPay,tvGrandTotal,tvLabelPercent,tvPercentAmount,tvPercentGrandTotal;
-    LinearLayout layoutList,layoutAdvancedPay,layoutPercent,layoutPercentGrandTotal;
+    LinearLayout layoutList,layoutAdvancedPay,layoutPercent,layoutPercentGrandTotal,layoutBill;
     Button btnBack,btnPrint;
     AppSetting appSetting=new AppSetting();
     int locationId,slipId;
@@ -47,6 +55,9 @@ public class SaleBillActivity extends AppCompatActivity {
     DatabaseAccess db;
     SharedPreferences sharedpreferences;
     ConnectionLiveData connectionLiveData;
+    public static BluetoothAdapter BA;
+    private BtDeviceListAdapter deviceAdapter;
+    private BluetoothAdapter bluetoothAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +87,19 @@ public class SaleBillActivity extends AppCompatActivity {
         btnPrint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                if(checkBluetoothOn()){
+                    if (checkBluetoothDevice(db.getPrinterAddress())){
+                        Intent i=new Intent(SaleBillActivity.this,SalePrintActivity.class);
+                        i.putExtra("PaperWidth",db.getPaperWidth());
+                        i.putExtra("LocationID",locationId);
+                        i.putExtra("SlipID",slipId);
+                        i.putExtra("CustomerName",customerName);
+                        startActivity(i);
+                        finish();
+                    }else{
+                        Toast.makeText(context,getResources().getString(R.string.printer_not_found),Toast.LENGTH_LONG).show();
+                    }
+                }
             }
         });
     }
@@ -87,6 +110,9 @@ public class SaleBillActivity extends AppCompatActivity {
         db=new DatabaseAccess(context);
         progressDialog =new ProgressDialog(context);
         appSetting.setupProgress(progressDialog);
+        BA = BluetoothAdapter.getDefaultAdapter();
+        deviceAdapter = new BtDeviceListAdapter(getApplicationContext(), null);
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     }
 
     private void checkConnection(){
@@ -182,16 +208,12 @@ public class SaleBillActivity extends AppCompatActivity {
         List<SaleTranData> lstSaleTran = db.getTranSale();
         for (int i = 0; i < lstSaleTran.size(); i++) {
             LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View row = layoutInflater.inflate(R.layout.item_sale, null);
+            View row = layoutInflater.inflate(R.layout.item_sale_bill, null);
             TextView tvProductName = row.findViewById(R.id.tvProductName);
             TextView tvPrice = row.findViewById(R.id.tvPrice);
             TextView tvQuantity = row.findViewById(R.id.tvQuantity);
             TextView tvNumber = row.findViewById(R.id.tvNumber);
             TextView tvAmount = row.findViewById(R.id.tvAmount);
-            ImageButton btnRemove = row.findViewById(R.id.btnRemove);
-
-            tvQuantity.setBackgroundColor(getResources().getColor(R.color.transparent));
-            btnRemove.setVisibility(View.GONE);
 
             tvProductName.setText(lstSaleTran.get(i).getProductName());
             tvPrice.setText(appSetting.df.format(lstSaleTran.get(i).getSalePrice()));
@@ -225,6 +247,7 @@ public class SaleBillActivity extends AppCompatActivity {
         layoutAdvancedPay=findViewById(R.id.layoutAdvancedPay);
         layoutPercent=findViewById(R.id.layoutPercent);
         layoutPercentGrandTotal=findViewById(R.id.layoutPercentGrandTotal);
+        layoutBill=findViewById(R.id.layoutBill);
         imgLogo=findViewById(R.id.imgLogo);
         tvTitle1=findViewById(R.id.tvTitle1);
         tvTitle2=findViewById(R.id.tvTitle2);
@@ -255,4 +278,59 @@ public class SaleBillActivity extends AppCompatActivity {
         btnBack=findViewById(R.id.btnBack);
         btnPrint=findViewById(R.id.btnPrint);
     }
+
+    /** bluetooth code **/
+    private boolean checkBluetoothOn(){
+        if (!BA.isEnabled()) {
+            Intent turnOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(turnOn, 0);
+            Toast.makeText(context, getResources().getString(R.string.turn_on), Toast.LENGTH_LONG).show();
+            return false;
+        }else {
+            return true;
+        }
+    }
+
+    private boolean checkBluetoothDevice(String btAddress){
+        Set<BluetoothDevice> pairedDevices = BA.getBondedDevices();
+
+        for(BluetoothDevice bt : pairedDevices) {
+            String address=bt.getAddress();
+            if(btAddress.equals(address)){
+                connectBluetoothDevice(bt);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void connectBluetoothDevice(BluetoothDevice bt){
+        if (null == deviceAdapter) {
+            return;
+        }
+        final BluetoothDevice bluetoothDevice = bt;
+        if (null == bluetoothDevice) {
+            return;
+        }
+        try {
+            BtUtil.cancelDiscovery(bluetoothAdapter);
+            PrintUtil.setDefaultBluetoothDeviceAddress(getApplicationContext(), bluetoothDevice.getAddress());
+            PrintUtil.setDefaultBluetoothDeviceName(getApplicationContext(), bluetoothDevice.getName());
+            if (null != deviceAdapter) {
+                deviceAdapter.setConnectedDeviceAddress(bluetoothDevice.getAddress());
+            }
+
+            //if (bluetoothDevice.getBondState() != BluetoothDevice.BOND_BONDED) {
+            Method createBondMethod = BluetoothDevice.class.getMethod("createBond");
+            createBondMethod.invoke(bluetoothDevice);
+            //}
+            PrintQueue.getQueue(getApplicationContext()).disconnect();
+        } catch (Exception e) {
+            e.printStackTrace();
+            PrintUtil.setDefaultBluetoothDeviceAddress(getApplicationContext(), "");
+            PrintUtil.setDefaultBluetoothDeviceName(getApplicationContext(), "");
+            Toast.makeText(context, getResources().getString(R.string.bluetooth_tethering_fail), Toast.LENGTH_LONG).show();
+        }
+    }
+    //end bluetooth code
 }

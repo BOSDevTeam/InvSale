@@ -161,5 +161,14 @@
     <string name="summary">Summary</string>
     <string name="exit_confirm_message">Are you sure you want to exit?</string>
     <string name="customer_not_found">Customer not found.Check your internet connection!</string>
+    <string name="printer_not_found">Printer not found.</string>
+    <string name="printing">Printing</string>
+    <string name="bluetooth_tethering_fail">Bluetooth Tethering Fail,Try Again!</string>
+    <string name="turn_on">Turn On</string>
+    <string name="require_storage_permission">Require Storage Permission, Please allow this permission in App SystemSetting.</string>
+    <string name="storage_path">QuickPOS</string>
+    <string name="sale_bill_png">salebill.png</string>
+    <string name="price">Price</string>
+    <string name="qty">Qty</string>
 
 </resources>
