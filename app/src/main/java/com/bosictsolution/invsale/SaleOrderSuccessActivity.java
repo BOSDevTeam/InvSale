@@ -44,12 +44,22 @@ public class SaleOrderSuccessActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(SaleOrderSummaryActivity.activity !=null)SaleOrderSummaryActivity.activity.finish();
-                if(ProductActivity.activity !=null)ProductActivity.activity.finish();
-                if(CategoryActivity.activity !=null)CategoryActivity.activity.finish();
-                finish();
+                orderFinished();
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        orderFinished();
+    }
+
+    private void orderFinished(){
+        if(SaleOrderSummaryActivity.activity !=null)SaleOrderSummaryActivity.activity.finish();
+        if(ProductActivity.activity !=null)ProductActivity.activity.finish();
+        if(CategoryActivity.activity !=null)CategoryActivity.activity.finish();
+        finish();
     }
 
     private void init(){

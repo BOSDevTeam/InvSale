@@ -7,11 +7,11 @@
 
     <androidx.cardview.widget.CardView android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardElevation="5dp"
-        app:cardCornerRadius="5dp"
-        android:layout_margin="5dp"
+        app:cardElevation="2dp"
+        app:cardCornerRadius="2dp"
+        android:layout_margin="2dp"
         app:cardBackgroundColor="@color/white"
-        app:cardMaxElevation="5dp"
+        app:cardMaxElevation="2dp"
         app:cardPreventCornerOverlap="false"
         app:cardUseCompatPadding="false">
 
@@ -57,13 +57,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 tools:text="1"
-                android:textColor="@color/red"
-                android:textSize="@dimen/text_small"
-                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_smaller"
                 tools:ignore="MissingConstraints"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintBaseline_toTopOf="parent"
-                android:layout_marginRight="10dp" />
+                android:layout_marginRight="10dp"
+                android:background="@drawable/bg_circle"
+                android:gravity="center"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

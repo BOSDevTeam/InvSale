@@ -4,7 +4,6 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,13 +19,9 @@ import android.widget.Toast;
 import com.bosictsolution.invsale.bluetooth.BondBtActivity;
 import com.bosictsolution.invsale.bluetooth.BtDeviceListAdapter;
 import com.bosictsolution.invsale.bluetooth.BtService;
-import com.bosictsolution.invsale.bluetooth.bt.BtUtil;
-import com.bosictsolution.invsale.bluetooth.print.PrintQueue;
 import com.bosictsolution.invsale.bluetooth.print.PrintUtil;
+import com.bosictsolution.invsale.common.AppSetting;
 import com.bosictsolution.invsale.common.DatabaseAccess;
-
-import java.lang.reflect.Method;
-import java.util.Set;
 
 public class BTPrinterSettingActivity extends AppCompatActivity {
 
@@ -39,6 +34,7 @@ public class BTPrinterSettingActivity extends AppCompatActivity {
     private BluetoothAdapter bluetoothAdapter;
     final Context context = this;
     public static int paperWidth;
+    AppSetting appSetting=new AppSetting();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +51,7 @@ public class BTPrinterSettingActivity extends AppCompatActivity {
         btnFindPrinter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (checkBluetoothOn()) {
+                if (appSetting.checkAndRequestBluetoothOn(BTPrinterSettingActivity.this,BA)) {
                     Intent i = new Intent(BTPrinterSettingActivity.this, BondBtActivity.class);
                     startActivity(i);
                 }
@@ -69,8 +65,8 @@ public class BTPrinterSettingActivity extends AppCompatActivity {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
-                            if (checkBluetoothOn()) {
-                                if (checkEditBluetoothDevice()) {
+                            if (appSetting.checkAndRequestBluetoothOn(BTPrinterSettingActivity.this,BA)) {
+                                if (appSetting.checkBluetoothDevice(BA,etBluetoothPrinter.getText().toString(),context,bluetoothAdapter,deviceAdapter)) {
                                     Intent intent = new Intent(getApplicationContext(), BtService.class);
                                     intent.setAction(PrintUtil.ACTION_PRINT_BITMAP);
                                     startService(intent);
@@ -143,59 +139,6 @@ public class BTPrinterSettingActivity extends AppCompatActivity {
         if (rdo58.isChecked()) paperWidth = 58;
         else if (rdo80.isChecked()) paperWidth = 80;
         return paperWidth;
-    }
-
-    private boolean checkEditBluetoothDevice() {
-        Set<BluetoothDevice> pairedDevices = BA.getBondedDevices();
-
-        for (BluetoothDevice bt : pairedDevices) {
-            String address = bt.getAddress();
-            String editAddress = etBluetoothPrinter.getText().toString();
-            if (editAddress.equals(address)) {
-                connectDevice(bt);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void connectDevice(BluetoothDevice bt) {
-        if (null == deviceAdapter) {
-            return;
-        }
-        final BluetoothDevice bluetoothDevice = bt;
-        if (null == bluetoothDevice) {
-            return;
-        }
-        try {
-            BtUtil.cancelDiscovery(bluetoothAdapter);
-            PrintUtil.setDefaultBluetoothDeviceAddress(getApplicationContext(), bluetoothDevice.getAddress());
-            PrintUtil.setDefaultBluetoothDeviceName(getApplicationContext(), bluetoothDevice.getName());
-            if (null != deviceAdapter) {
-                deviceAdapter.setConnectedDeviceAddress(bluetoothDevice.getAddress());
-            }
-            //if (bluetoothDevice.getBondState() != BluetoothDevice.BOND_BONDED) {
-            Method createBondMethod = BluetoothDevice.class.getMethod("createBond");
-            createBondMethod.invoke(bluetoothDevice);
-            //}
-            PrintQueue.getQueue(getApplicationContext()).disconnect();
-        } catch (Exception e) {
-            e.printStackTrace();
-            PrintUtil.setDefaultBluetoothDeviceAddress(getApplicationContext(), "");
-            PrintUtil.setDefaultBluetoothDeviceName(getApplicationContext(), "");
-            Toast.makeText(context, getResources().getString(R.string.bluetooth_tethering_fail), Toast.LENGTH_LONG).show();
-        }
-    }
-
-    private boolean checkBluetoothOn() {
-        if (!BA.isEnabled()) {
-            Intent turnOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(turnOn, 0);
-            Toast.makeText(context, getResources().getString(R.string.turn_on), Toast.LENGTH_LONG).show();
-            return false;
-        } else {
-            return true;
-        }
     }
 
     private void fillData() {

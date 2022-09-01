@@ -288,7 +288,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onError(@NonNull Throwable e) {
                 progressDialog.dismiss();
-                Log.e("LoginActivity", e.getMessage());
+                Toast.makeText(context,e.getMessage(),Toast.LENGTH_LONG).show();
             }
 
             @Override

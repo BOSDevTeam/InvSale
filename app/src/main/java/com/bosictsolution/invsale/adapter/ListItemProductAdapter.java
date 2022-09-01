@@ -48,8 +48,11 @@ public class ListItemProductAdapter extends RecyclerView.Adapter<ListItemProduct
         holder.tvProductName.setText(list.get(position).getProductName());
         holder.tvPrice.setText(db.getHomeCurrency()+context.getResources().getString(R.string.space) + appSetting.df.format(list.get(position).getSalePrice()));
 
-        if (list.get(position).getQuantity() != 0)
+        if (list.get(position).getQuantity() != 0) {
             holder.tvQuantity.setText(String.valueOf(list.get(position).getQuantity()));
+            holder.tvQuantity.setVisibility(View.VISIBLE);
+        }else
+            holder.tvQuantity.setVisibility(View.GONE);
 
         if (list.get(position).getPhotoUrl() != null && list.get(position).getPhotoUrl().length() != 0)
             Picasso.with(context).load(list.get(position).getPhotoUrl()).into(holder.imgPhoto);

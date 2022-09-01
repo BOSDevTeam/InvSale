@@ -3,6 +3,7 @@ package com.bosictsolution.invsale;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -14,12 +15,14 @@ import io.reactivex.functions.Function6;
 import io.reactivex.schedulers.Schedulers;
 
 import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -39,6 +42,7 @@ import com.bosictsolution.invsale.adapter.ListItemProductInfoAdapter;
 import com.bosictsolution.invsale.adapter.GeneralExpandableListAdapter;
 import com.bosictsolution.invsale.adapter.ListItemSaleAdapter;
 import com.bosictsolution.invsale.api.Api;
+import com.bosictsolution.invsale.bluetooth.BtDeviceListAdapter;
 import com.bosictsolution.invsale.common.AppSetting;
 import com.bosictsolution.invsale.common.Confirmation;
 import com.bosictsolution.invsale.common.ConnectionLiveData;
@@ -88,6 +92,9 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
     DatabaseAccess db;
     public static boolean isSaleCompleted;
     ConnectionLiveData connectionLiveData;
+    public static BluetoothAdapter BA;
+    private BtDeviceListAdapter deviceAdapter;
+    private BluetoothAdapter bluetoothAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -182,6 +189,23 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         db=new DatabaseAccess(context);
         progressDialog =new ProgressDialog(context);
         appSetting.setupProgress(progressDialog);
+        BA = BluetoothAdapter.getDefaultAdapter();
+        deviceAdapter = new BtDeviceListAdapter(getApplicationContext(), null);
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.printer_info, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem printerInfoItem = menu.findItem(R.id.action_printer_info);
+        if (!checkBluetoothPrinterStatus())
+            printerInfoItem.setIcon(ContextCompat.getDrawable(context, R.drawable.ic_print_disabled_24));
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -190,9 +214,31 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
             case android.R.id.home:
                 finish();
                 return true;
+            case R.id.action_printer_info:
+                showBluetoothPrinterStatus();
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void showBluetoothPrinterStatus() {
+        if (!db.isSetupBluetoothPrinter()) {
+            Toast.makeText(context, context.getResources().getString(R.string.bluetooth_printer_setup_message), Toast.LENGTH_LONG).show();
+        } else if (!appSetting.checkBluetoothOn(BA)) {
+            Toast.makeText(context, context.getResources().getString(R.string.bluetooth_off_message), Toast.LENGTH_LONG).show();
+        } else if (!appSetting.checkBluetoothDevice(BA, db.getPrinterAddress(), context, bluetoothAdapter, deviceAdapter)) {
+            Toast.makeText(context, context.getResources().getString(R.string.bluetooth_printer_disconnect_message), Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(context, context.getResources().getString(R.string.bluetooth_printer_ready), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private boolean checkBluetoothPrinterStatus() {
+        if (!db.isSetupBluetoothPrinter()) return false;
+        else if (!appSetting.checkBluetoothOn(BA)) return false;
+        else if (!appSetting.checkBluetoothDevice(BA, db.getPrinterAddress(), context, bluetoothAdapter, deviceAdapter))
+            return false;
+        return true;
     }
 
     @Override
@@ -662,7 +708,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
             @Override
             public void onError(@NonNull Throwable e) {
                 progressDialog.dismiss();
-                Log.e("SaleActivity", e.getMessage());
+                Toast.makeText(context,e.getMessage(),Toast.LENGTH_LONG).show();
             }
 
             @Override

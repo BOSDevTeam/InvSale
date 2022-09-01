@@ -33,7 +33,7 @@ import java.util.List;
 
 public class ProductActivity extends AppCompatActivity implements ListItemProductAdapter.IListener {
 
-    TextView tvSubMenu,tvProductName,tvPrice,tvQuantity,tvAlreadyInOrder;
+    TextView tvSubMenu,tvProductName,tvPrice,tvQuantity,tvAlreadyInOrder,tvDescription;
     Button btnAddToOrder;
     ImageButton btnPlus,btnMinus;
     RecyclerView rvProduct;
@@ -194,6 +194,7 @@ public class ProductActivity extends AppCompatActivity implements ListItemProduc
         bottom_sheet=findViewById(R.id.bottom_sheet);
         btnBottomSheetClose=findViewById(R.id.btnBottomSheetClose);
         tvProductName = findViewById(R.id.tvProductName);
+        tvDescription = findViewById(R.id.tvDescription);
         tvPrice = findViewById(R.id.tvPrice);
         tvQuantity = findViewById(R.id.tvQuantity);
         tvAlreadyInOrder = findViewById(R.id.tvAlreadyInOrder);
@@ -205,12 +206,17 @@ public class ProductActivity extends AppCompatActivity implements ListItemProduc
 
     @Override
     public void onProductClicked(int position) {
-        productPosition=position;
+        productPosition = position;
         productId = lstProduct.get(position).getProductID();
-        productName=lstProduct.get(position).getProductName();
-        salePrice=lstProduct.get(position).getSalePrice();
+        productName = lstProduct.get(position).getProductName();
+        salePrice = lstProduct.get(position).getSalePrice();
         tvProductName.setText(productName);
-        tvPrice.setText(db.getHomeCurrency()+context.getResources().getString(R.string.space) + appSetting.df.format(salePrice));
+        tvPrice.setText(db.getHomeCurrency() + context.getResources().getString(R.string.space) + appSetting.df.format(salePrice));
+
+        if (lstProduct.get(position).getDescription() != null && lstProduct.get(position).getDescription().length() != 0)
+            tvDescription.setText(lstProduct.get(position).getDescription());
+        else tvDescription.setVisibility(View.GONE);
+
         int quantity = db.getSaleOrderQuantityByProduct(productId);
         if (quantity == 0) {
             tvAlreadyInOrder.setVisibility(View.GONE);

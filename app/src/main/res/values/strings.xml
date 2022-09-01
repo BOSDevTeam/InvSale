@@ -170,5 +170,10 @@
     <string name="sale_bill_png">salebill.png</string>
     <string name="price">Price</string>
     <string name="qty">Qty</string>
+    <string name="printer">Printer</string>
+    <string name="bluetooth_printer_setup_message">Setup Bluetooth Printer in App Setting Menu!</string>
+    <string name="bluetooth_off_message">Bluetooth Off! Please Turn On.</string>
+    <string name="bluetooth_printer_disconnect_message">Bluetooth printer not found or disconnected! Check your printer is Off!</string>
+    <string name="bluetooth_printer_ready">Bluetooth Printer Ready!</string>
 
 </resources>

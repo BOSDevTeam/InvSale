@@ -6,7 +6,6 @@ import androidx.lifecycle.Observer;
 
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -21,9 +20,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bosictsolution.invsale.bluetooth.BtDeviceListAdapter;
-import com.bosictsolution.invsale.bluetooth.bt.BtUtil;
-import com.bosictsolution.invsale.bluetooth.print.PrintQueue;
-import com.bosictsolution.invsale.bluetooth.print.PrintUtil;
 import com.bosictsolution.invsale.common.AppConstant;
 import com.bosictsolution.invsale.common.AppSetting;
 import com.bosictsolution.invsale.common.ConnectionLiveData;
@@ -34,9 +30,7 @@ import com.bosictsolution.invsale.data.SaleTranData;
 import com.bosictsolution.invsale.data.VoucherSettingData;
 import com.squareup.picasso.Picasso;
 
-import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Set;
 
 public class SaleBillActivity extends AppCompatActivity {
 
@@ -87,8 +81,8 @@ public class SaleBillActivity extends AppCompatActivity {
         btnPrint.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(checkBluetoothOn()){
-                    if (checkBluetoothDevice(db.getPrinterAddress())){
+                if(appSetting.checkAndRequestBluetoothOn(SaleBillActivity.this,BA)){
+                    if (appSetting.checkBluetoothDevice(BA,db.getPrinterAddress(),context,bluetoothAdapter,deviceAdapter)){
                         Intent i=new Intent(SaleBillActivity.this,SalePrintActivity.class);
                         i.putExtra("PaperWidth",db.getPaperWidth());
                         i.putExtra("LocationID",locationId);
@@ -236,6 +230,12 @@ public class SaleBillActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        saleCompleted();
+    }
+
     private void saleCompleted(){
         if(PayDetailActivity.activity!=null) PayDetailActivity.activity.finish();
         SaleActivity.isSaleCompleted=true;
@@ -278,59 +278,4 @@ public class SaleBillActivity extends AppCompatActivity {
         btnBack=findViewById(R.id.btnBack);
         btnPrint=findViewById(R.id.btnPrint);
     }
-
-    /** bluetooth code **/
-    private boolean checkBluetoothOn(){
-        if (!BA.isEnabled()) {
-            Intent turnOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(turnOn, 0);
-            Toast.makeText(context, getResources().getString(R.string.turn_on), Toast.LENGTH_LONG).show();
-            return false;
-        }else {
-            return true;
-        }
-    }
-
-    private boolean checkBluetoothDevice(String btAddress){
-        Set<BluetoothDevice> pairedDevices = BA.getBondedDevices();
-
-        for(BluetoothDevice bt : pairedDevices) {
-            String address=bt.getAddress();
-            if(btAddress.equals(address)){
-                connectBluetoothDevice(bt);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void connectBluetoothDevice(BluetoothDevice bt){
-        if (null == deviceAdapter) {
-            return;
-        }
-        final BluetoothDevice bluetoothDevice = bt;
-        if (null == bluetoothDevice) {
-            return;
-        }
-        try {
-            BtUtil.cancelDiscovery(bluetoothAdapter);
-            PrintUtil.setDefaultBluetoothDeviceAddress(getApplicationContext(), bluetoothDevice.getAddress());
-            PrintUtil.setDefaultBluetoothDeviceName(getApplicationContext(), bluetoothDevice.getName());
-            if (null != deviceAdapter) {
-                deviceAdapter.setConnectedDeviceAddress(bluetoothDevice.getAddress());
-            }
-
-            //if (bluetoothDevice.getBondState() != BluetoothDevice.BOND_BONDED) {
-            Method createBondMethod = BluetoothDevice.class.getMethod("createBond");
-            createBondMethod.invoke(bluetoothDevice);
-            //}
-            PrintQueue.getQueue(getApplicationContext()).disconnect();
-        } catch (Exception e) {
-            e.printStackTrace();
-            PrintUtil.setDefaultBluetoothDeviceAddress(getApplicationContext(), "");
-            PrintUtil.setDefaultBluetoothDeviceName(getApplicationContext(), "");
-            Toast.makeText(context, getResources().getString(R.string.bluetooth_tethering_fail), Toast.LENGTH_LONG).show();
-        }
-    }
-    //end bluetooth code
 }

@@ -255,6 +255,7 @@ public class DatabaseAccess {
             cv.put("ProductName", list.get(i).getProductName());
             cv.put("SalePrice", list.get(i).getSalePrice());
             cv.put("PhotoUrl", list.get(i).getPhotoUrl());
+            cv.put("Description",list.get(i).getDescription());
             database.insert("ProductTemp", null, cv);
         }
         return true;
@@ -290,7 +291,7 @@ public class DatabaseAccess {
     public List<ProductData> getProductBySubMenu(int subMenuId) {
         database = openHelper.getReadableDatabase();
         List<ProductData> list = new ArrayList<>();
-        Cursor cur = database.rawQuery("SELECT p.ProductID,ProductName,SalePrice,SubMenuID,Quantity,PhotoUrl FROM ProductTemp p LEFT JOIN TranSaleOrderTemp ts ON p.ProductID=ts.ProductID WHERE SubMenuID =" + subMenuId, null);
+        Cursor cur = database.rawQuery("SELECT p.ProductID,ProductName,SalePrice,SubMenuID,Quantity,PhotoUrl,Description FROM ProductTemp p LEFT JOIN TranSaleOrderTemp ts ON p.ProductID=ts.ProductID WHERE SubMenuID =" + subMenuId, null);
         while (cur.moveToNext()) {
             ProductData data = new ProductData();
             data.setProductID(cur.getInt(0));
@@ -299,6 +300,7 @@ public class DatabaseAccess {
             data.setSubMenuID(cur.getInt(3));
             data.setQuantity(cur.getInt(4));
             data.setPhotoUrl(cur.getString(5));
+            data.setDescription(cur.getString(6));
             list.add(data);
         }
         return list;
@@ -605,6 +607,13 @@ public class DatabaseAccess {
         Cursor cur = database.rawQuery("SELECT PaperWidth FROM BluetoothPrinter", null);
         if (cur.moveToFirst()) paperWidth = cur.getInt(0);
         return paperWidth;
+    }
+    public boolean isSetupBluetoothPrinter() {
+        boolean result = false;
+        database = openHelper.getReadableDatabase();
+        Cursor cur = database.rawQuery("SELECT * FROM BluetoothPrinter", null);
+        if (cur.moveToFirst()) result = true;
+        return result;
     }
     private boolean deleteMasterSale(){
         database=openHelper.getWritableDatabase();
