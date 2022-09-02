@@ -48,7 +48,7 @@ public class ProductActivity extends AppCompatActivity implements ListItemProduc
     private ProgressDialog progressDialog;
     String mainMenuName,subMenuName;
     int subMenuId,productId,salePrice,productPosition;
-    String productName;
+    String productName,description;
     AppSetting appSetting=new AppSetting();
     public static Activity activity;
     ConnectionLiveData connectionLiveData;
@@ -114,6 +114,7 @@ public class ProductActivity extends AppCompatActivity implements ListItemProduc
                     ProductData productData=new ProductData();
                     productData.setProductID(productId);
                     productData.setProductName(productName);
+                    productData.setDescription(description);
                     productData.setSalePrice(salePrice);
                     productData.setQuantity(quantity);
                     lstProduct.set(productPosition,productData);
@@ -209,13 +210,15 @@ public class ProductActivity extends AppCompatActivity implements ListItemProduc
         productPosition = position;
         productId = lstProduct.get(position).getProductID();
         productName = lstProduct.get(position).getProductName();
+        description = lstProduct.get(position).getDescription();
         salePrice = lstProduct.get(position).getSalePrice();
         tvProductName.setText(productName);
         tvPrice.setText(db.getHomeCurrency() + context.getResources().getString(R.string.space) + appSetting.df.format(salePrice));
 
-        if (lstProduct.get(position).getDescription() != null && lstProduct.get(position).getDescription().length() != 0)
-            tvDescription.setText(lstProduct.get(position).getDescription());
-        else tvDescription.setVisibility(View.GONE);
+        if (description != null && description.length() != 0) {
+            tvDescription.setText(description);
+            tvDescription.setVisibility(View.VISIBLE);
+        } else tvDescription.setVisibility(View.GONE);
 
         int quantity = db.getSaleOrderQuantityByProduct(productId);
         if (quantity == 0) {

@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -24,14 +25,20 @@ import com.bosictsolution.invsale.api.Api;
 import com.bosictsolution.invsale.common.AppConstant;
 import com.bosictsolution.invsale.common.AppSetting;
 import com.bosictsolution.invsale.common.ConnectionLiveData;
+import com.bosictsolution.invsale.common.DatabaseAccess;
 import com.bosictsolution.invsale.data.ClientData;
 import com.bosictsolution.invsale.data.ConnectionData;
 import com.bosictsolution.invsale.data.DivisionData;
 import com.bosictsolution.invsale.data.TownshipData;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.FirebaseException;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthProvider;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -45,9 +52,13 @@ public class RegisterActivity extends AppCompatActivity {
     List<TownshipData> lstTownship=new ArrayList<>();
     private Context context=this;
     private ProgressDialog progressDialog;
-    int clientId;
     SharedPreferences sharedpreferences;
     ConnectionLiveData connectionLiveData;
+    DatabaseAccess db;
+    PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallback;
+    FirebaseAuth auth;
+    private String verificationCode;
+    ClientData clientData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +70,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         checkConnection();
         fillData();
+        startFirebaseLogin();
 
         spDivision.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -78,23 +90,24 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (validateControl()) {
-                    ClientData clientData = new ClientData();
+                    clientData = new ClientData();
                     clientData.setClientName(etUserName.getText().toString());
                     clientData.setShopName(etShopName.getText().toString());
                     clientData.setPhone(etPhone.getText().toString());
                     clientData.setAddress(etAddress.getText().toString());
                     int position = spDivision.getSelectedItemPosition();
                     int divisionId = lstDivision.get(position).getDivisionID();
-                    String divisionName=lstDivision.get(position).getDivisionName();
+                    String divisionName = lstDivision.get(position).getDivisionName();
                     clientData.setDivisionID(divisionId);
                     clientData.setDivisionName(divisionName);
                     position = spTownship.getSelectedItemPosition();
                     int townshipId = lstTownship.get(position).getTownshipID();
-                    String townshipName=lstTownship.get(position).getTownshipName();
+                    String townshipName = lstTownship.get(position).getTownshipName();
                     clientData.setTownshipID(townshipId);
                     clientData.setTownshipName(townshipName);
                     clientData.setSalePerson(true);
-                    insertClient(clientData);  // insert client to database
+                    if (db.getIsClientPhoneVerify() == 1) checkClientPhone();
+                    else insertClient(clientData);  // insert client to database
                 }
             }
         });
@@ -111,6 +124,7 @@ public class RegisterActivity extends AppCompatActivity {
     private void init() {
         connectionLiveData = new ConnectionLiveData(context);
         sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
+        db=new DatabaseAccess(context);
         progressDialog = new ProgressDialog(context);
         appSetting.setupProgress(progressDialog);
     }
@@ -195,7 +209,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
                 progressDialog.dismiss();
-                clientId = response.body();
+                int clientId = response.body();
                 if (clientId != 0) {
                     Toast.makeText(context, getResources().getString(R.string.register_success), Toast.LENGTH_LONG).show();
                     SharedPreferences.Editor editor = sharedpreferences.edit();
@@ -220,6 +234,34 @@ public class RegisterActivity extends AppCompatActivity {
             public void onFailure(Call<Integer> call, Throwable t) {
                 progressDialog.dismiss();
                 Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void checkClientPhone() {
+        progressDialog.show();
+        progressDialog.setMessage(getResources().getString(R.string.loading));
+        Api.getClient().checkClient(clientData.getPhone()).enqueue(new Callback<ClientData>() {
+            @Override
+            public void onResponse(Call<ClientData> call, Response<ClientData> response) {
+                ClientData data = response.body();
+                if (data.getClientID() == 0) {
+                    PhoneAuthProvider.getInstance().verifyPhoneNumber(
+                            clientData.getPhone(),           // Phone number to verify
+                            60,                           // Timeout duration
+                            TimeUnit.SECONDS,                // Unit of timeout
+                            RegisterActivity.this,   // Activity (for callback binding)
+                            mCallback);
+                } else {
+                    progressDialog.dismiss();
+                    Toast.makeText(context, getResources().getString(R.string.already_register_phone), Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ClientData> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -257,5 +299,35 @@ public class RegisterActivity extends AppCompatActivity {
         inputPhone=findViewById(R.id.inputPhone);
         inputAddress=findViewById(R.id.inputAddress);
         tvSignIn=findViewById(R.id.tvSignIn);
+    }
+
+    private void startFirebaseLogin() {
+        auth = FirebaseAuth.getInstance();
+        mCallback = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+            @Override
+            public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
+                progressDialog.dismiss();
+                Toast.makeText(context,"Verification completed!", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(RegisterActivity.this, OTPConfirmActivity.class);
+                i.putExtra("ClientData", (Parcelable) clientData);
+                i.putExtra("VerificationCode",verificationCode);
+                startActivity(i);
+                finish();
+            }
+
+            @Override
+            public void onVerificationFailed(FirebaseException e) {
+                progressDialog.dismiss();
+                Toast.makeText(context,"Invalid number and verification failed!",Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+                super.onCodeSent(s, forceResendingToken);
+                verificationCode = s;
+                Toast.makeText(context,"Code sent!",Toast.LENGTH_SHORT).show();
+            }
+        };
     }
 }

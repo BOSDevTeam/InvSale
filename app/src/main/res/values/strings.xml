@@ -175,5 +175,7 @@
     <string name="bluetooth_off_message">Bluetooth Off! Please Turn On.</string>
     <string name="bluetooth_printer_disconnect_message">Bluetooth printer not found or disconnected! Check your printer is Off!</string>
     <string name="bluetooth_printer_ready">Bluetooth Printer Ready!</string>
+    <string name="enter_verify_code">Enter the code to Verify your phone</string>
+    <string name="sms_code_message">We have sent you an SMS with a code to the number +95 -\u0020</string>
 
 </resources>

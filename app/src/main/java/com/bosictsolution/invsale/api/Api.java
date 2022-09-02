@@ -13,8 +13,8 @@ public class Api {
 
     public static ApiInterface getClient() {  // this is manual dependency injection
 
-        //String BASE_URL = "http://192.168.100.14/InventoryWebService/api/";
-        String BASE_URL = "http://bosasp-001-site15.gtempurl.com/api/";
+        String BASE_URL = "http://192.168.100.14/InventoryWebService/api/";
+        //String BASE_URL = "http://bosasp-001-site15.gtempurl.com/api/";
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder()
                 .callTimeout(5, TimeUnit.MINUTES)

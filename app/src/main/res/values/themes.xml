@@ -290,4 +290,18 @@
         <item name="android:background">@color/gray</item>
     </style>
 
+    <style name="OtpTextView">
+        <item name="android:layout_height">50dp</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:background">@drawable/bd_gray_1r_white</item>
+        <item name="android:layout_margin">5dp</item>
+        <item name="android:textColor">@color/black_soft</item>
+        <item name="android:textSize">@dimen/text_regular</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:inputType">number</item>
+        <item name="android:gravity">center</item>
+        <item name="android:maxLength">1</item>
+    </style>
+
 </resources>

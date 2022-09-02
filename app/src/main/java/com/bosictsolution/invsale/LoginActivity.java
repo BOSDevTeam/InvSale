@@ -6,7 +6,7 @@ import androidx.lifecycle.Observer;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Function4;
+import io.reactivex.functions.Function3;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -28,7 +28,6 @@ import com.bosictsolution.invsale.common.AppConstant;
 import com.bosictsolution.invsale.common.AppSetting;
 import com.bosictsolution.invsale.common.ConnectionLiveData;
 import com.bosictsolution.invsale.common.DatabaseAccess;
-import com.bosictsolution.invsale.data.CompanySettingData;
 import com.bosictsolution.invsale.data.ConnectionData;
 import com.bosictsolution.invsale.data.MainMenuData;
 import com.bosictsolution.invsale.data.ProductData;
@@ -254,21 +253,19 @@ public class LoginActivity extends AppCompatActivity {
     private void loadData() {
         progressDialog.show();
         progressDialog.setMessage(getResources().getString(R.string.loading));
-        Observable<CompanySettingData> obCompanySetting = Api.getClient().getCompanySetting();
         Observable<List<MainMenuData>> obMainMenu = Api.getClient().getMainMenu();
         Observable<List<SubMenuData>> obSubMenu = Api.getClient().getSubMenu();
         Observable<List<ProductData>> obProduct = Api.getClient().getProduct();
 
-        Observable<Boolean> result = io.reactivex.Observable.zip(obCompanySetting.subscribeOn(Schedulers.io()),
+        Observable<Boolean> result = io.reactivex.Observable.zip(
                 obMainMenu.subscribeOn(Schedulers.io()), obSubMenu.subscribeOn(Schedulers.io()), obProduct.subscribeOn(Schedulers.io()),
-                new Function4<CompanySettingData, List<MainMenuData>, List<SubMenuData>, List<ProductData>, Boolean>() {
+                new Function3<List<MainMenuData>, List<SubMenuData>, List<ProductData>, Boolean>() {
                     @NonNull
                     @Override
-                    public Boolean apply(@NonNull CompanySettingData companySettingData, @NonNull List<MainMenuData> mainMenuData, @NonNull List<SubMenuData> subMenuData, @NonNull List<ProductData> productData) throws Exception {
+                    public Boolean apply(@NonNull List<MainMenuData> mainMenuData, @NonNull List<SubMenuData> subMenuData, @NonNull List<ProductData> productData) throws Exception {
                         db.insertMainMenu(mainMenuData);
                         db.insertSubMenu(subMenuData);
                         db.insertProduct(productData);
-                        db.insertCompanySetting(companySettingData);
                         progressDialog.dismiss();
                         return true;
                     }
@@ -288,7 +285,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onError(@NonNull Throwable e) {
                 progressDialog.dismiss();
-                Toast.makeText(context,e.getMessage(),Toast.LENGTH_LONG).show();
+                Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
             }
 
             @Override

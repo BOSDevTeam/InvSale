@@ -1,7 +1,18 @@
 package com.bosictsolution.invsale.data;
 
 public class CompanySettingData {
-    private int Tax,ServiceCharges;
+    private int Tax;
+    private int ServiceCharges;
+
+    public int getIsClientPhoneVerify() {
+        return IsClientPhoneVerify;
+    }
+
+    public void setIsClientPhoneVerify(int isClientPhoneVerify) {
+        IsClientPhoneVerify = isClientPhoneVerify;
+    }
+
+    private int IsClientPhoneVerify;
     private String HomeCurrency;
 
     public int getTax() {

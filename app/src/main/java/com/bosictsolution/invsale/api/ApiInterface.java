@@ -125,7 +125,7 @@ public interface ApiInterface {
     Call<List<SaleOrderTranData>> getSaleOrderItemByValue(@Query("value") String value, @Query("clientId") int clientId);
 
     @GET("companysetting/GetCompanySetting")
-    Observable<CompanySettingData> getCompanySetting();
+    Call<CompanySettingData> getCompanySetting();
 
     @GET("mainmenu/GetMainMenu")
     Observable<List<MainMenuData>> getMainMenu();

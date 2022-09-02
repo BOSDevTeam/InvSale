@@ -5,7 +5,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -18,8 +22,11 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.widget.Toast;
 
+import com.bosictsolution.invsale.api.Api;
 import com.bosictsolution.invsale.common.AppConstant;
 import com.bosictsolution.invsale.common.AppSetting;
+import com.bosictsolution.invsale.common.DatabaseAccess;
+import com.bosictsolution.invsale.data.CompanySettingData;
 
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -30,13 +37,15 @@ public class SplashActivity extends AppCompatActivity {
     AppSetting appSetting=new AppSetting();
     Context context=this;
     SharedPreferences sharedpreferences;
+    private ProgressDialog progressDialog;
+    DatabaseAccess db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         getSupportActionBar().hide();
-        sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
+        init();
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -47,16 +56,8 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void appStart() {
-        if (appSetting.checkConnection(context)) {
-            int clientId = sharedpreferences.getInt(AppConstant.ClientID, 0);
-            Intent i;
-            if (clientId == 0) {
-                i = new Intent(SplashActivity.this, RegisterActivity.class);
-            } else {
-                i = new Intent(SplashActivity.this, LoginActivity.class);
-            }
-            startActivity(i);
-        } else {
+        if (appSetting.checkConnection(context)) getCompanySetting();
+        else {
             Intent i = new Intent(SplashActivity.this, NoInternetActivity.class);
             startActivity(i);
         }
@@ -130,5 +131,38 @@ public class SplashActivity extends AppCompatActivity {
                 }
                 break;
         }
+    }
+
+    private void getCompanySetting() {
+        progressDialog.show();
+        progressDialog.setMessage(getResources().getString(R.string.loading));
+        Api.getClient().getCompanySetting().enqueue(new Callback<CompanySettingData>() {
+            @Override
+            public void onResponse(Call<CompanySettingData> call, Response<CompanySettingData> response) {
+                if (db.insertCompanySetting(response.body())) {
+                    int clientId = sharedpreferences.getInt(AppConstant.ClientID, 0);
+                    Intent i;
+                    if (clientId == 0) {
+                        i = new Intent(SplashActivity.this, RegisterActivity.class);
+                    } else {
+                        i = new Intent(SplashActivity.this, LoginActivity.class);
+                    }
+                    startActivity(i);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<CompanySettingData> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void init(){
+        sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
+        db=new DatabaseAccess(context);
+        progressDialog = new ProgressDialog(context);
+        appSetting.setupProgress(progressDialog);
     }
 }

@@ -12,13 +12,16 @@
         android:theme="@style/Theme.InvSale"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".OTPConfirmActivity"
+            android:exported="true" />
+        <activity
             android:name=".SalePrintActivity"
             android:exported="true"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".bluetooth.BondBtActivity"
             android:exported="true"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".SignInActivity"
             android:exported="true"
@@ -102,14 +105,14 @@
 
         <service android:name=".bluetooth.BtService" />
     </application>
-    <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <uses-permission android:name="android.permission.BLUETOOTH" />
 
 </manifest>

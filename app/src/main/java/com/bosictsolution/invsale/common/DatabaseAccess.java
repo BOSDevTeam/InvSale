@@ -313,6 +313,7 @@ public class DatabaseAccess {
             cv.put("Tax", data.getTax());
             cv.put("ServiceCharges", data.getServiceCharges());
             cv.put("HomeCurrency",data.getHomeCurrency());
+            cv.put("IsClientPhoneVerify",data.getIsClientPhoneVerify());
             database.insert("CompanySettingTemp", null, cv);
         }
         return true;
@@ -334,6 +335,14 @@ public class DatabaseAccess {
         if (cur.moveToFirst())
             homeCurrency = cur.getString(0);
         return homeCurrency;
+    }
+    public int getIsClientPhoneVerify() {
+        database = openHelper.getReadableDatabase();
+        int result = 0;
+        Cursor cur = database.rawQuery("SELECT IsClientPhoneVerify FROM CompanySettingTemp", null);
+        if (cur.moveToFirst())
+            result = cur.getInt(0);
+        return result;
     }
     public boolean insertLocation(List<LocationData> list){
         deleteLocation();
