@@ -60,8 +60,8 @@ public class SplashActivity extends AppCompatActivity {
         else {
             Intent i = new Intent(SplashActivity.this, NoInternetActivity.class);
             startActivity(i);
+            finish();
         }
-        finish();
     }
 
     private void permission() {
@@ -148,6 +148,7 @@ public class SplashActivity extends AppCompatActivity {
                         i = new Intent(SplashActivity.this, LoginActivity.class);
                     }
                     startActivity(i);
+                    finish();
                 }
             }
 

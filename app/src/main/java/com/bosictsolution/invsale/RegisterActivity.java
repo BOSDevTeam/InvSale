@@ -308,7 +308,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
                 progressDialog.dismiss();
-                Toast.makeText(context,"Verification completed!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context,getResources().getString(R.string.verification_completed), Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(RegisterActivity.this, OTPConfirmActivity.class);
                 i.putExtra("ClientData", (Parcelable) clientData);
                 i.putExtra("VerificationCode",verificationCode);
@@ -319,14 +319,14 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onVerificationFailed(FirebaseException e) {
                 progressDialog.dismiss();
-                Toast.makeText(context,"Invalid number and verification failed!",Toast.LENGTH_SHORT).show();
+                Toast.makeText(context,getResources().getString(R.string.invalid_verification),Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
                 super.onCodeSent(s, forceResendingToken);
                 verificationCode = s;
-                Toast.makeText(context,"Code sent!",Toast.LENGTH_SHORT).show();
+                Toast.makeText(context,getResources().getString(R.string.code_sent),Toast.LENGTH_SHORT).show();
             }
         };
     }

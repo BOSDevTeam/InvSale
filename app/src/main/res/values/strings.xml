@@ -176,6 +176,10 @@
     <string name="bluetooth_printer_disconnect_message">Bluetooth printer not found or disconnected! Check your printer is Off!</string>
     <string name="bluetooth_printer_ready">Bluetooth Printer Ready!</string>
     <string name="enter_verify_code">Enter the code to Verify your phone</string>
-    <string name="sms_code_message">We have sent you an SMS with a code to the number +95 -\u0020</string>
+    <string name="sms_code_message">We have sent you an SMS with a code to the number\u0020</string>
+    <string name="incorrect_otp">Incorrect OTP</string>
+    <string name="invalid_verification">Invalid number and verification failed!</string>
+    <string name="code_sent">Code Sent!</string>
+    <string name="verification_completed">Verification Completed!</string>
 
 </resources>

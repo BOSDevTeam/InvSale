@@ -13,6 +13,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,7 +31,8 @@ import com.google.firebase.auth.PhoneAuthProvider;
 public class OTPConfirmActivity extends AppCompatActivity {
 
     Button btnOK;
-    TextView tvOTP1,tvOTP2,tvOTP3,tvOTP4,tvOTP5,tvOTP6,tvSubtitle;
+    EditText etOTP1,etOTP2,etOTP3,etOTP4,etOTP5,etOTP6;
+    TextView tvSubtitle;
     ClientData clientData;
     String verificationCode,otp;
     FirebaseAuth auth;
@@ -56,7 +58,8 @@ public class OTPConfirmActivity extends AppCompatActivity {
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                otp=tvOTP1.getText().toString()+tvOTP2.getText().toString()+tvOTP3.getText().toString()+tvOTP4.getText().toString()+tvOTP5.getText().toString()+tvOTP6.getText().toString();
+                otp=etOTP1.getText().toString()+etOTP2.getText().toString()+etOTP3.getText().toString()+etOTP4.getText().toString()+etOTP5.getText().toString()+etOTP6.getText().toString();
+                if(otp==null || otp.length()==0)return;
                 PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationCode, otp);
                 signInWithPhone(credential);
             }
@@ -75,7 +78,7 @@ public class OTPConfirmActivity extends AppCompatActivity {
                             insertClient();
                         } else {
                             progressDialog.dismiss();
-                            Toast.makeText(OTPConfirmActivity.this, "Incorrect OTP", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(OTPConfirmActivity.this, getResources().getString(R.string.incorrect_otp), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -117,12 +120,12 @@ public class OTPConfirmActivity extends AppCompatActivity {
 
     private void setLayoutResource(){
         btnOK=findViewById(R.id.btnOK);
-        tvOTP1=findViewById(R.id.tvOTP1);
-        tvOTP2=findViewById(R.id.tvOTP2);
-        tvOTP3=findViewById(R.id.tvOTP3);
-        tvOTP4=findViewById(R.id.tvOTP4);
-        tvOTP5=findViewById(R.id.tvOTP5);
-        tvOTP6=findViewById(R.id.tvOTP6);
+        etOTP1=findViewById(R.id.etOTP1);
+        etOTP2=findViewById(R.id.etOTP2);
+        etOTP3=findViewById(R.id.etOTP3);
+        etOTP4=findViewById(R.id.etOTP4);
+        etOTP5=findViewById(R.id.etOTP5);
+        etOTP6=findViewById(R.id.etOTP6);
         tvSubtitle=findViewById(R.id.tvSubtitle);
     }
 
