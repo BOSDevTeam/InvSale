@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -55,6 +56,46 @@ public class OTPConfirmActivity extends AppCompatActivity {
 
         fillData();
 
+        etOTP1.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if(etOTP1.length()==0)etOTP1.requestFocus();
+                else etOTP2.requestFocus();
+                return false;
+            }
+        });
+        etOTP2.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if(etOTP2.length()==0)etOTP2.requestFocus();
+                else etOTP3.requestFocus();
+                return false;
+            }
+        });
+        etOTP3.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if(etOTP3.length()==0)etOTP3.requestFocus();
+                else etOTP4.requestFocus();
+                return false;
+            }
+        });
+        etOTP4.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if(etOTP4.length()==0)etOTP4.requestFocus();
+                else etOTP5.requestFocus();
+                return false;
+            }
+        });
+        etOTP5.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if(etOTP5.length()==0)etOTP5.requestFocus();
+                else etOTP6.requestFocus();
+                return false;
+            }
+        });
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
