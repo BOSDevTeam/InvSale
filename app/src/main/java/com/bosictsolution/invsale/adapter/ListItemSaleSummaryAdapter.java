@@ -38,10 +38,10 @@ public class ListItemSaleSummaryAdapter extends RecyclerView.Adapter<ListItemSal
 
     @Override
     public void onBindViewHolder(ViewHolder holder, @SuppressLint("RecyclerView") int position) {
-        holder.tvDate.setText(list.get(position).getDate());
+        holder.tvDate.setText(list.get(position).getSaleDateTime());
         holder.tvCustomer.setText(list.get(position).getCustomerName());
         holder.tvSaleNo.setText(context.getResources().getString(R.string.hash)+list.get(position).getUserVoucherNo());
-        holder.tvGrandTotal.setText(db.getHomeCurrency()+context.getResources().getString(R.string.space)+appSetting.df.format(list.get(position).getNetAmt()));
+        holder.tvGrandTotal.setText(db.getHomeCurrency()+context.getResources().getString(R.string.space)+appSetting.df.format(list.get(position).getGrandtotal()));
     }
 
     @Override

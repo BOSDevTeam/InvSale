@@ -48,7 +48,7 @@ public class ListItemSaleAdapter extends RecyclerView.Adapter<ListItemSaleAdapte
         holder.tvPrice.setText(appSetting.df.format(list.get(position).getSalePrice()));
         holder.tvQuantity.setText(String.valueOf(list.get(position).getQuantity()));
         holder.tvNumber.setText(String.valueOf(list.get(position).getNumber()));
-        holder.tvAmount.setText(appSetting.df.format(list.get(position).getTotalAmount()));
+        holder.tvAmount.setText(appSetting.df.format(list.get(position).getAmount()));
 
         if(isAllowEdit){
             holder.tvQuantity.setBackground(context.getResources().getDrawable(R.drawable.bd_quantity));

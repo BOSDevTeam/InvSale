@@ -84,13 +84,15 @@ public class DatabaseAccess {
         cv.put("BankPaymentID", data.getBankPaymentID());
         cv.put("PaymentPercent", data.getPaymentPercent());
         cv.put("Subtotal", data.getSubtotal());
-        cv.put("Tax", data.getTaxAmt());
-        cv.put("Charges", data.getChargesAmt());
-        cv.put("Total", data.getTotalAmt());
-        cv.put("VoucherDiscount", data.getVoucherDis());
-        cv.put("AdvancedPay", data.getAdvancedPayAmt());
+        cv.put("Tax", data.getTax());
+        cv.put("TaxAmt", data.getTaxAmt());
+        cv.put("Charges", data.getCharges());
+        cv.put("ChargesAmt", data.getChargesAmt());
+        cv.put("Total", data.getTotal());
+        cv.put("VoucherDiscount", data.getVoucherDiscount());
+        cv.put("AdvancedPay", data.getAdvancedPay());
         cv.put("PayPercentAmt", data.getPayPercentAmt());
-        cv.put("Grandtotal", data.getNetAmt());
+        cv.put("Grandtotal", data.getGrandtotal());
         cv.put("Remark", data.getRemark());
         database.insert("MasterSaleTemp", null, cv);
         return true;
@@ -110,14 +112,16 @@ public class DatabaseAccess {
             data.setBankPaymentID(cur.getInt(7));
             data.setPaymentPercent(cur.getInt(8));
             data.setSubtotal(cur.getInt(9));
-            data.setTaxAmt(cur.getInt(10));
-            data.setChargesAmt(cur.getInt(11));
-            data.setTotalAmt(cur.getInt(9));
-            data.setVoucherDis(cur.getInt(13));
-            data.setAdvancedPayAmt(cur.getInt(14));
-            data.setPayPercentAmt(cur.getInt(15));
-            data.setNetAmt(cur.getInt(16));
-            data.setRemark(cur.getString(17));
+            data.setTax(cur.getInt(10));
+            data.setTaxAmt(cur.getInt(11));
+            data.setCharges(cur.getInt(12));
+            data.setChargesAmt(cur.getInt(13));
+            data.setTotal(cur.getInt(14));
+            data.setVoucherDiscount(cur.getInt(15));
+            data.setAdvancedPay(cur.getInt(16));
+            data.setPayPercentAmt(cur.getInt(17));
+            data.setGrandtotal(cur.getInt(18));
+            data.setRemark(cur.getString(19));
         }
         return data;
     }
@@ -129,7 +133,7 @@ public class DatabaseAccess {
             cv.put("ProductID", list.get(i).getProductID());
             cv.put("Quantity", list.get(i).getQuantity());
             cv.put("SalePrice", list.get(i).getSalePrice());
-            cv.put("Amount", list.get(i).getTotalAmount());
+            cv.put("Amount", list.get(i).getAmount());
             cv.put("IsFOC", list.get(i).isFOC());
             cv.put("ProductName",list.get(i).getProductName());
             database.insert("TranSaleTemp", null, cv);
@@ -146,7 +150,7 @@ public class DatabaseAccess {
             data.setProductID(cur.getInt(0));
             data.setQuantity(cur.getInt(1));
             data.setSalePrice(cur.getInt(2));
-            data.setTotalAmount(cur.getInt(3));
+            data.setAmount(cur.getInt(3));
             int foc = cur.getInt(4);
             if (foc == 0) data.setFOC(false);
             else if (foc == 1) data.setFOC(true);

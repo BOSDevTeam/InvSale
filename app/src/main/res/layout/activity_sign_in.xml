@@ -12,14 +12,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:background="@color/primary_500">
+        android:background="@color/primary_500"
+        android:orientation="vertical">
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@mipmap/ic_launcher_foreground"
-            android:paddingTop="100dp"
-            android:layout_marginBottom="15dp"/>
+            android:paddingTop="80dp" />
+
+        <TextView style="@style/AppName"
+            android:text="@string/sign_in"
+            android:layout_marginBottom="20dp"
+            android:textColor="@color/gray_soft"/>
 
     </LinearLayout>
 

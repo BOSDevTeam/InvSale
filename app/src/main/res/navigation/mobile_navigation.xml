@@ -24,6 +24,12 @@
         tools:layout="@layout/fragment_sale_order" />
 
     <fragment
+        android:id="@+id/nav_notification"
+        android:name="com.bosictsolution.invsale.ui.notification.NotificationFragment"
+        android:label="@string/menu_notification"
+        tools:layout="@layout/fragment_notification" />
+
+    <fragment
         android:id="@+id/nav_profile"
         android:name="com.bosictsolution.invsale.ui.profile.ProfileFragment"
         android:label="@string/menu_profile"

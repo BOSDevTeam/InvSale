@@ -97,7 +97,7 @@ public class SaleOrderFragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.search, menu);
+        inflater.inflate(R.menu.search_refresh, menu);
         MenuItem itemSearch=menu.findItem(R.id.action_search);
         MenuItem itemRefresh=menu.findItem(R.id.action_refresh);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(itemSearch);

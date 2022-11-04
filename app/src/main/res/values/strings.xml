@@ -16,6 +16,7 @@
     <string name="menu_setting">Setting</string>
     <string name="menu_report">Report</string>
     <string name="menu_logout">Exit</string>
+    <string name="menu_notification">Notification</string>
 
     <string name="report_sale_order_item">Sale Order Item Report</string>
 
@@ -181,5 +182,7 @@
     <string name="invalid_verification">Invalid number and verification failed!</string>
     <string name="code_sent">Code Sent!</string>
     <string name="verification_completed">Verification Completed!</string>
+    <string name="new_product">New Product</string>
+    <string name="mark_all_read">Mark All as Read</string>
 
 </resources>

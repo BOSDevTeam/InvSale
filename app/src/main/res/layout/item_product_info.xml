@@ -13,28 +13,36 @@
     app:cardUseCompatPadding="false">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:background="@drawable/btn_transparent">
 
-        <TextView android:id="@+id/tvProductName"
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView android:id="@+id/tvProductName"
+                style="@style/DefaultTextView"
+                tools:text="Product ABC"
+                android:padding="5dp"/>
+            <TextView android:id="@+id/tvCode"
+                style="@style/SmallTextView"
+                tools:text="1001"
+                android:paddingLeft="5dp"
+                android:paddingBottom="5dp"/>
+
+        </LinearLayout>
+
+        <TextView android:id="@+id/tvPrice"
             style="@style/DefaultTextView"
-            tools:text="Product ABC"
-            android:padding="5dp"/>
-        <TextView android:id="@+id/tvCode"
-            style="@style/SmallTextView"
-            tools:text="1001"
-            android:paddingLeft="5dp"
-            android:paddingBottom="5dp"/>
+            android:layout_width="wrap_content"
+            tools:text="2,000"
+            android:layout_gravity="center"
+            android:padding="5dp"
+            android:textColor="@color/primary_500" />
 
     </LinearLayout>
-
-    <TextView android:id="@+id/tvPrice"
-        style="@style/DefaultTextView"
-        android:layout_width="wrap_content"
-        tools:text="2,000"
-        android:layout_gravity="right|center"
-        android:padding="5dp"
-        android:textColor="@color/primary_500"/>
 
 </androidx.cardview.widget.CardView>

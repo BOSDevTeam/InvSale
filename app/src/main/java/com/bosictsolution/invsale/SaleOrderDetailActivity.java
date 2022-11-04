@@ -25,6 +25,7 @@ import com.bosictsolution.invsale.api.Api;
 import com.bosictsolution.invsale.common.AppSetting;
 import com.bosictsolution.invsale.common.ConnectionLiveData;
 import com.bosictsolution.invsale.data.ConnectionData;
+import com.bosictsolution.invsale.data.SaleOrderMasterData;
 import com.bosictsolution.invsale.data.SaleOrderTranData;
 
 import java.util.List;
@@ -39,7 +40,7 @@ public class SaleOrderDetailActivity extends AppCompatActivity {
     AppSetting appSetting=new AppSetting();
     private ProgressDialog progressDialog;
     private Context context=this;
-    String remark,orderNumber,orderDataTime,customerName;
+    /*String remark,orderNumber,orderDataTime,customerName;*/
     ConnectionLiveData connectionLiveData;
 
     @Override
@@ -53,19 +54,23 @@ public class SaleOrderDetailActivity extends AppCompatActivity {
         actionbar.setDisplayShowTitleEnabled(true);
         setTitle(getResources().getString(R.string.order_detail));
 
-        Intent i = getIntent();
-        saleOrderId = i.getIntExtra("SaleOrderID", 0);
-        orderNumber = i.getStringExtra("OrderNumber");
-        orderDataTime = i.getStringExtra("OrderDateTime");
-        customerName = i.getStringExtra("CustomerName");
-        tax = i.getIntExtra("TaxAmt", 0);
-        charges = i.getIntExtra("ChargesAmt", 0);
-        subtotal = i.getIntExtra("Subtotal", 0);
-        total = i.getIntExtra("Total", 0);
-        remark = i.getStringExtra("Remark");
-
         checkConnection();
-        fillData();
+
+        Intent i = getIntent();
+        SaleOrderMasterData data = new SaleOrderMasterData();
+        saleOrderId = i.getIntExtra("SaleOrderID", 0);
+        boolean isFromNotification = i.getBooleanExtra("IsFromNotification", false);
+        if (!isFromNotification) {
+            data.setOrderNumber(i.getStringExtra("OrderNumber"));
+            data.setOrderDateTime(i.getStringExtra("OrderDateTime"));
+            data.setCustomerName(i.getStringExtra("CustomerName"));
+            data.setTaxAmt(i.getIntExtra("TaxAmt", 0));
+            data.setChargesAmt(i.getIntExtra("ChargesAmt", 0));
+            data.setSubtotal(i.getIntExtra("Subtotal", 0));
+            data.setTotal(i.getIntExtra("Total", 0));
+            data.setRemark(i.getStringExtra("Remark"));
+            fillData(data);
+        } else getMasterSaleOrderBySaleOrderID(saleOrderId);
     }
 
     private void checkConnection(){
@@ -78,18 +83,18 @@ public class SaleOrderDetailActivity extends AppCompatActivity {
         });
     }
 
-    private void fillData() {
-        tvOrderNumber.setText(getResources().getString(R.string.hash) + orderNumber);
-        tvOrderDateTime.setText(orderDataTime);
-        tvCustomer.setText(customerName);
-        tvTax.setText(appSetting.df.format(tax));
-        tvCharges.setText(appSetting.df.format(charges));
-        tvSubtotal.setText(appSetting.df.format(subtotal));
-        tvTotal.setText(appSetting.df.format(total));
-        if (remark.length() == 0) layoutRemark.setVisibility(View.GONE);
+    private void fillData(SaleOrderMasterData data) {
+        tvOrderNumber.setText(getResources().getString(R.string.hash) + data.getOrderNumber());
+        tvOrderDateTime.setText(data.getOrderDateTime());
+        tvCustomer.setText(data.getCustomerName());
+        tvTax.setText(appSetting.df.format(data.getTaxAmt()));
+        tvCharges.setText(appSetting.df.format(data.getChargesAmt()));
+        tvSubtotal.setText(appSetting.df.format(data.getSubtotal()));
+        tvTotal.setText(appSetting.df.format(data.getTotal()));
+        if (data.getRemark().length() == 0) layoutRemark.setVisibility(View.GONE);
         else {
             layoutRemark.setVisibility(View.VISIBLE);
-            tvRemark.setText(remark);
+            tvRemark.setText(data.getRemark());
         }
         getTranSaleOrderBySaleOrderID(saleOrderId);
     }
@@ -99,6 +104,25 @@ public class SaleOrderDetailActivity extends AppCompatActivity {
         rvItemSaleOrder.setAdapter(saleOrderSummaryAdapter);
         rvItemSaleOrder.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         rvItemSaleOrder.addItemDecoration(new DividerItemDecoration(rvItemSaleOrder.getContext(), DividerItemDecoration.VERTICAL));
+    }
+
+    private void getMasterSaleOrderBySaleOrderID(int saleOrderId){
+        progressDialog.show();
+        progressDialog.setMessage(getResources().getString(R.string.loading));
+        Api.getClient().getMasterSaleOrderBySaleOrderID(saleOrderId).enqueue(new Callback<SaleOrderMasterData>() {
+            @Override
+            public void onResponse(Call<SaleOrderMasterData> call, Response<SaleOrderMasterData> response) {
+                progressDialog.dismiss();
+                SaleOrderMasterData data=response.body();
+                fillData(data);
+            }
+
+            @Override
+            public void onFailure(Call<SaleOrderMasterData> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void getTranSaleOrderBySaleOrderID(int saleOrderId){

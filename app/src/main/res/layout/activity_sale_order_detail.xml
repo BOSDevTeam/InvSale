@@ -6,57 +6,70 @@
     android:layout_height="match_parent"
     android:id="@+id/layoutRoot"
     tools:context=".SaleOrderDetailActivity"
-    android:orientation="vertical"
-    android:padding="10dp">
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:orientation="vertical"
-        android:background="@color/primary_soft">
+        android:background="@color/white">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <TextView style="@style/TableLabelTextView"
-                android:text="@string/order_number" />
-            <TextView style="@style/TableLabelTextView"
-                android:text="@string/colon_sign" />
-            <TextView android:id="@+id/tvOrderNumber"
-                style="@style/TableValueTextView"
-                tools:text="#SO0001" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView style="@style/SmallTextView"
+                    android:text="@string/order_number" />
+                <TextView android:id="@+id/tvOrderNumber"
+                    style="@style/DefaultTextView"
+                    tools:text="#SO0001"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView style="@style/SmallTextView"
+                    android:text="@string/customer"
+                    android:gravity="right"/>
+                <TextView android:id="@+id/tvCustomer"
+                    style="@style/DefaultTextView"
+                    tools:text="CustomerA"
+                    android:textStyle="bold"
+                    android:gravity="right"/>
+            </LinearLayout>
+
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp">
-            <TextView style="@style/TableLabelTextView"
+            android:layout_marginTop="5dp"
+            android:orientation="vertical">
+            <TextView style="@style/SmallTextView"
                 android:text="@string/order_date" />
-            <TextView style="@style/TableLabelTextView"
-                android:text="@string/colon_sign" />
             <TextView android:id="@+id/tvOrderDateTime"
-                style="@style/TableValueTextView"
-                tools:text="27/06/2022" />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp">
-            <TextView style="@style/TableLabelTextView"
-                android:text="@string/customer" />
-            <TextView style="@style/TableLabelTextView"
-                android:text="@string/colon_sign" />
-            <TextView android:id="@+id/tvCustomer"
-                style="@style/TableValueTextView"
-                tools:text="CustomerA" />
+                style="@style/DefaultTextView"
+                tools:text="27/06/2022"
+                android:textStyle="bold"/>
         </LinearLayout>
 
     </LinearLayout>
 
+    <View style="@style/Divider"></View>
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_height="0dp"
         android:orientation="vertical">
 
         <LinearLayout
@@ -87,100 +100,89 @@
 
         <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvItemSaleOrder"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="wrap_content"
             tools:listitem="@layout/item_sale"/>
+
+    </LinearLayout>
+
+    <LinearLayout android:id="@+id/layoutRemark"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:layout_marginBottom="5dp"
+        android:orientation="vertical"
+        android:background="@drawable/bd_gray_1r_white">
+
+        <TextView android:id="@+id/tvRemark"
+            style="@style/SmallTextView"
+            tools:text="Remark: We’ll share what each component of an address means so you know why you need it and where to find it." />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="5dp"
+        android:background="@drawable/bg_gray_10r">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/gray_soft"
-            android:orientation="vertical"
-            android:padding="5dp"
-            android:layout_marginTop="10dp">
+            android:layout_height="wrap_content">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="5dp">
+            <TextView style="@style/AmountGroupTextView"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="@string/tax_colon" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+            <TextView android:id="@+id/tvTax"
+                style="@style/AmountGroupTextView"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="0" />
 
-                    <TextView style="@style/AmountGroupTextView"
-                        android:layout_width="0dp"
-                        android:layout_weight="2"
-                        android:text="@string/tax_colon" />
+            <TextView style="@style/AmountGroupTextView"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="@string/subtotal_colon" />
 
-                    <TextView android:id="@+id/tvTax"
-                        style="@style/AmountGroupTextView"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:text="0" />
-
-                    <TextView style="@style/AmountGroupTextView"
-                        android:layout_width="0dp"
-                        android:layout_weight="2"
-                        android:text="@string/subtotal_colon" />
-
-                    <TextView android:id="@+id/tvSubtotal"
-                        style="@style/AmountGroupTextView"
-                        android:layout_width="0dp"
-                        android:layout_weight="2"
-                        android:text="0" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView style="@style/AmountGroupTextView"
-                        android:layout_width="0dp"
-                        android:layout_weight="2"
-                        android:text="@string/charges_colon"/>
-
-                    <TextView android:id="@+id/tvCharges"
-                        style="@style/AmountGroupTextView"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:text="0" />
-
-                    <TextView style="@style/AmountGroupTextView"
-                        android:layout_width="0dp"
-                        android:layout_weight="2"
-                        android:text="@string/total_colon"
-                        android:textColor="@color/primary_500"
-                        android:textSize="@dimen/text_large" />
-
-                    <TextView android:id="@+id/tvTotal"
-                        style="@style/AmountGroupTextView"
-                        android:layout_width="0dp"
-                        android:layout_weight="2"
-                        android:text="0"
-                        android:textColor="@color/primary_500"
-                        android:textSize="@dimen/text_large" />
-
-                </LinearLayout>
-
-            </LinearLayout>
+            <TextView android:id="@+id/tvSubtotal"
+                style="@style/AmountGroupTextView"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="0" />
 
         </LinearLayout>
 
-        <LinearLayout android:id="@+id/layoutRemark"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:orientation="vertical"
-            android:background="@drawable/bd_gray_1r_white"
-            android:layout_marginTop="10dp">
+            android:layout_height="wrap_content">
 
-            <TextView android:id="@+id/tvRemark"
-                style="@style/SmallTextView"
-                tools:text="Remark: We’ll share what each component of an address means so you know why you need it and where to find it."
-                android:layout_marginTop="5dp"/>
+            <TextView style="@style/AmountGroupTextView"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="@string/charges_colon"/>
+
+            <TextView android:id="@+id/tvCharges"
+                style="@style/AmountGroupTextView"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="0" />
+
+            <TextView style="@style/AmountGroupTextView"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="@string/total_colon"
+                android:textColor="@color/primary_500"
+                android:textSize="@dimen/text_large" />
+
+            <TextView android:id="@+id/tvTotal"
+                style="@style/AmountGroupTextView"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:text="0"
+                android:textColor="@color/primary_500"
+                android:textSize="@dimen/text_large" />
 
         </LinearLayout>
 

@@ -23,6 +23,15 @@
 
     <style name="Theme.InvSale.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="AppName">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/text_extra_large</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+
     <style name="TitleTextView">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
@@ -46,9 +55,8 @@
     </style>
 
     <style name="DefaultButton">
-        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_height">60dp</item>
         <item name="android:layout_width">match_parent</item>
-        <item name="android:background">@drawable/btn_primary</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">@dimen/text_regular</item>
         <item name="android:textAllCaps">true</item>
@@ -72,7 +80,7 @@
         <item name="android:background">@drawable/bd_black_soft_1r_white</item>
         <item name="android:layout_margin">5dp</item>
         <item name="android:textColor">@color/black</item>
-        <item name="android:textSize">@dimen/text_regular</item>
+        <item name="android:textSize">@dimen/text_extra_large</item>
         <item name="android:textStyle">bold</item>
         <item name="android:gravity">center</item>
         <item name="android:inputType">textPassword</item>
@@ -239,47 +247,48 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_weight">1</item>
-        <item name="android:background">@drawable/btn_primary</item>
+<!--        <item name="android:background">@drawable/btn_primary</item>-->
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">@dimen/text_regular</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:paddingTop">20dp</item>
         <item name="android:paddingBottom">20dp</item>
-        <item name="android:layout_margin">5dp</item>
+        <item name="android:layout_marginLeft">5dp</item>
+        <item name="android:layout_marginRight">5dp</item>
     </style>
 
     <style name="StepSuccessImage">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:src">@drawable/ic_check_circle_24</item>
-        <item name="android:tint">@color/primary_500</item>
+        <item name="android:tint">@color/accent_200</item>
     </style>
 
     <style name="StepSuccessText">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:textColor">@color/primary_500</item>
+        <item name="android:textColor">@color/white</item>
         <item name="android:textStyle">bold</item>
     </style>
 
     <style name="StepSuccessView">
-        <item name="android:layout_height">3dp</item>
+        <item name="android:layout_height">2dp</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_weight">1</item>
-        <item name="android:background">@color/primary_500</item>
+        <item name="android:background">@color/accent_200</item>
     </style>
 
     <style name="StepProcessImage">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:src">@drawable/ic_check_circle_outline_24</item>
-        <item name="android:tint">@color/black_soft</item>
+        <item name="android:tint">@color/gray</item>
     </style>
 
     <style name="StepProcessText">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:textColor">@color/black_soft</item>
+        <item name="android:textColor">@color/gray</item>
         <item name="android:textStyle">bold</item>
     </style>
 

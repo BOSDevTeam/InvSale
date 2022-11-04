@@ -4,27 +4,27 @@ import java.util.List;
 
 public class SaleMasterData {
 
-    private String Date, Voucher, CustomerName,Remark,UserVoucherNo;
-    private int NetAmt,CustomerID,LocationID,PaymentID,VoucherDis,AdvancedPayAmt,TaxAmt,ChargesAmt,
-                TotalAmt,VouDisPercent,VouDisAmount,PayMethodID,BankPaymentID,PaymentPercent,ClientID,LimitedDayID,
-                PayPercentAmt,Subtotal;
-    private boolean IsClient,IsDefaultCustomer,IsAdvancedPay;
+    private String SaleDateTime, SystemVoucherNo, CustomerName,Remark,UserVoucherNo;
+    private int Grandtotal,CustomerID,LocationID,PaymentID, VoucherDiscount, AdvancedPay,TaxAmt,ChargesAmt,
+                Total,VouDisPercent,VouDisAmount,PayMethodID,BankPaymentID,PaymentPercent,ClientID,LimitedDayID,
+                PayPercentAmt,Subtotal,Tax,Charges;
+    private boolean IsClientSale,IsDefaultCustomer,IsAdvancedPay;
     private List<SaleTranData> lstSaleTran;
 
-    public String getDate() {
-        return Date;
+    public String getSaleDateTime() {
+        return SaleDateTime;
     }
 
-    public void setDate(String date) {
-        this.Date = date;
+    public void setSaleDateTime(String saleDateTime) {
+        this.SaleDateTime = saleDateTime;
     }
 
-    public String getVoucher() {
-        return Voucher;
+    public String getSystemVoucherNo() {
+        return SystemVoucherNo;
     }
 
-    public void setVoucher(String voucher) {
-        this.Voucher = voucher;
+    public void setSystemVoucherNo(String systemVoucherNo) {
+        this.SystemVoucherNo = systemVoucherNo;
     }
 
     public String getCustomerName() {
@@ -35,12 +35,12 @@ public class SaleMasterData {
         this.CustomerName = customerName;
     }
 
-    public int getNetAmt() {
-        return NetAmt;
+    public int getGrandtotal() {
+        return Grandtotal;
     }
 
-    public void setNetAmt(int netAmt) {
-        this.NetAmt = netAmt;
+    public void setGrandtotal(int grandtotal) {
+        this.Grandtotal = grandtotal;
     }
 
     public int getCustomerID() {
@@ -67,20 +67,20 @@ public class SaleMasterData {
         PaymentID = paymentID;
     }
 
-    public int getVoucherDis() {
-        return VoucherDis;
+    public int getVoucherDiscount() {
+        return VoucherDiscount;
     }
 
-    public void setVoucherDis(int voucherDis) {
-        VoucherDis = voucherDis;
+    public void setVoucherDiscount(int voucherDiscount) {
+        VoucherDiscount = voucherDiscount;
     }
 
-    public int getAdvancedPayAmt() {
-        return AdvancedPayAmt;
+    public int getAdvancedPay() {
+        return AdvancedPay;
     }
 
-    public void setAdvancedPayAmt(int advancedPayAmt) {
-        AdvancedPayAmt = advancedPayAmt;
+    public void setAdvancedPay(int advancedPay) {
+        AdvancedPay = advancedPay;
     }
 
     public int getTaxAmt() {
@@ -99,12 +99,12 @@ public class SaleMasterData {
         ChargesAmt = chargesAmt;
     }
 
-    public int getTotalAmt() {
-        return TotalAmt;
+    public int getTotal() {
+        return Total;
     }
 
-    public void setTotalAmt(int totalAmt) {
-        TotalAmt = totalAmt;
+    public void setTotal(int total) {
+        Total = total;
     }
 
     public int getVouDisPercent() {
@@ -171,12 +171,12 @@ public class SaleMasterData {
         PayPercentAmt = payPercentAmt;
     }
 
-    public boolean isClient() {
-        return IsClient;
+    public boolean isClientSale() {
+        return IsClientSale;
     }
 
-    public void setClient(boolean client) {
-        IsClient = client;
+    public void setClientSale(boolean clientSale) {
+        IsClientSale = clientSale;
     }
 
     public int getSubtotal() {
@@ -225,5 +225,21 @@ public class SaleMasterData {
 
     public void setUserVoucherNo(String userVoucherNo) {
         UserVoucherNo = userVoucherNo;
+    }
+
+    public int getTax() {
+        return Tax;
+    }
+
+    public void setTax(int tax) {
+        Tax = tax;
+    }
+
+    public int getCharges() {
+        return Charges;
+    }
+
+    public void setCharges(int charges) {
+        Charges = charges;
     }
 }

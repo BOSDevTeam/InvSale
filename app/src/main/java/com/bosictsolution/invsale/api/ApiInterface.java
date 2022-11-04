@@ -8,6 +8,7 @@ import com.bosictsolution.invsale.data.DivisionData;
 import com.bosictsolution.invsale.data.LimitedDayData;
 import com.bosictsolution.invsale.data.LocationData;
 import com.bosictsolution.invsale.data.MainMenuData;
+import com.bosictsolution.invsale.data.NotificationData;
 import com.bosictsolution.invsale.data.PaymentData;
 import com.bosictsolution.invsale.data.PaymentMethodData;
 import com.bosictsolution.invsale.data.ProductData;
@@ -112,6 +113,9 @@ public interface ApiInterface {
     @GET("saleorder/GetMasterSaleOrderByValue")
     Call<List<SaleOrderMasterData>> getMasterSaleOrderByValue(@Query("value") String value,@Query("clientId") int clientId,@Query("isOrderFinished") boolean isOrderFinished);
 
+    @GET("saleorder/GetMasterSaleOrderBySaleOrderID")
+    Call<SaleOrderMasterData> getMasterSaleOrderBySaleOrderID(@Query("saleOrderId") int saleOrderId);
+
     @GET("saleorder/GetTranSaleOrderBySaleOrderID")
     Call<List<SaleOrderTranData>> getTranSaleOrderBySaleOrderID(@Query("saleOrderId") int saleOrderId);
 
@@ -135,4 +139,21 @@ public interface ApiInterface {
 
     @GET("product/GetProduct")
     Observable<List<ProductData>> getProduct();
+
+    @GET("clientnoti/GetClientNotiCount")
+    Call<Integer> getClientNotiCount(@Query("clientId") int clientId);
+
+    @GET("clientnoti/GetClientNotification")
+    Call<List<NotificationData>> getClientNotification(@Query("clientId") int clientId);
+
+    @Headers("Content-type: application/json")
+    @POST("clientnoti/DeleteClientNotification")
+    Call<Void> deleteClientNotification(@Query("clientId") int clientId,@Query("notiId") int notiId,@Query("notiType") int notiType);
+
+    @Headers("Content-type: application/json")
+    @POST("clientnoti/DeleteAllClientNotification")
+    Call<Void> deleteAllClientNotification(@Query("clientId") int clientId);
+
+    @GET("product/GetProduct")
+    Call<ProductData> getProduct(@Query("productId") int productId);
 }

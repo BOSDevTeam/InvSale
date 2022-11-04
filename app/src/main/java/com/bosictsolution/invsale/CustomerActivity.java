@@ -190,7 +190,7 @@ public class CustomerActivity extends AppCompatActivity {
         SaleMasterData data = db.getMasterSale();
         data.setLstSaleTran(db.getTranSale());
         data.setCustomerID(customerId);
-        data.setClient(true);
+        data.setClientSale(true);
         data.setClientID(clientId);
         progressDialog.show();
         progressDialog.setMessage(getResources().getString(R.string.loading));

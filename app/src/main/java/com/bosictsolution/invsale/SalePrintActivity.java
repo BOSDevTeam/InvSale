@@ -228,22 +228,22 @@ public class SalePrintActivity extends AppCompatActivity {
 
         if (data.getVouDisPercent() != 0)
             tvLabelVoucherDiscount.setText(getResources().getString(R.string.voucher_discount_colon) + "(" + data.getVouDisPercent() + "%)");
-        tvVoucherDiscount.setText(appSetting.df.format(data.getVoucherDis()));
+        tvVoucherDiscount.setText(appSetting.df.format(data.getVoucherDiscount()));
 
-        if (data.getAdvancedPayAmt() !=0) {
+        if (data.getAdvancedPay() !=0) {
             layoutAdvancedPay.setVisibility(View.VISIBLE);
-            tvAdvancedPay.setText(appSetting.df.format(data.getAdvancedPayAmt()));
+            tvAdvancedPay.setText(appSetting.df.format(data.getAdvancedPay()));
         } else
             layoutAdvancedPay.setVisibility(View.GONE);
 
-        int grandTotal = (data.getSubtotal()+data.getTaxAmt()+data.getChargesAmt()) - (data.getAdvancedPayAmt() + data.getVoucherDis());
+        int grandTotal = (data.getSubtotal()+data.getTaxAmt()+data.getChargesAmt()) - (data.getAdvancedPay() + data.getVoucherDiscount());
         tvGrandTotal.setText(appSetting.df.format(grandTotal));
 
         if (data.getPaymentPercent() != 0) {
             layoutPercent.setVisibility(View.VISIBLE);
             layoutPercentGrandTotal.setVisibility(View.VISIBLE);
             tvPercentAmount.setText(appSetting.df.format(data.getPayPercentAmt()));
-            tvPercentGrandTotal.setText(appSetting.df.format(data.getNetAmt()));
+            tvPercentGrandTotal.setText(appSetting.df.format(data.getGrandtotal()));
             tvLabelPercent.setText(getResources().getString(R.string.percent) + "(" + data.getPaymentPercent() + "%)"+getResources().getString(R.string.colon_sign));
         } else {
             layoutPercent.setVisibility(View.GONE);
@@ -269,7 +269,7 @@ public class SalePrintActivity extends AppCompatActivity {
             tvPrice.setText(appSetting.df.format(lstSaleTran.get(i).getSalePrice()));
             tvQuantity.setText(String.valueOf(lstSaleTran.get(i).getQuantity()));
             tvNumber.setText(String.valueOf(lstSaleTran.get(i).getNumber()));
-            tvAmount.setText(appSetting.df.format(lstSaleTran.get(i).getTotalAmount()));
+            tvAmount.setText(appSetting.df.format(lstSaleTran.get(i).getAmount()));
 
             layoutList.addView(row);
         }

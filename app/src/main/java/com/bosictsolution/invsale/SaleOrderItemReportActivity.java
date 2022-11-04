@@ -112,7 +112,7 @@ public class SaleOrderItemReportActivity extends AppCompatActivity implements Ca
     @Override
     public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.search, menu);
+        inflater.inflate(R.menu.search_refresh, menu);
         MenuItem itemSearch = menu.findItem(R.id.action_search);
         MenuItem itemRefresh=menu.findItem(R.id.action_refresh);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(itemSearch);

@@ -12,6 +12,9 @@ public class AppConstant {
     public static final int FROM_DATE_REQUEST_CODE = 12;
     public static final int TO_DATE_REQUEST_CODE = 13;
 
+    public static final short noti_new_product=1;
+    public static final short noti_update_order=2;
+
     public static final String MyPREFERENCES = "InvSalePref";
     public static final String ClientID = "ClientID";
     public static final String ClientName = "ClientNameKey";

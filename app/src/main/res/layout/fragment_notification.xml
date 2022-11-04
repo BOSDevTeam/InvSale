@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.notification.NotificationFragment"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.AppCompatButton android:id="@+id/btnMarkAllRead"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/mark_all_read"
+        android:textColor="@color/primary_500"
+        android:textSize="@dimen/text_small"
+        android:layout_gravity="right"
+        android:textAllCaps="false"/>
+
+    <androidx.recyclerview.widget.RecyclerView android:id="@+id/rvNotification"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:listitem="@layout/item_notification"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"/>
+
+</LinearLayout>

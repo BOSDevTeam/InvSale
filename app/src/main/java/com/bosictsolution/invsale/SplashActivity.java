@@ -20,6 +20,9 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bosictsolution.invsale.api.Api;
@@ -34,6 +37,7 @@ import static android.os.Build.VERSION.SDK_INT;
 
 public class SplashActivity extends AppCompatActivity {
 
+    ImageView imgLogo;
     AppSetting appSetting=new AppSetting();
     Context context=this;
     SharedPreferences sharedpreferences;
@@ -44,8 +48,11 @@ public class SplashActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        setLayoutResource();
         getSupportActionBar().hide();
         init();
+        Animation animation = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_animation);
+        imgLogo.startAnimation(animation);
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -165,5 +172,9 @@ public class SplashActivity extends AppCompatActivity {
         db=new DatabaseAccess(context);
         progressDialog = new ProgressDialog(context);
         appSetting.setupProgress(progressDialog);
+    }
+
+    private void setLayoutResource(){
+        imgLogo=findViewById(R.id.imgLogo);
     }
 }

@@ -242,13 +242,15 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
     }
 
     private void setCustomer() {
-        String[] customers = new String[lstCustomer.size()];
-        for (int i = 0; i < lstCustomer.size(); i++) {
-            customers[i] = lstCustomer.get(i).getCustomerName();
+        if(lstCustomer.size()!=0) {
+            String[] customers = new String[lstCustomer.size()];
+            for (int i = 0; i < lstCustomer.size(); i++) {
+                customers[i] = lstCustomer.get(i).getCustomerName();
+            }
+            ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.simple_spinner_item, customers);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spCustomer.setAdapter(adapter);
         }
-        ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.simple_spinner_item, customers);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spCustomer.setAdapter(adapter);
     }
 
     private void setSaleOrderAdapter(){
@@ -311,6 +313,7 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
         dialog.setView(v);
 
         final ImageButton btnClose = v.findViewById(R.id.btnClose);
+        final ImageButton btnBackspace = v.findViewById(R.id.btnBackspace);
         final TextView tvTitle = v.findViewById(R.id.tvTitle);
         final TextView tvInput = v.findViewById(R.id.tvInput);
         final Button btnOK = v.findViewById(R.id.btnOK);
@@ -333,6 +336,16 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
         final android.app.AlertDialog alertDialog = dialog.create();
         alertDialog.show();
 
+        btnBackspace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String value=tvInput.getText().toString();
+                if(value.length()!=0){
+                    value=value.substring(0,value.length()-1);
+                    tvInput.setText(value);
+                }
+            }
+        });
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -349,7 +362,7 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
             @Override
             public void onClick(View view) {
                 alertDialog.dismiss();
-                if (!tvInput.getText().toString().equals("0")) {
+                if (!tvInput.getText().toString().equals("0") && tvInput.getText().toString().length()!=0) {
                     int quantity = Integer.parseInt(tvInput.getText().toString());
                     if (db.insertUpdateTranSaleOrder(lstSaleOrderTran.get(position).getProductID(), quantity)) {
                         updateControlByQuantity(position, tvQuantity, tvAmount, quantity);

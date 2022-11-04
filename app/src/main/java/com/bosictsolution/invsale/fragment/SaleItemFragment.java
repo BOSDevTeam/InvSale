@@ -328,10 +328,10 @@ public class SaleItemFragment extends Fragment implements SaleFragment.onFragmen
         int amountTotal = 0;
         String result = "";
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            if (list != null) amountTotal = list.stream().mapToInt(x -> x.getTotalAmount()).sum();
+            if (list != null) amountTotal = list.stream().mapToInt(x -> x.getAmount()).sum();
         } else {
             for (int i = 0; i < list.size(); i++) {
-                amountTotal += list.get(i).getTotalAmount();
+                amountTotal += list.get(i).getAmount();
             }
         }
         result = appSetting.df.format(amountTotal);

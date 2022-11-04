@@ -3,7 +3,7 @@ package com.bosictsolution.invsale.data;
 public class SaleTranData {
 
     private String ProductName;
-    private int ProductID,Number,Quantity, SalePrice, TotalAmount, DefaultSalePrice,TranID;
+    private int ProductID,Number,Quantity, SalePrice, Amount, DefaultSalePrice;
     private boolean IsFOC;
 
     public String getProductName() {
@@ -38,14 +38,6 @@ public class SaleTranData {
         this.SalePrice = salePrice;
     }
 
-    public int getTotalAmount() {
-        return TotalAmount;
-    }
-
-    public void setTotalAmount(int totalAmount) {
-        this.TotalAmount = totalAmount;
-    }
-
     public int getProductID() {
         return ProductID;
     }
@@ -70,11 +62,11 @@ public class SaleTranData {
         DefaultSalePrice = defaultSalePrice;
     }
 
-    public int getTranID() {
-        return TranID;
+    public int getAmount() {
+        return Amount;
     }
 
-    public void setTranID(int tranID) {
-        TranID = tranID;
+    public void setAmount(int amount) {
+        Amount = amount;
     }
 }

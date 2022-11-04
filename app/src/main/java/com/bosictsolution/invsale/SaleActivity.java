@@ -107,7 +107,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         actionbar.setDisplayShowTitleEnabled(true);
         setTitle(getResources().getString(R.string.menu_sale));
 
-        getCompanySetting();
+        getTaxServiceCharges();
         checkConnection();
         loadData();
 
@@ -118,7 +118,9 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
                     if(db.insertTranSale(lstSaleTran)){
                         Intent i = new Intent(SaleActivity.this, PayDetailActivity.class);
                         i.putExtra("Subtotal",subtotal);
+                        i.putExtra("Tax",tax);
                         i.putExtra("TaxAmount",taxAmount);
+                        i.putExtra("Charges",charges);
                         i.putExtra("ChargesAmount",chargesAmount);
                         i.putExtra("Total",total);
                         startActivity(i);
@@ -277,6 +279,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         dialog.setView(v);
 
         final ImageButton btnClose = v.findViewById(R.id.btnClose);
+        final ImageButton btnBackspace = v.findViewById(R.id.btnBackspace);
         final TextView tvTitle = v.findViewById(R.id.tvTitle);
         final TextView tvInput = v.findViewById(R.id.tvInput);
         final Button btnOK = v.findViewById(R.id.btnOK);
@@ -299,6 +302,16 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         final android.app.AlertDialog alertDialog = dialog.create();
         alertDialog.show();
 
+        btnBackspace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String value=tvInput.getText().toString();
+                if(value.length()!=0){
+                    value=value.substring(0,value.length()-1);
+                    tvInput.setText(value);
+                }
+            }
+        });
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -315,7 +328,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
             @Override
             public void onClick(View view) {
                 alertDialog.dismiss();
-                if (!tvInput.getText().toString().equals("0")){
+                if (!tvInput.getText().toString().equals("0") && tvInput.getText().toString().length()!=0){
                     editQuantity(position, tvQuantity, tvAmount, Integer.parseInt(tvInput.getText().toString()));
                 }
             }
@@ -409,7 +422,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
                     tvAmount.setText("0");
                     lstSaleTran.get(position).setDefaultSalePrice(lstSaleTran.get(position).getSalePrice());
                     lstSaleTran.get(position).setSalePrice(0);
-                    lstSaleTran.get(position).setTotalAmount(0);
+                    lstSaleTran.get(position).setAmount(0);
                     lstSaleTran.get(position).setFOC(true);
                     calculateAmount();
                 }else{
@@ -417,7 +430,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
                         tvPrice.setText(String.valueOf(lstSaleTran.get(position).getDefaultSalePrice()));
                         tvAmount.setText(String.valueOf(lstSaleTran.get(position).getQuantity()*lstSaleTran.get(position).getDefaultSalePrice()));
                         lstSaleTran.get(position).setSalePrice(lstSaleTran.get(position).getDefaultSalePrice());
-                        lstSaleTran.get(position).setTotalAmount(lstSaleTran.get(position).getQuantity()*lstSaleTran.get(position).getDefaultSalePrice());
+                        lstSaleTran.get(position).setAmount(lstSaleTran.get(position).getQuantity()*lstSaleTran.get(position).getDefaultSalePrice());
                         lstSaleTran.get(position).setDefaultSalePrice(0);
                         lstSaleTran.get(position).setFOC(false);
                         calculateAmount();
@@ -552,7 +565,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         data.setProductName(list.get(position).getProductName());
         data.setSalePrice(list.get(position).getSalePrice());
         data.setQuantity(1);
-        data.setTotalAmount(list.get(position).getSalePrice());
+        data.setAmount(list.get(position).getSalePrice());
         lstSaleTran.add(data);
     }
 
@@ -573,14 +586,14 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         tvQuantity.setText(String.valueOf(quantity));
         tvAmount.setText(appSetting.df.format(quantity*lstSaleTran.get(position).getSalePrice()));
         lstSaleTran.get(position).setQuantity(quantity);
-        lstSaleTran.get(position).setTotalAmount(quantity*lstSaleTran.get(position).getSalePrice());
+        lstSaleTran.get(position).setAmount(quantity*lstSaleTran.get(position).getSalePrice());
         calculateAmount();
     }
 
     private void calculateAmount() {
         subtotal=0;
         for (int i = 0; i < lstSaleTran.size(); i++) {
-            subtotal += lstSaleTran.get(i).getTotalAmount();
+            subtotal += lstSaleTran.get(i).getAmount();
         }
         taxAmount = (subtotal * tax) / 100;
         chargesAmount = (subtotal * charges) / 100;
@@ -631,7 +644,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         setDataToExpList(expList);
     }
 
-    private void getCompanySetting(){
+    private void getTaxServiceCharges(){
         CompanySettingData data=db.getTaxServiceCharges();
         if(data!=null){
             tax=data.getTax();

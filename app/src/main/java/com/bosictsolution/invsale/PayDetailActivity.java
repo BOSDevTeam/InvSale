@@ -64,7 +64,7 @@ public class PayDetailActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private Context context = this;
     int voucherDiscountType, discountPercentType = 1, discountAmountType = 2, total,
-        subtotal,taxAmount,chargesAmount,clientId;
+        subtotal,taxAmount,chargesAmount,clientId,tax,charges;
     AppSetting appSetting = new AppSetting();
     DatabaseAccess db;
     SharedPreferences sharedpreferences;
@@ -84,7 +84,9 @@ public class PayDetailActivity extends AppCompatActivity {
 
         Intent i = getIntent();
         subtotal = i.getIntExtra("Subtotal", 0);
+        tax = i.getIntExtra("Tax", 0);
         taxAmount = i.getIntExtra("TaxAmount", 0);
+        charges = i.getIntExtra("Charges", 0);
         chargesAmount = i.getIntExtra("ChargesAmount", 0);
         total = i.getIntExtra("Total", 0);
 
@@ -188,22 +190,22 @@ public class PayDetailActivity extends AppCompatActivity {
 
         if (saleMasterData.isAdvancedPay()) {
             layoutAdvancedPay.setVisibility(View.VISIBLE);
-            tvAdvancedPay.setText(appSetting.df.format(saleMasterData.getAdvancedPayAmt()));
+            tvAdvancedPay.setText(appSetting.df.format(saleMasterData.getAdvancedPay()));
         } else
             layoutAdvancedPay.setVisibility(View.GONE);
 
         if (saleMasterData.getVouDisPercent() != 0)
             tvLabelVoucherDiscount.setText(getResources().getString(R.string.voucher_discount_colon) + "(" + saleMasterData.getVouDisPercent() + "%)");
-        tvVoucherDiscount.setText(appSetting.df.format(saleMasterData.getVoucherDis()));
+        tvVoucherDiscount.setText(appSetting.df.format(saleMasterData.getVoucherDiscount()));
 
-        int grandTotal = saleMasterData.getTotalAmt() - (saleMasterData.getAdvancedPayAmt() + saleMasterData.getVoucherDis());
+        int grandTotal = saleMasterData.getTotal() - (saleMasterData.getAdvancedPay() + saleMasterData.getVoucherDiscount());
         tvGrandTotal.setText(appSetting.df.format(grandTotal));
 
         if (saleMasterData.getPaymentPercent() != 0) {
             layoutPercent.setVisibility(View.VISIBLE);
             layoutPercentGrandTotal.setVisibility(View.VISIBLE);
             tvPercentAmount.setText(appSetting.df.format(saleMasterData.getPayPercentAmt()));
-            tvPercentGrandTotal.setText(appSetting.df.format(saleMasterData.getNetAmt()));
+            tvPercentGrandTotal.setText(appSetting.df.format(saleMasterData.getGrandtotal()));
             tvLabelPercent.setText(getResources().getString(R.string.percent) + "(" + saleMasterData.getPaymentPercent() + "%)"+getResources().getString(R.string.colon_sign));
         } else {
             layoutPercent.setVisibility(View.GONE);
@@ -243,7 +245,7 @@ public class PayDetailActivity extends AppCompatActivity {
     private void insertSale() {
         SaleMasterData data = db.getMasterSale();
         data.setLstSaleTran(db.getTranSale());
-        data.setClient(true);
+        data.setClientSale(true);
         data.setClientID(clientId);
         progressDialog.show();
         progressDialog.setMessage(getResources().getString(R.string.loading));
@@ -273,7 +275,7 @@ public class PayDetailActivity extends AppCompatActivity {
     }
 
     private SaleMasterData prepareSaleMasterData() {
-        int advancedPay = 0, vouDisPercent = 0, voucherDiscount = 0, payPercent = 0, payPercentAmt = 0, grandTotal,
+        int advancedPay = 0, vouDisPercent = 0, vouDisAmount = 0, voucherDiscount = 0, payPercent = 0, payPercentAmt = 0, grandTotal,
                 percentGrandTotal = 0, position, paymentId, customerId, locationId, limitedDayId = 0, payMethodId,
                 bankPaymentId = 0;
         boolean isAdvancedPay = false, isDefaultCustomer;
@@ -301,6 +303,8 @@ public class PayDetailActivity extends AppCompatActivity {
 
         if (voucherDiscountType == discountPercentType && etVoucherDiscount.getText().toString().length() != 0)
             vouDisPercent = Integer.parseInt(etVoucherDiscount.getText().toString());
+        else if (voucherDiscountType == discountAmountType && etVoucherDiscount.getText().toString().length() != 0)
+            vouDisAmount = Integer.parseInt(etVoucherDiscount.getText().toString());
         voucherDiscount = calculateVoucherDiscount(vouDisPercent);
 
         grandTotal = total - (advancedPay + voucherDiscount);
@@ -326,20 +330,22 @@ public class PayDetailActivity extends AppCompatActivity {
         saleMasterData.setPaymentID(paymentId);
         saleMasterData.setLimitedDayID(limitedDayId);
         saleMasterData.setAdvancedPay(isAdvancedPay);
-        saleMasterData.setAdvancedPayAmt(advancedPay);
+        saleMasterData.setAdvancedPay(advancedPay);
         saleMasterData.setVouDisPercent(vouDisPercent);
-        saleMasterData.setVouDisAmount(voucherDiscount);
-        saleMasterData.setVoucherDis(voucherDiscount);
+        saleMasterData.setVouDisAmount(vouDisAmount);
+        saleMasterData.setVoucherDiscount(voucherDiscount);
         saleMasterData.setPayMethodID(payMethodId);
         saleMasterData.setBankPaymentID(bankPaymentId);
         saleMasterData.setPaymentPercent(payPercent);
         saleMasterData.setPayPercentAmt(payPercentAmt);
         saleMasterData.setSubtotal(subtotal);
+        saleMasterData.setTax(tax);
         saleMasterData.setTaxAmt(taxAmount);
+        saleMasterData.setCharges(charges);
         saleMasterData.setChargesAmt(chargesAmount);
-        saleMasterData.setTotalAmt(total);
-        if (payPercent != 0) saleMasterData.setNetAmt(percentGrandTotal);
-        else saleMasterData.setNetAmt(grandTotal);
+        saleMasterData.setTotal(total);
+        if (payPercent != 0) saleMasterData.setGrandtotal(percentGrandTotal);
+        else saleMasterData.setGrandtotal(grandTotal);
         saleMasterData.setRemark(remark);
 
         return saleMasterData;

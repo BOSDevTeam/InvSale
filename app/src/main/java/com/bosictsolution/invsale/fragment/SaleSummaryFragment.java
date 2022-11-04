@@ -189,10 +189,11 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
         int netAmtTotal = 0;
         String result = "";
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            netAmtTotal = list.stream().mapToInt(x -> x.getNetAmt()).sum();
+            if (list.stream() != null)
+                netAmtTotal = list.stream().mapToInt(x -> x.getGrandtotal()).sum();
         } else {
             for (int i = 0; i < list.size(); i++) {
-                netAmtTotal += list.get(i).getNetAmt();
+                netAmtTotal += list.get(i).getGrandtotal();
             }
         }
         result = appSetting.df.format(netAmtTotal);

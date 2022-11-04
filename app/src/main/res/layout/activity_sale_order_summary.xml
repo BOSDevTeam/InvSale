@@ -12,7 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:padding="10dp">
+        android:padding="10dp"
+        android:background="@color/primary_500">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -52,6 +53,22 @@
 
     <View style="@style/Divider"></View>
 
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="5dp"
+        android:background="@drawable/bd_gray_1r_white">
+
+        <TextView style="@style/SmallTextView"
+            android:text="@string/customer" />
+
+        <Spinner android:id="@+id/spCustomer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"/>
+
+    </LinearLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -90,27 +107,12 @@
             android:layout_weight="1"
             tools:listitem="@layout/item_sale"/>
 
-        <LinearLayout android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="10dp"
-            android:background="@drawable/bd_gray_1r_white"
-            android:layout_margin="10dp">
-
-            <TextView style="@style/SmallTextView"
-                android:text="@string/customer" />
-
-            <Spinner android:id="@+id/spCustomer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"/>
-
-        </LinearLayout>
+        <View style="@style/Divider"></View>
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp">
+            android:layout_marginBottom="5dp">
             <EditText android:id="@+id/etRemark"
                 style="@style/DefaultEditText"
                 android:hint="@string/remark"
@@ -126,7 +128,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/gray_soft"
+        android:background="@drawable/bg_gray_10r"
         android:orientation="vertical">
 
         <LinearLayout
