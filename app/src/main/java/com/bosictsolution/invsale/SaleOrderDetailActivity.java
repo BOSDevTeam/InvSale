@@ -33,14 +33,13 @@ import java.util.List;
 public class SaleOrderDetailActivity extends AppCompatActivity {
 
     RecyclerView rvItemSaleOrder;
-    TextView tvOrderNumber,tvOrderDateTime,tvCustomer,tvTax,tvSubtotal,tvCharges,tvTotal,tvRemark;
+    TextView tvOrderNumber,tvOrderDateTime,tvTax,tvSubtotal,tvCharges,tvTotal,tvRemark;
     LinearLayout layoutRemark;
     SaleOrderSummaryAdapter saleOrderSummaryAdapter;
-    int saleOrderId,tax,charges,subtotal,total;
+    int saleOrderId;
     AppSetting appSetting=new AppSetting();
     private ProgressDialog progressDialog;
     private Context context=this;
-    /*String remark,orderNumber,orderDataTime,customerName;*/
     ConnectionLiveData connectionLiveData;
 
     @Override
@@ -63,7 +62,6 @@ public class SaleOrderDetailActivity extends AppCompatActivity {
         if (!isFromNotification) {
             data.setOrderNumber(i.getStringExtra("OrderNumber"));
             data.setOrderDateTime(i.getStringExtra("OrderDateTime"));
-            data.setCustomerName(i.getStringExtra("CustomerName"));
             data.setTaxAmt(i.getIntExtra("TaxAmt", 0));
             data.setChargesAmt(i.getIntExtra("ChargesAmt", 0));
             data.setSubtotal(i.getIntExtra("Subtotal", 0));
@@ -86,7 +84,6 @@ public class SaleOrderDetailActivity extends AppCompatActivity {
     private void fillData(SaleOrderMasterData data) {
         tvOrderNumber.setText(getResources().getString(R.string.hash) + data.getOrderNumber());
         tvOrderDateTime.setText(data.getOrderDateTime());
-        tvCustomer.setText(data.getCustomerName());
         tvTax.setText(appSetting.df.format(data.getTaxAmt()));
         tvCharges.setText(appSetting.df.format(data.getChargesAmt()));
         tvSubtotal.setText(appSetting.df.format(data.getSubtotal()));
@@ -167,7 +164,6 @@ public class SaleOrderDetailActivity extends AppCompatActivity {
         rvItemSaleOrder=findViewById(R.id.rvItemSaleOrder);
         tvOrderNumber=findViewById(R.id.tvOrderNumber);
         tvOrderDateTime=findViewById(R.id.tvOrderDateTime);
-        tvCustomer=findViewById(R.id.tvCustomer);
         tvTax=findViewById(R.id.tvTax);
         tvSubtotal=findViewById(R.id.tvSubtotal);
         tvCharges=findViewById(R.id.tvCharges);

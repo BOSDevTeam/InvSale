@@ -18,36 +18,14 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <TextView style="@style/SmallTextView"
-                    android:text="@string/order_number" />
-                <TextView android:id="@+id/tvOrderNumber"
-                    style="@style/DefaultTextView"
-                    tools:text="#SO0001"
-                    android:textStyle="bold"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <TextView style="@style/SmallTextView"
-                    android:text="@string/customer"
-                    android:gravity="right"/>
-                <TextView android:id="@+id/tvCustomer"
-                    style="@style/DefaultTextView"
-                    tools:text="CustomerA"
-                    android:textStyle="bold"
-                    android:gravity="right"/>
-            </LinearLayout>
-
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView style="@style/SmallTextView"
+                android:text="@string/order_number" />
+            <TextView android:id="@+id/tvOrderNumber"
+                style="@style/DefaultTextView"
+                tools:text="#SO0001"
+                android:textStyle="bold"/>
         </LinearLayout>
 
         <LinearLayout

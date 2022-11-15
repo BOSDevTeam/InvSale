@@ -105,7 +105,7 @@ public class RegisterActivity extends AppCompatActivity {
                     String townshipName = lstTownship.get(position).getTownshipName();
                     clientData.setTownshipID(townshipId);
                     clientData.setTownshipName(townshipName);
-                    clientData.setSalePerson(true);
+                    clientData.setSalePerson(false);
                     if (db.getIsClientPhoneVerify() == 1) checkClientPhone();
                     else insertClient(clientData);  // insert client to database
                 }

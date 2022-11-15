@@ -43,7 +43,6 @@ public class ListItemSaleOrderAdapter extends RecyclerView.Adapter<ListItemSaleO
         holder.tvYear.setText(list.get(position).getYear());
         holder.tvDay.setText(list.get(position).getDay());
         holder.tvMonth.setText(list.get(position).getMonth());
-        holder.tvCustomer.setText(list.get(position).getCustomerName());
         holder.tvOrderNumber.setText(context.getResources().getString(R.string.space)+context.getResources().getString(R.string.hash)+list.get(position).getOrderNumber());
         holder.tvGrandTotal.setText(db.getHomeCurrency()+context.getResources().getString(R.string.space)+appSetting.df.format(list.get(position).getTotal()));
 
@@ -54,7 +53,6 @@ public class ListItemSaleOrderAdapter extends RecyclerView.Adapter<ListItemSaleO
                 i.putExtra("SaleOrderID",list.get(position).getSaleOrderID());
                 i.putExtra("OrderNumber",list.get(position).getOrderNumber());
                 i.putExtra("OrderDateTime",list.get(position).getOrderDateTime());
-                i.putExtra("CustomerName",list.get(position).getCustomerName());
                 i.putExtra("TaxAmt",list.get(position).getTaxAmt());
                 i.putExtra("ChargesAmt",list.get(position).getChargesAmt());
                 i.putExtra("Subtotal",list.get(position).getSubtotal());
@@ -72,7 +70,7 @@ public class ListItemSaleOrderAdapter extends RecyclerView.Adapter<ListItemSaleO
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvYear,tvDay,tvMonth,tvOrderNumber,tvGrandTotal,tvCustomer;
+        TextView tvYear,tvDay,tvMonth,tvOrderNumber,tvGrandTotal;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -81,7 +79,6 @@ public class ListItemSaleOrderAdapter extends RecyclerView.Adapter<ListItemSaleO
             tvMonth =  itemView.findViewById(R.id.tvMonth);
             tvOrderNumber =  itemView.findViewById(R.id.tvOrderNumber);
             tvGrandTotal =  itemView.findViewById(R.id.tvGrandTotal);
-            tvCustomer =  itemView.findViewById(R.id.tvCustomer);
         }
     }
 }

@@ -6,17 +6,6 @@
     tools:context=".ui.setting.SettingFragment"
     android:orientation="vertical">
 
-    <TextView android:id="@+id/tvBTPrinterSetting"
-        style="@style/DefaultTextView"
-        android:text="@string/bluetooth_printer_setting"
-        android:drawableLeft="@drawable/ic_print_24"
-        android:drawablePadding="10dp"
-        android:drawableTint="@color/primary_700"
-        android:background="@drawable/btn_transparent"
-        android:padding="20dp"/>
-
-    <View style="@style/Divider" />
-
     <TextView android:id="@+id/tvNotificationSetting"
         style="@style/DefaultTextView"
         android:text="@string/notification_setting"

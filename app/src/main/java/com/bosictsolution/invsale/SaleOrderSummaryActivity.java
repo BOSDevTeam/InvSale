@@ -19,13 +19,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,7 +33,6 @@ import com.bosictsolution.invsale.common.ConnectionLiveData;
 import com.bosictsolution.invsale.common.DatabaseAccess;
 import com.bosictsolution.invsale.data.CompanySettingData;
 import com.bosictsolution.invsale.data.ConnectionData;
-import com.bosictsolution.invsale.data.CustomerData;
 import com.bosictsolution.invsale.data.SaleOrderMasterData;
 import com.bosictsolution.invsale.data.SaleOrderTranData;
 import com.bosictsolution.invsale.listener.ListItemSaleListener;
@@ -51,15 +46,12 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
     RecyclerView rvItemSaleOrder;
     TextView tvTax,tvSubtotal,tvCharges,tvTotal;
     EditText etRemark;
-    Spinner spCustomer;
     SaleOrderSummaryAdapter saleOrderSummaryAdapter;
-    LinearLayout layoutProcessCustomer;
     List<SaleOrderTranData> lstSaleOrderTran =new ArrayList<>();
     DatabaseAccess db;
     private ProgressDialog progressDialog;
     AppSetting appSetting=new AppSetting();
     private Context context=this;
-    List<CustomerData> lstCustomer = new ArrayList<>();
     int tax, charges, total, subtotal , taxAmount, chargesAmount,clientId;
     SharedPreferences sharedpreferences;
     public static Activity activity;
@@ -83,36 +75,9 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
             @Override
             public void onClick(View view) {
                 if (lstSaleOrderTran.size() == 0) return;
-                if (lstCustomer.size() == 0) {
-                    Toast.makeText(context, getResources().getString(R.string.customer_not_found), Toast.LENGTH_LONG).show();
-                    return;
-                }
                 SaleOrderMasterData data = prepareSaleOrderMasterData();
                 db.insertMasterSaleOrder(data);
-                if (data.getCustomerID() == 0) {
-                    Intent i = new Intent(SaleOrderSummaryActivity.this, CustomerActivity.class);
-                    i.putExtra(AppSetting.EXTRA_MODULE_TYPE, AppConstant.SALE_ORDER_MODULE_TYPE);
-                    startActivity(i);
-                } else
-                    insertSaleOrder();
-            }
-        });
-        spCustomer.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if(!lstCustomer.get(i).isDefault()){
-                    btnContinue.setText(getResources().getString(R.string.order_confirm));
-                    layoutProcessCustomer.setVisibility(View.GONE);
-                }
-                else {
-                    btnContinue.setText(getResources().getString(R.string.str_continue));
-                    layoutProcessCustomer.setVisibility(View.VISIBLE);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
+                insertSaleOrder();
             }
         });
     }
@@ -173,23 +138,13 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
         lstSaleOrderTran =db.getTranSaleOrder();
         setSaleOrderAdapter();
         calculateAmount();
-        getCustomer();
     }
 
     private SaleOrderMasterData prepareSaleOrderMasterData(){
-        int position,customerId;
-        boolean isDefaultCustomer;
         String remark;
-
-        position = spCustomer.getSelectedItemPosition();
-        isDefaultCustomer = lstCustomer.get(position).isDefault();
-        if (isDefaultCustomer) customerId = 0;
-        else customerId = lstCustomer.get(position).getCustomerID();
-
         remark = etRemark.getText().toString();
 
         SaleOrderMasterData data=new SaleOrderMasterData();
-        data.setCustomerID(customerId);
         data.setSubtotal(subtotal);
         data.setTax(tax);
         data.setTaxAmt(taxAmount);
@@ -223,38 +178,6 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
         tvTotal.setText(appSetting.df.format(total));
     }
 
-    private void getCustomer() {
-        progressDialog.show();
-        progressDialog.setMessage(getResources().getString(R.string.loading));
-        Api.getClient().getCustomer().enqueue(new Callback<List<CustomerData>>() {
-            @Override
-            public void onResponse(Call<List<CustomerData>> call, Response<List<CustomerData>> response) {
-                progressDialog.dismiss();
-                if (response.body() == null) return;
-                lstCustomer = response.body();
-                setCustomer();
-            }
-
-            @Override
-            public void onFailure(Call<List<CustomerData>> call, Throwable t) {
-                progressDialog.dismiss();
-                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    private void setCustomer() {
-        if(lstCustomer.size()!=0) {
-            String[] customers = new String[lstCustomer.size()];
-            for (int i = 0; i < lstCustomer.size(); i++) {
-                customers[i] = lstCustomer.get(i).getCustomerName();
-            }
-            ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.simple_spinner_item, customers);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spCustomer.setAdapter(adapter);
-        }
-    }
-
     private void setSaleOrderAdapter(){
         while (rvItemSaleOrder.getItemDecorationCount() > 0) {
             rvItemSaleOrder.removeItemDecorationAt(0);
@@ -280,13 +203,11 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
     private void setLayoutResource(){
         btnContinue=findViewById(R.id.btnContinue);
         rvItemSaleOrder=findViewById(R.id.rvItemSaleOrder);
-        spCustomer=findViewById(R.id.spCustomer);
         tvTax=findViewById(R.id.tvTax);
         tvCharges=findViewById(R.id.tvCharges);
         tvSubtotal=findViewById(R.id.tvSubtotal);
         tvTotal=findViewById(R.id.tvTotal);
         etRemark=findViewById(R.id.etRemark);
-        layoutProcessCustomer=findViewById(R.id.layoutProcessCustomer);
     }
 
     @Override

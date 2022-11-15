@@ -37,8 +37,8 @@ import com.bosictsolution.invsale.databinding.FragmentHomeBinding;
 public class HomeFragment extends Fragment {
 
     ProgressBar progressBar;
-    LinearLayout layoutTodaySale,layoutCurrentOrder,layoutTotalSale,layoutTotalOrder;
-    TextView tvBadge,tvTotalProduct,tvTodaySale,tvCurrentSaleOrder,tvTotalSale,tvTotalOrder;
+    LinearLayout layoutCurrentOrder,layoutTotalOrder;
+    TextView tvBadge,tvTotalProduct,tvCurrentSaleOrder,tvTotalOrder;
     Button btnCategory;
     private HomeViewModel homeViewModel;
     private FragmentHomeBinding binding;
@@ -66,22 +66,10 @@ public class HomeFragment extends Fragment {
                 startActivity(i);
             }
         });
-        layoutTodaySale.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Navigation.findNavController(view).navigate(R.id.nav_sale);
-            }
-        });
         layoutCurrentOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Navigation.findNavController(view).navigate(R.id.nav_sale_order);
-            }
-        });
-        layoutTotalSale.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Navigation.findNavController(view).navigate(R.id.nav_sale);
             }
         });
         layoutTotalOrder.setOnClickListener(new View.OnClickListener() {
@@ -116,9 +104,7 @@ public class HomeFragment extends Fragment {
                         tvBadge.setText(String.valueOf(data.getNotiCount()));
                     }
                     tvTotalProduct.setText(String.valueOf(data.getTotalProduct()));
-                    tvTodaySale.setText(db.getHomeCurrency()+getResources().getString(R.string.space)+appSetting.df.format(data.getTodaySale()));
                     tvCurrentSaleOrder.setText(String.valueOf(data.getCurrentOrder()));
-                    tvTotalSale.setText(String.valueOf(data.getTotalSale()));
                     tvTotalOrder.setText(String.valueOf(data.getTotalOrder()));
                 }
             }
@@ -168,14 +154,10 @@ public class HomeFragment extends Fragment {
     }
 
     private void setLayoutResource(){
-        layoutTodaySale = binding.layoutTodaySale;
         layoutCurrentOrder = binding.layoutCurrentOrder;
-        layoutTotalSale = binding.layoutTotalSale;
         layoutTotalOrder = binding.layoutTotalOrder;
         tvTotalProduct = binding.tvTotalProduct;
-        tvTodaySale = binding.tvTodaySale;
         tvCurrentSaleOrder = binding.tvCurrentSaleOrder;
-        tvTotalSale = binding.tvTotalSale;
         tvTotalOrder = binding.tvTotalOrder;
         btnCategory = binding.btnCategory;
         progressBar = binding.progressBar;

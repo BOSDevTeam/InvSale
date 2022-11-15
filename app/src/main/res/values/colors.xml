@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary_200">#50CC7E</color>
-    <color name="primary_500">#2F9956</color>
-    <color name="primary_700">#258348</color>
+    <color name="primary_200">#82B1FF</color>
+    <color name="primary_500">#448AFF</color>
+    <color name="primary_700">#2979FF</color>
     <color name="accent_200">#FFC107</color>
     <color name="accent_700">#FF9800</color>
     <color name="black">#333333</color>

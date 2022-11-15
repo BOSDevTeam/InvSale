@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.bosictsolution.invsale.BTPrinterSettingActivity;
 import com.bosictsolution.invsale.NotificationSettingActivity;
 import com.bosictsolution.invsale.databinding.FragmentSettingBinding;
 
@@ -32,16 +31,8 @@ public class SettingFragment extends Fragment {
         binding = FragmentSettingBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView tvBTPrinterSetting = binding.tvBTPrinterSetting;
         final TextView tvNotificationSetting = binding.tvNotificationSetting;
 
-        tvBTPrinterSetting.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i=new Intent(getContext(), BTPrinterSettingActivity.class);
-                startActivity(i);
-            }
-        });
         tvNotificationSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

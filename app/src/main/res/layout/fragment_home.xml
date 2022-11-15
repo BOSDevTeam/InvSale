@@ -64,22 +64,6 @@
         android:orientation="vertical"
         android:padding="10dp">
 
-        <LinearLayout android:id="@+id/layoutTodaySale"
-            style="@style/HomeInfoLayout">
-
-            <View style="@style/HomeViewBorder" />
-
-            <TextView android:text="@string/today_sale"
-                style="@style/HomeLabel" />
-
-            <LinearLayout style="@style/HomeValueLayout">
-                <TextView android:id="@+id/tvTodaySale"
-                    tools:text="100,000 MMK"
-                    style="@style/HomeValue" />
-            </LinearLayout>
-
-        </LinearLayout>
-
         <LinearLayout android:id="@+id/layoutCurrentOrder"
             style="@style/HomeInfoLayout">
 
@@ -94,24 +78,6 @@
                     tools:text="5"
                     style="@style/HomeValue"
                     android:background="@color/yellow"/>
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout android:id="@+id/layoutTotalSale"
-            style="@style/HomeInfoLayout">
-
-            <View style="@style/HomeViewBorder"
-                android:background="@color/primary_200"/>
-
-            <TextView android:text="@string/total_sale"
-                style="@style/HomeLabel" />
-
-            <LinearLayout style="@style/HomeValueLayout">
-                <TextView android:id="@+id/tvTotalSale"
-                    tools:text="50"
-                    style="@style/HomeValue"
-                    android:background="@color/makeup"/>
             </LinearLayout>
 
         </LinearLayout>

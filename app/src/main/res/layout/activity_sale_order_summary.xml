@@ -28,18 +28,6 @@
 
         <View style="@style/StepSuccessView"/>
 
-        <LinearLayout android:id="@+id/layoutProcessCustomer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center">
-            <ImageView style="@style/StepProcessImage" />
-            <TextView style="@style/StepProcessText"
-                android:text="@string/customer" />
-        </LinearLayout>
-
-        <View style="@style/StepProcessView"/>
-
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -49,23 +37,6 @@
             <TextView style="@style/StepProcessText"
                 android:text="@string/confirm" />
         </LinearLayout>
-
-    </LinearLayout>
-
-    <View style="@style/Divider"></View>
-
-    <LinearLayout android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="5dp"
-        android:background="@drawable/bd_gray_1r_white">
-
-        <TextView style="@style/SmallTextView"
-            android:text="@string/customer" />
-
-        <Spinner android:id="@+id/spCustomer"
-            style="@style/Spinner"
-            android:layout_marginTop="5dp"/>
 
     </LinearLayout>
 
@@ -205,7 +176,7 @@
                 style="@style/DefaultButton"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:text="@string/str_continue"
+                android:text="@string/confirm"
                 android:layout_gravity="right" />
         </LinearLayout>
 
