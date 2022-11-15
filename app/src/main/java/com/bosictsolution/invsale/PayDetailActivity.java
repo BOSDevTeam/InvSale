@@ -159,7 +159,7 @@ public class PayDetailActivity extends AppCompatActivity {
 
     private void init(){
         connectionLiveData = new ConnectionLiveData(context);
-        sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
+        sharedpreferences = getSharedPreferences(AppConstant.MYPREFERENCES, Context.MODE_PRIVATE);
         db=new DatabaseAccess(context);
         activity=this;
         progressDialog = new ProgressDialog(context);
@@ -231,7 +231,7 @@ public class PayDetailActivity extends AppCompatActivity {
                 if (db.insertMasterSale(saleMasterData)) {
                     if (saleMasterData.isDefaultCustomer()) {
                         Intent i = new Intent(PayDetailActivity.this, CustomerActivity.class);
-                        i.putExtra(AppConstant.extra_module_type, AppConstant.sale_module_type);
+                        i.putExtra(AppSetting.EXTRA_MODULE_TYPE, AppConstant.SALE_MODULE_TYPE);
                         i.putExtra("LocationID", saleMasterData.getLocationID());
                         startActivity(i);
                     } else
@@ -253,6 +253,7 @@ public class PayDetailActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
                 progressDialog.dismiss();
+                if (response.body() == null) return;
                 if (response.isSuccessful()) {
                     int slipId=response.body();
                     int position = spCustomer.getSelectedItemPosition();
@@ -466,7 +467,7 @@ public class PayDetailActivity extends AppCompatActivity {
     }
 
     private void fillData() {
-        clientId=sharedpreferences.getInt(AppConstant.ClientID,0);
+        clientId=sharedpreferences.getInt(AppConstant.CLIENT_ID,0);
         voucherDiscountType = discountPercentType;
         getLocation();
         getPayment();
@@ -544,6 +545,7 @@ public class PayDetailActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<CustomerData>> call, Response<List<CustomerData>> response) {
                 progressDialog.dismiss();
+                if (response.body() == null) return;
                 lstCustomer = response.body();
                 setCustomer();
             }

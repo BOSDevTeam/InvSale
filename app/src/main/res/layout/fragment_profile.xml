@@ -101,8 +101,7 @@
                 style="@style/DefaultTextView"
                 android:layout_marginTop="10dp"/>
             <Spinner android:id="@+id/spDivision"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/Spinner"
                 android:layout_marginTop="10dp"
                 android:visibility="gone"
                 tools:visibility="visible"/>
@@ -127,8 +126,7 @@
                 style="@style/DefaultTextView"
                 android:layout_marginTop="10dp"/>
             <Spinner android:id="@+id/spTownship"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/Spinner"
                 android:layout_marginTop="10dp"
                 android:visibility="gone"
                 tools:visibility="visible"/>

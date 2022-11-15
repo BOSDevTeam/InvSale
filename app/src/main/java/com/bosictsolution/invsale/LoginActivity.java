@@ -147,7 +147,7 @@ public class LoginActivity extends AppCompatActivity {
                 String confirmPassword = tvCode1.getText().toString() + tvCode2.getText().toString() + tvCode3.getText().toString() + tvCode4.getText().toString();
                 if (newPassword.equals(confirmPassword)) {
                     Toast.makeText(context, getResources().getString(R.string.success), Toast.LENGTH_LONG).show();
-                    int clientId = sharedpreferences.getInt(AppConstant.ClientID, 0);
+                    int clientId = sharedpreferences.getInt(AppConstant.CLIENT_ID, 0);
                     updateClientPassword(clientId, newPassword);  // update password to database
                 } else {
                     Toast.makeText(context, getResources().getString(R.string.incorrect_confirm_password), Toast.LENGTH_LONG).show();
@@ -169,7 +169,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(Call<Void> call, Response<Void> response) {
                 progressDialog.dismiss();
                 SharedPreferences.Editor editor = sharedpreferences.edit();
-                editor.putString(AppConstant.ClientPassword, newPassword);
+                editor.putString(AppConstant.CLIENT_PASSWORD, newPassword);
                 editor.commit();
                 loadData();
             }
@@ -197,7 +197,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void getPasswordStatus() {
-        clientPassword = sharedpreferences.getString(AppConstant.ClientPassword, "");
+        clientPassword = sharedpreferences.getString(AppConstant.CLIENT_PASSWORD, "");
         if (clientPassword.length() != 0) status = status_existing;
         else status = status_new;
     }
@@ -213,7 +213,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void fillData() {
-        String clientName = sharedpreferences.getString(AppConstant.ClientName, "");
+        String clientName = sharedpreferences.getString(AppConstant.CLIENT_NAME, "");
         tvUser.setText(clientName);
         getPasswordStatus();
         if (status == status_existing)
@@ -223,7 +223,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void init(){
         connectionLiveData = new ConnectionLiveData(context);
-        sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
+        sharedpreferences = getSharedPreferences(AppConstant.MYPREFERENCES, Context.MODE_PRIVATE);
         db=new DatabaseAccess(context);
         progressDialog =new ProgressDialog(context);
         appSetting.setupProgress(progressDialog);

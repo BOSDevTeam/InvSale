@@ -69,7 +69,7 @@ public class CustomerActivity extends AppCompatActivity {
         setTitle(getResources().getString(R.string.customer_detail));
 
         Intent i=getIntent();
-        moduleType=i.getShortExtra(AppConstant.extra_module_type,Short.MIN_VALUE);
+        moduleType=i.getShortExtra(AppSetting.EXTRA_MODULE_TYPE,Short.MIN_VALUE);
         locationId=i.getIntExtra("LocationID",0);
 
         checkConnection();
@@ -124,7 +124,7 @@ public class CustomerActivity extends AppCompatActivity {
 
     private void init(){
         connectionLiveData = new ConnectionLiveData(context);
-        sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
+        sharedpreferences = getSharedPreferences(AppConstant.MYPREFERENCES, Context.MODE_PRIVATE);
         db=new DatabaseAccess(context);
         progressDialog =new ProgressDialog(context);
         appSetting.setupProgress(progressDialog);
@@ -136,10 +136,11 @@ public class CustomerActivity extends AppCompatActivity {
         Api.getClient().insertCustomer(customerData).enqueue(new Callback<Integer>() {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
+                if (response.body() == null) return;
                 int customerId = response.body();
                 if (customerId != 0) {
-                    if (moduleType == AppConstant.sale_module_type) insertSale(customerId);
-                    else if (moduleType == AppConstant.sale_order_module_type)
+                    if (moduleType == AppConstant.SALE_MODULE_TYPE) insertSale(customerId);
+                    else if (moduleType == AppConstant.SALE_ORDER_MODULE_TYPE)
                         insertSaleOrder(customerId);
                 } else {
                     progressDialog.dismiss();
@@ -166,6 +167,7 @@ public class CustomerActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 progressDialog.dismiss();
+                if (response.body() == null) return;
                 if(response.isSuccessful()){
                     db.deleteMasterSaleOrder();
                     db.deleteTranSaleOrder();
@@ -198,15 +200,16 @@ public class CustomerActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
                 progressDialog.dismiss();
+                if (response.body() == null) return;
                 if (response.isSuccessful()) {
                     int slipId=response.body();
                     Intent intent = new Intent();
-                    if (moduleType == AppConstant.sale_module_type) {
+                    if (moduleType == AppConstant.SALE_MODULE_TYPE) {
                         intent = new Intent(CustomerActivity.this, SaleBillActivity.class);
                         intent.putExtra("LocationID", locationId);
                         intent.putExtra("CustomerName", etName.getText().toString());
                         intent.putExtra("SlipID",slipId );
-                    } else if (moduleType == AppConstant.sale_order_module_type) {
+                    } else if (moduleType == AppConstant.SALE_ORDER_MODULE_TYPE) {
                         intent = new Intent(CustomerActivity.this, SaleOrderSuccessActivity.class);
                     }
                     if (intent != null) {
@@ -252,9 +255,9 @@ public class CustomerActivity extends AppCompatActivity {
     }
 
     private void fillData(){
-        clientId=sharedpreferences.getInt(AppConstant.ClientID,0);
-        if(moduleType==AppConstant.sale_module_type)btnConfirm.setText(getResources().getString(R.string.pay_confirm));
-        else if(moduleType==AppConstant.sale_order_module_type) {
+        clientId=sharedpreferences.getInt(AppConstant.CLIENT_ID,0);
+        if(moduleType==AppConstant.SALE_MODULE_TYPE)btnConfirm.setText(getResources().getString(R.string.pay_confirm));
+        else if(moduleType==AppConstant.SALE_ORDER_MODULE_TYPE) {
             btnConfirm.setText(getResources().getString(R.string.order_confirm));
             layoutProcess.setVisibility(View.VISIBLE);
         }
@@ -267,6 +270,7 @@ public class CustomerActivity extends AppCompatActivity {
         Api.getClient().getDivision().enqueue(new Callback<List<DivisionData>>() {
             @Override
             public void onResponse(Call<List<DivisionData>> call, Response<List<DivisionData>> response) {
+                if (response.body() == null) return;
                 lstDivision = response.body();
                 setDivision();
             }
@@ -288,6 +292,7 @@ public class CustomerActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<TownshipData>> call, Response<List<TownshipData>> response) {
                 progressDialog.dismiss();
+                if (response.body() == null) return;
                 lstTownship = response.body();
                 setTownship();
             }

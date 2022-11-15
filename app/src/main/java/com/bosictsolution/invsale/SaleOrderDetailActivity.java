@@ -113,6 +113,7 @@ public class SaleOrderDetailActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<SaleOrderMasterData> call, Response<SaleOrderMasterData> response) {
                 progressDialog.dismiss();
+                if (response.body() == null) return;
                 SaleOrderMasterData data=response.body();
                 fillData(data);
             }
@@ -132,6 +133,7 @@ public class SaleOrderDetailActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<SaleOrderTranData>> call, Response<List<SaleOrderTranData>> response) {
                 progressDialog.dismiss();
+                if (response.body() == null) return;
                 List<SaleOrderTranData> list =response.body();
                 setAdapter(list);
             }

@@ -67,7 +67,7 @@ public class SignInActivity extends AppCompatActivity {
 
     private void init(){
         connectionLiveData = new ConnectionLiveData(context);
-        sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
+        sharedpreferences = getSharedPreferences(AppConstant.MYPREFERENCES, Context.MODE_PRIVATE);
         progressDialog =new ProgressDialog(context);
         appSetting.setupProgress(progressDialog);
     }
@@ -79,19 +79,21 @@ public class SignInActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ClientData> call, Response<ClientData> response) {
                 progressDialog.dismiss();
+                if (response.body() == null) return;
                 ClientData data = response.body();
                 if (data.getClientID() != 0) {
                     SharedPreferences.Editor editor = sharedpreferences.edit();
-                    editor.putInt(AppConstant.ClientID, data.getClientID());
-                    editor.putString(AppConstant.ClientName, data.getClientName());
-                    editor.putString(AppConstant.ClientPassword, data.getClientPassword());
-                    editor.putString(AppConstant.ClientShopName, data.getShopName());
-                    editor.putString(AppConstant.ClientPhone, phone);
-                    editor.putInt(AppConstant.ClientDivisionID, data.getDivisionID());
-                    editor.putString(AppConstant.ClientDivisionName, data.getDivisionName());
-                    editor.putInt(AppConstant.ClientTownshipID, data.getTownshipID());
-                    editor.putString(AppConstant.ClientTownshipName, data.getTownshipName());
-                    editor.putString(AppConstant.ClientAddress, data.getAddress());
+                    editor.putInt(AppConstant.CLIENT_ID, data.getClientID());
+                    editor.putString(AppConstant.CLIENT_NAME, data.getClientName());
+                    editor.putString(AppConstant.CLIENT_PASSWORD, data.getClientPassword());
+                    editor.putString(AppConstant.CLIENT_SHOP_NAME, data.getShopName());
+                    editor.putString(AppConstant.CLIENT_PHONE, phone);
+                    editor.putInt(AppConstant.CLIENT_DIVISION_ID, data.getDivisionID());
+                    editor.putString(AppConstant.CLIENT_DIVISION_NAME, data.getDivisionName());
+                    editor.putInt(AppConstant.CLIENT_TOWNSHIP_ID, data.getTownshipID());
+                    editor.putString(AppConstant.CLIENT_TOWNSHIP_NAME, data.getTownshipName());
+                    editor.putString(AppConstant.CLIENT_ADDRESS, data.getAddress());
+                    editor.putBoolean(AppConstant.ACCESS_NOTI, true);
                     editor.commit();
                     Intent i = new Intent(SignInActivity.this, LoginActivity.class);
                     startActivity(i);

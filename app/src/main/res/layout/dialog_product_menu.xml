@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/white">
 
     <LinearLayout style="@style/DialogLayout"
         android:gravity="center">
@@ -22,8 +23,7 @@
         android:orientation="vertical">
 
         <Spinner android:id="@+id/spMainMenu"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            style="@style/Spinner"/>
 
         <ExpandableListView android:id="@+id/list"
             android:layout_width="match_parent"

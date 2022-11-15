@@ -44,16 +44,16 @@ public class ListItemNotificationAdapter extends RecyclerView.Adapter<ListItemNo
         holder.tvNotiType.setText(String.valueOf(list.get(position).getNotiType()));
         holder.tvNotiID.setText(String.valueOf(list.get(position).getNotiID()));
 
-        if (list.get(position).getNotiType() == AppConstant.noti_update_order)
+        if (list.get(position).getNotiType() == AppConstant.NOTI_UPDATE_ORDER)
             holder.tvNotiMessage.getCompoundDrawables()[0].setTint(context.getResources().getColor(R.color.accent_700));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(iNotification!=null) {
-                    if (list.get(position).getNotiType() == AppConstant.noti_new_product)
+                    if (list.get(position).getNotiType() == AppConstant.NOTI_NEW_PRODUCT)
                         iNotification.setOnNewProductNotiClick(list.get(position).getNotiID());
-                    else if (list.get(position).getNotiType() == AppConstant.noti_update_order)
+                    else if (list.get(position).getNotiType() == AppConstant.NOTI_UPDATE_ORDER)
                         iNotification.setOnUpdateOrderNotiClick(list.get(position).getNotiID());
                 }
             }

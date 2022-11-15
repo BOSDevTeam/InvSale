@@ -5,6 +5,7 @@ import com.bosictsolution.invsale.data.ClientData;
 import com.bosictsolution.invsale.data.CompanySettingData;
 import com.bosictsolution.invsale.data.CustomerData;
 import com.bosictsolution.invsale.data.DivisionData;
+import com.bosictsolution.invsale.data.SummaryData;
 import com.bosictsolution.invsale.data.LimitedDayData;
 import com.bosictsolution.invsale.data.LocationData;
 import com.bosictsolution.invsale.data.MainMenuData;
@@ -144,7 +145,7 @@ public interface ApiInterface {
     Call<Integer> getClientNotiCount(@Query("clientId") int clientId);
 
     @GET("clientnoti/GetClientNotification")
-    Call<List<NotificationData>> getClientNotification(@Query("clientId") int clientId);
+    Call<List<NotificationData>> getClientNotification(@Query("clientId") int clientId,@Query("isForStatusBar") boolean isForStatusBar);
 
     @Headers("Content-type: application/json")
     @POST("clientnoti/DeleteClientNotification")
@@ -154,6 +155,13 @@ public interface ApiInterface {
     @POST("clientnoti/DeleteAllClientNotification")
     Call<Void> deleteAllClientNotification(@Query("clientId") int clientId);
 
+    @Headers("Content-type: application/json")
+    @POST("clientnoti/UpdateClientNotification")
+    Call<Void> updateClientNotification(@Query("clientId") int clientId,@Query("notiType") short notiType,@Query("notiIds") String notiIds,@Query("isStatusBarFinished") boolean isStatusBarFinished);
+
     @GET("product/GetProduct")
     Call<ProductData> getProduct(@Query("productId") int productId);
+
+    @GET("summary")
+    Call<SummaryData> getSummaryData(@Query("clientId") int clientId,@Query("date") String date);
 }

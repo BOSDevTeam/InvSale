@@ -73,8 +73,8 @@ public class NotificationFragment extends Fragment implements ListItemNotificati
         setHasOptionsMenu(true);
         setLayoutResource();
         db=new DatabaseAccess(getContext());
-        sharedpreferences = getContext().getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
-        clientId=sharedpreferences.getInt(AppConstant.ClientID, 0);
+        sharedpreferences = getContext().getSharedPreferences(AppConstant.MYPREFERENCES, Context.MODE_PRIVATE);
+        clientId=sharedpreferences.getInt(AppConstant.CLIENT_ID, 0);
         getClientNotification(clientId);
 
         btnMarkAllRead.setOnClickListener(new View.OnClickListener() {
@@ -104,10 +104,11 @@ public class NotificationFragment extends Fragment implements ListItemNotificati
     private void getClientNotification(int clientId){
         progressDialog.show();
         progressDialog.setMessage(getResources().getString(R.string.loading));
-        Api.getClient().getClientNotification(clientId).enqueue(new Callback<List<NotificationData>>() {
+        Api.getClient().getClientNotification(clientId,false).enqueue(new Callback<List<NotificationData>>() {
             @Override
             public void onResponse(Call<List<NotificationData>> call, Response<List<NotificationData>> response) {
                 progressDialog.dismiss();
+                if (response.body() == null) return;
                 lstNotification=response.body();
                 setAdapter(lstNotification);
                 if(lstNotification != null) MainActivity.setNotificationBadge(lstNotification.size(),getContext());
@@ -194,7 +195,7 @@ public class NotificationFragment extends Fragment implements ListItemNotificati
         i.putExtra("SaleOrderID",saleOrderId);
         i.putExtra("IsFromNotification",true);
         getContext().startActivity(i);
-        deleteClientNotification(clientId,saleOrderId,AppConstant.noti_update_order);
+        deleteClientNotification(clientId,saleOrderId,AppConstant.NOTI_UPDATE_ORDER);
     }
 
     private void deleteClientNotification(int clientId,int notiId,short notiType){
@@ -238,9 +239,10 @@ public class NotificationFragment extends Fragment implements ListItemNotificati
             @Override
             public void onResponse(Call<ProductData> call, Response<ProductData> response) {
                 progressDialog.dismiss();
+                if (response.body() == null) return;
                 ProductData data=response.body();
                 showNewProductDialog(data);
-                deleteClientNotification(clientId,productId,AppConstant.noti_new_product);
+                deleteClientNotification(clientId,productId,AppConstant.NOTI_NEW_PRODUCT);
             }
 
             @Override

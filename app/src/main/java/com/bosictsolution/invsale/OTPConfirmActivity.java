@@ -130,19 +130,21 @@ public class OTPConfirmActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
                 progressDialog.dismiss();
+                if (response.body() == null) return;
                 int clientId = response.body();
                 if (clientId != 0) {
                     Toast.makeText(context, getResources().getString(R.string.register_success), Toast.LENGTH_LONG).show();
                     SharedPreferences.Editor editor = sharedpreferences.edit();
-                    editor.putInt(AppConstant.ClientID, clientId);
-                    editor.putString(AppConstant.ClientName, clientData.getClientName());
-                    editor.putString(AppConstant.ClientShopName, clientData.getShopName());
-                    editor.putString(AppConstant.ClientPhone, clientData.getPhone());
-                    editor.putInt(AppConstant.ClientDivisionID, clientData.getDivisionID());
-                    editor.putString(AppConstant.ClientDivisionName, clientData.getDivisionName());
-                    editor.putInt(AppConstant.ClientTownshipID, clientData.getTownshipID());
-                    editor.putString(AppConstant.ClientTownshipName, clientData.getTownshipName());
-                    editor.putString(AppConstant.ClientAddress, clientData.getAddress());
+                    editor.putInt(AppConstant.CLIENT_ID, clientId);
+                    editor.putString(AppConstant.CLIENT_NAME, clientData.getClientName());
+                    editor.putString(AppConstant.CLIENT_SHOP_NAME, clientData.getShopName());
+                    editor.putString(AppConstant.CLIENT_PHONE, clientData.getPhone());
+                    editor.putInt(AppConstant.CLIENT_DIVISION_ID, clientData.getDivisionID());
+                    editor.putString(AppConstant.CLIENT_DIVISION_NAME, clientData.getDivisionName());
+                    editor.putInt(AppConstant.CLIENT_TOWNSHIP_ID, clientData.getTownshipID());
+                    editor.putString(AppConstant.CLIENT_TOWNSHIP_NAME, clientData.getTownshipName());
+                    editor.putString(AppConstant.CLIENT_ADDRESS, clientData.getAddress());
+                    editor.putBoolean(AppConstant.ACCESS_NOTI, true);
                     editor.commit();
                     Intent i = new Intent(OTPConfirmActivity.this, LoginActivity.class);
                     startActivity(i);
@@ -171,7 +173,7 @@ public class OTPConfirmActivity extends AppCompatActivity {
     }
 
     private void init(){
-        sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
+        sharedpreferences = getSharedPreferences(AppConstant.MYPREFERENCES, Context.MODE_PRIVATE);
         progressDialog = new ProgressDialog(context);
         appSetting.setupProgress(progressDialog);
     }

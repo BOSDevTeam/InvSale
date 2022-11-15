@@ -237,6 +237,7 @@ public class SaleItemFragment extends Fragment implements SaleFragment.onFragmen
             @Override
             public void onResponse(Call<List<SaleTranData>> call, Response<List<SaleTranData>> response) {
                 progressDialog.dismiss();
+                if (response.body() == null) return;
                 List<SaleTranData> list=response.body();
                 setAdapter(list);
                 tvTotal.setText(db.getHomeCurrency()+getResources().getString(R.string.space)+calculateAmountTotal(list));
@@ -258,6 +259,7 @@ public class SaleItemFragment extends Fragment implements SaleFragment.onFragmen
             @Override
             public void onResponse(Call<List<SaleTranData>> call, Response<List<SaleTranData>> response) {
                 progressDialog.dismiss();
+                if (response.body() == null) return;
                 List<SaleTranData> list=response.body();
                 setAdapter(list);
                 tvTotal.setText(db.getHomeCurrency()+getResources().getString(R.string.space)+calculateAmountTotal(list));
@@ -278,6 +280,7 @@ public class SaleItemFragment extends Fragment implements SaleFragment.onFragmen
             @Override
             public void onResponse(Call<List<SaleTranData>> call, Response<List<SaleTranData>> response) {
                 progressDialog.dismiss();
+                if (response.body() == null) return;
                 List<SaleTranData> list=response.body();
                 setAdapter(list);
                 tvTotal.setText(db.getHomeCurrency()+getResources().getString(R.string.space)+calculateAmountTotal(list));
@@ -313,14 +316,14 @@ public class SaleItemFragment extends Fragment implements SaleFragment.onFragmen
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(false);
         db=new DatabaseAccess(getContext());
-        sharedpreferences = getContext().getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
+        sharedpreferences = getContext().getSharedPreferences(AppConstant.MYPREFERENCES, Context.MODE_PRIVATE);
     }
 
     private void fillData(){
         date_filter_type=date_filter;
         selectedDate= appSetting.getTodayDate();
         tvDate.setText(selectedDate);
-        clientId=sharedpreferences.getInt(AppConstant.ClientID,0);
+        clientId=sharedpreferences.getInt(AppConstant.CLIENT_ID,0);
         getSaleItemByDate();
     }
 

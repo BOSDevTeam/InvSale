@@ -146,8 +146,9 @@ public class SplashActivity extends AppCompatActivity {
         Api.getClient().getCompanySetting().enqueue(new Callback<CompanySettingData>() {
             @Override
             public void onResponse(Call<CompanySettingData> call, Response<CompanySettingData> response) {
+                if (response.body() == null) return;
                 if (db.insertCompanySetting(response.body())) {
-                    int clientId = sharedpreferences.getInt(AppConstant.ClientID, 0);
+                    int clientId = sharedpreferences.getInt(AppConstant.CLIENT_ID, 0);
                     Intent i;
                     if (clientId == 0) {
                         i = new Intent(SplashActivity.this, RegisterActivity.class);
@@ -168,7 +169,7 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     private void init(){
-        sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
+        sharedpreferences = getSharedPreferences(AppConstant.MYPREFERENCES, Context.MODE_PRIVATE);
         db=new DatabaseAccess(context);
         progressDialog = new ProgressDialog(context);
         appSetting.setupProgress(progressDialog);

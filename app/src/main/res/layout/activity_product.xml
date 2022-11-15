@@ -5,7 +5,8 @@
     android:id="@+id/layoutRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ProductActivity">
+    tools:context=".ProductActivity"
+    android:background="@color/white">
 
     <include layout="@layout/content_product"/>
 

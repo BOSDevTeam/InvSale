@@ -181,6 +181,7 @@ public class SaleOrderItemReportActivity extends AppCompatActivity implements Ca
             @Override
             public void onResponse(Call<List<SaleOrderTranData>> call, Response<List<SaleOrderTranData>> response) {
                 progressDialog.dismiss();
+                if (response.body() == null) return;
                 List<SaleOrderTranData> list=response.body();
                 setAdapter(list);
             }
@@ -201,6 +202,7 @@ public class SaleOrderItemReportActivity extends AppCompatActivity implements Ca
             @Override
             public void onResponse(Call<List<SaleOrderTranData>> call, Response<List<SaleOrderTranData>> response) {
                 progressDialog.dismiss();
+                if (response.body() == null) return;
                 List<SaleOrderTranData> list=response.body();
                 setAdapter(list);
             }
@@ -220,6 +222,7 @@ public class SaleOrderItemReportActivity extends AppCompatActivity implements Ca
             @Override
             public void onResponse(Call<List<SaleOrderTranData>> call, Response<List<SaleOrderTranData>> response) {
                 progressDialog.dismiss();
+                if (response.body() == null) return;
                 List<SaleOrderTranData> list=response.body();
                 setAdapter(list);
             }
@@ -237,7 +240,7 @@ public class SaleOrderItemReportActivity extends AppCompatActivity implements Ca
         progressDialog = new ProgressDialog(context);
         appSetting.setupProgress(progressDialog);
         db=new DatabaseAccess(context);
-        sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
+        sharedpreferences = getSharedPreferences(AppConstant.MYPREFERENCES, Context.MODE_PRIVATE);
     }
 
     private void checkConnection(){
@@ -254,7 +257,7 @@ public class SaleOrderItemReportActivity extends AppCompatActivity implements Ca
         date_filter_type=date_filter;
         selectedDate= appSetting.getTodayDate();
         tvDate.setText(selectedDate);
-        clientId=sharedpreferences.getInt(AppConstant.ClientID,0);
+        clientId=sharedpreferences.getInt(AppConstant.CLIENT_ID,0);
         getSaleOrderItemByDate();
     }
 

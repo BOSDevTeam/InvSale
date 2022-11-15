@@ -8,10 +8,13 @@
     <color name="black">#333333</color>
     <color name="black_soft">#666666</color>
     <color name="white">#FFFFFF</color>
+    <color name="gray_dark">#CCCCCC</color>
     <color name="gray">#E1DFDF</color>
     <color name="gray_soft">#F1EFEF</color>
     <color name="primary_soft">#D9EFE1</color>
     <color name="transparent">@android:color/transparent</color>
     <color name="red">#E91E36</color>
     <color name="primary_extra_soft">#E7F4EC</color>
+    <color name="yellow">#FFEB3B</color>
+    <color name="makeup">#F4D988</color>
 </resources>

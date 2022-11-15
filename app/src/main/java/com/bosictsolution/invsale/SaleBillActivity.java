@@ -100,7 +100,7 @@ public class SaleBillActivity extends AppCompatActivity {
 
     private void init(){
         connectionLiveData = new ConnectionLiveData(context);
-        sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
+        sharedpreferences = getSharedPreferences(AppConstant.MYPREFERENCES, Context.MODE_PRIVATE);
         db=new DatabaseAccess(context);
         progressDialog =new ProgressDialog(context);
         appSetting.setupProgress(progressDialog);
@@ -120,7 +120,7 @@ public class SaleBillActivity extends AppCompatActivity {
     }
 
     private void fillData(){
-        clientName=sharedpreferences.getString(AppConstant.ClientName,"");
+        clientName=sharedpreferences.getString(AppConstant.CLIENT_NAME,"");
         getVoucherSetting(locationId);
     }
 

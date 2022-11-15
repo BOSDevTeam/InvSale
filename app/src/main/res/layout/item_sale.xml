@@ -34,7 +34,8 @@
                 android:paddingRight="15dp"
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
-                android:background="@drawable/bd_quantity"/>
+                android:background="@drawable/bd_quantity"
+                android:textColor="@color/black"/>
             <TextView style="@style/SmallTextView"
                 android:layout_width="wrap_content"
                 android:text="@string/multiple" />

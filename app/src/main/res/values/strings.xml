@@ -184,5 +184,11 @@
     <string name="verification_completed">Verification Completed!</string>
     <string name="new_product">New Product</string>
     <string name="mark_all_read">Mark All as Read</string>
+    <string name="updated_new_products">\u0020updated their new products!</string>
+    <string name="updated_order">Updated Order</string>
+    <string name="total_product">Total Product</string>
+    <string name="today_sale">Today Sale</string>
+    <string name="total_sale">Total Sale</string>
+    <string name="total_order">Total Order</string>
 
 </resources>

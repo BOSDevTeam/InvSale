@@ -91,7 +91,7 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
                 db.insertMasterSaleOrder(data);
                 if (data.getCustomerID() == 0) {
                     Intent i = new Intent(SaleOrderSummaryActivity.this, CustomerActivity.class);
-                    i.putExtra(AppConstant.extra_module_type, AppConstant.sale_order_module_type);
+                    i.putExtra(AppSetting.EXTRA_MODULE_TYPE, AppConstant.SALE_ORDER_MODULE_TYPE);
                     startActivity(i);
                 } else
                     insertSaleOrder();
@@ -127,6 +127,7 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 progressDialog.dismiss();
+                if (response.body() == null) return;
                 if(response.isSuccessful()){
                     db.deleteMasterSaleOrder();
                     db.deleteTranSaleOrder();
@@ -151,7 +152,7 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
         connectionLiveData = new ConnectionLiveData(context);
         activity=this;
         db=new DatabaseAccess(context);
-        sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
+        sharedpreferences = getSharedPreferences(AppConstant.MYPREFERENCES, Context.MODE_PRIVATE);
         progressDialog =new ProgressDialog(context);
         appSetting.setupProgress(progressDialog);
     }
@@ -167,7 +168,7 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
     }
 
     private void fillData(){
-        clientId=sharedpreferences.getInt(AppConstant.ClientID,0);
+        clientId=sharedpreferences.getInt(AppConstant.CLIENT_ID,0);
         getCompanySetting();
         lstSaleOrderTran =db.getTranSaleOrder();
         setSaleOrderAdapter();
@@ -229,6 +230,7 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
             @Override
             public void onResponse(Call<List<CustomerData>> call, Response<List<CustomerData>> response) {
                 progressDialog.dismiss();
+                if (response.body() == null) return;
                 lstCustomer = response.body();
                 setCustomer();
             }

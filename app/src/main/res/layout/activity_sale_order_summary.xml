@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SaleOrderSummaryActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -63,8 +64,7 @@
             android:text="@string/customer" />
 
         <Spinner android:id="@+id/spCustomer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/Spinner"
             android:layout_marginTop="5dp"/>
 
     </LinearLayout>

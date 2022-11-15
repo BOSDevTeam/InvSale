@@ -1,22 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.home.HomeFragment">
+    tools:context=".ui.home.HomeFragment"
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/text_home"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:background="@color/primary_500"
+        android:gravity="center_horizontal">
+
+        <ProgressBar android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:indeterminateTint="@color/primary_200"
+            android:indeterminateBehavior="repeat"
+            android:indeterminateDuration="@integer/material_motion_duration_medium_1"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="@color/white"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="-50dp"
+        android:padding="10dp"
+        android:gravity="center"
+        android:elevation="8dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView android:text="@string/total_product"
+                style="@style/DefaultTextView"
+                android:textColor="@color/black_soft"/>
+
+            <TextView android:id="@+id/tvTotalProduct"
+                tools:text="154"
+                style="@style/TitleTextView"
+                android:textColor="@color/primary_500"
+                android:textSize="@dimen/text_extra_large"/>
+
+        </LinearLayout>
+        
+        <androidx.appcompat.widget.AppCompatButton android:id="@+id/btnCategory"
+            android:text="@string/categories"
+            style="@style/AccentButton"/>
+
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:textAlignment="center"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <LinearLayout android:id="@+id/layoutTodaySale"
+            style="@style/HomeInfoLayout">
+
+            <View style="@style/HomeViewBorder" />
+
+            <TextView android:text="@string/today_sale"
+                style="@style/HomeLabel" />
+
+            <LinearLayout style="@style/HomeValueLayout">
+                <TextView android:id="@+id/tvTodaySale"
+                    tools:text="100,000 MMK"
+                    style="@style/HomeValue" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/layoutCurrentOrder"
+            style="@style/HomeInfoLayout">
+
+            <View style="@style/HomeViewBorder"
+                android:background="@color/red"/>
+
+            <TextView android:text="@string/current_order"
+                style="@style/HomeLabel" />
+
+            <LinearLayout style="@style/HomeValueLayout">
+                <TextView android:id="@+id/tvCurrentSaleOrder"
+                    tools:text="5"
+                    style="@style/HomeValue"
+                    android:background="@color/yellow"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/layoutTotalSale"
+            style="@style/HomeInfoLayout">
+
+            <View style="@style/HomeViewBorder"
+                android:background="@color/primary_200"/>
+
+            <TextView android:text="@string/total_sale"
+                style="@style/HomeLabel" />
+
+            <LinearLayout style="@style/HomeValueLayout">
+                <TextView android:id="@+id/tvTotalSale"
+                    tools:text="50"
+                    style="@style/HomeValue"
+                    android:background="@color/makeup"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout android:id="@+id/layoutTotalOrder"
+            style="@style/HomeInfoLayout">
+
+            <View style="@style/HomeViewBorder"
+                android:background="@color/accent_200"/>
+
+            <TextView android:text="@string/total_order"
+                style="@style/HomeLabel" />
+
+            <LinearLayout style="@style/HomeValueLayout">
+                <TextView android:id="@+id/tvTotalOrder"
+                    tools:text="15"
+                    style="@style/HomeValue"
+                    android:background="@color/makeup"/>
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -27,6 +27,7 @@ import java.util.Calendar;
 import java.util.Set;
 
 public class AppSetting {
+    public static String EXTRA_MODULE_TYPE;
     public DecimalFormat df= new DecimalFormat("#,###");
 
     public boolean checkConnection(Context context) {

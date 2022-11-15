@@ -67,7 +67,7 @@ public class ProfileFragment extends Fragment {
         binding = FragmentProfileBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         setLayoutResource();
-        sharedpreferences = getContext().getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
+        sharedpreferences = getContext().getSharedPreferences(AppConstant.MYPREFERENCES, Context.MODE_PRIVATE);
 
         fillData();
 
@@ -126,13 +126,13 @@ public class ProfileFragment extends Fragment {
                 progressDialog.dismiss();
                 Toast.makeText(getContext(),getResources().getString(R.string.success),Toast.LENGTH_LONG).show();
                 SharedPreferences.Editor editor = sharedpreferences.edit();
-                editor.putString(AppConstant.ClientName, clientData.getClientName());
-                editor.putString(AppConstant.ClientShopName, clientData.getShopName());
-                editor.putInt(AppConstant.ClientDivisionID, clientData.getDivisionID());
-                editor.putString(AppConstant.ClientDivisionName, clientData.getDivisionName());
-                editor.putInt(AppConstant.ClientTownshipID, clientData.getTownshipID());
-                editor.putString(AppConstant.ClientTownshipName, clientData.getTownshipName());
-                editor.putString(AppConstant.ClientAddress, clientData.getAddress());
+                editor.putString(AppConstant.CLIENT_NAME, clientData.getClientName());
+                editor.putString(AppConstant.CLIENT_SHOP_NAME, clientData.getShopName());
+                editor.putInt(AppConstant.CLIENT_DIVISION_ID, clientData.getDivisionID());
+                editor.putString(AppConstant.CLIENT_DIVISION_NAME, clientData.getDivisionName());
+                editor.putInt(AppConstant.CLIENT_TOWNSHIP_ID, clientData.getTownshipID());
+                editor.putString(AppConstant.CLIENT_TOWNSHIP_NAME, clientData.getTownshipName());
+                editor.putString(AppConstant.CLIENT_ADDRESS, clientData.getAddress());
                 editor.commit();
             }
 
@@ -166,15 +166,15 @@ public class ProfileFragment extends Fragment {
     }
 
     private void fillData() {
-        clientId = sharedpreferences.getInt(AppConstant.ClientID, 0);
-        String clientName = sharedpreferences.getString(AppConstant.ClientName, "");
-        String clientShopName = sharedpreferences.getString(AppConstant.ClientShopName, "");
-        String clientPhone = sharedpreferences.getString(AppConstant.ClientPhone, "");
-        clientDivisionId = sharedpreferences.getInt(AppConstant.ClientDivisionID, 0);
-        String clientDivisionName = sharedpreferences.getString(AppConstant.ClientDivisionName, "");
-        clientTownshipId = sharedpreferences.getInt(AppConstant.ClientTownshipID, 0);
-        String clientTownshipName = sharedpreferences.getString(AppConstant.ClientTownshipName, "");
-        String clientAddress = sharedpreferences.getString(AppConstant.ClientAddress, "");
+        clientId = sharedpreferences.getInt(AppConstant.CLIENT_ID, 0);
+        String clientName = sharedpreferences.getString(AppConstant.CLIENT_NAME, "");
+        String clientShopName = sharedpreferences.getString(AppConstant.CLIENT_SHOP_NAME, "");
+        String clientPhone = sharedpreferences.getString(AppConstant.CLIENT_PHONE, "");
+        clientDivisionId = sharedpreferences.getInt(AppConstant.CLIENT_DIVISION_ID, 0);
+        String clientDivisionName = sharedpreferences.getString(AppConstant.CLIENT_DIVISION_NAME, "");
+        clientTownshipId = sharedpreferences.getInt(AppConstant.CLIENT_TOWNSHIP_ID, 0);
+        String clientTownshipName = sharedpreferences.getString(AppConstant.CLIENT_TOWNSHIP_NAME, "");
+        String clientAddress = sharedpreferences.getString(AppConstant.CLIENT_ADDRESS, "");
         etUserName.setText(clientName);
         etShopName.setText(clientShopName);
         tvPhone.setText(clientPhone);
@@ -201,6 +201,7 @@ public class ProfileFragment extends Fragment {
         Api.getClient().getDivision().enqueue(new Callback<List<DivisionData>>() {
             @Override
             public void onResponse(Call<List<DivisionData>> call, Response<List<DivisionData>> response) {
+                if (response.body() == null) return;
                 lstDivision = response.body();
                 setDivision();
                 for(int i=0;i<lstDivision.size();i++){
@@ -228,6 +229,7 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onResponse(Call<List<TownshipData>> call, Response<List<TownshipData>> response) {
                 progressDialog.dismiss();
+                if (response.body() == null) return;
                 lstTownship = response.body();
                 setTownship();
                 for(int i=0;i<lstTownship.size();i++){

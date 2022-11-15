@@ -123,7 +123,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void init() {
         connectionLiveData = new ConnectionLiveData(context);
-        sharedpreferences = getSharedPreferences(AppConstant.MyPREFERENCES, Context.MODE_PRIVATE);
+        sharedpreferences = getSharedPreferences(AppConstant.MYPREFERENCES, Context.MODE_PRIVATE);
         db=new DatabaseAccess(context);
         progressDialog = new ProgressDialog(context);
         appSetting.setupProgress(progressDialog);
@@ -169,6 +169,7 @@ public class RegisterActivity extends AppCompatActivity {
         Api.getClient().getDivision().enqueue(new Callback<List<DivisionData>>() {
             @Override
             public void onResponse(Call<List<DivisionData>> call, Response<List<DivisionData>> response) {
+                if (response.body() == null) return;
                 lstDivision = response.body();
                 setDivision();
             }
@@ -190,6 +191,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<TownshipData>> call, Response<List<TownshipData>> response) {
                 progressDialog.dismiss();
+                if (response.body() == null) return;
                 lstTownship = response.body();
                 setTownship();
             }
@@ -209,19 +211,21 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
                 progressDialog.dismiss();
+                if (response.body() == null) return;
                 int clientId = response.body();
                 if (clientId != 0) {
                     Toast.makeText(context, getResources().getString(R.string.register_success), Toast.LENGTH_LONG).show();
                     SharedPreferences.Editor editor = sharedpreferences.edit();
-                    editor.putInt(AppConstant.ClientID, clientId);
-                    editor.putString(AppConstant.ClientName, clientData.getClientName());
-                    editor.putString(AppConstant.ClientShopName, clientData.getShopName());
-                    editor.putString(AppConstant.ClientPhone, clientData.getPhone());
-                    editor.putInt(AppConstant.ClientDivisionID, clientData.getDivisionID());
-                    editor.putString(AppConstant.ClientDivisionName, clientData.getDivisionName());
-                    editor.putInt(AppConstant.ClientTownshipID, clientData.getTownshipID());
-                    editor.putString(AppConstant.ClientTownshipName, clientData.getTownshipName());
-                    editor.putString(AppConstant.ClientAddress, clientData.getAddress());
+                    editor.putInt(AppConstant.CLIENT_ID, clientId);
+                    editor.putString(AppConstant.CLIENT_NAME, clientData.getClientName());
+                    editor.putString(AppConstant.CLIENT_SHOP_NAME, clientData.getShopName());
+                    editor.putString(AppConstant.CLIENT_PHONE, clientData.getPhone());
+                    editor.putInt(AppConstant.CLIENT_DIVISION_ID, clientData.getDivisionID());
+                    editor.putString(AppConstant.CLIENT_DIVISION_NAME, clientData.getDivisionName());
+                    editor.putInt(AppConstant.CLIENT_TOWNSHIP_ID, clientData.getTownshipID());
+                    editor.putString(AppConstant.CLIENT_TOWNSHIP_NAME, clientData.getTownshipName());
+                    editor.putString(AppConstant.CLIENT_ADDRESS, clientData.getAddress());
+                    editor.putBoolean(AppConstant.ACCESS_NOTI, true);
                     editor.commit();
                     Intent i = new Intent(RegisterActivity.this, LoginActivity.class);
                     startActivity(i);
@@ -244,6 +248,7 @@ public class RegisterActivity extends AppCompatActivity {
         Api.getClient().checkClient(clientData.getPhone()).enqueue(new Callback<ClientData>() {
             @Override
             public void onResponse(Call<ClientData> call, Response<ClientData> response) {
+                if (response.body() == null) return;
                 ClientData data = response.body();
                 if (data.getClientID() == 0) {
                     PhoneAuthProvider.getInstance().verifyPhoneNumber(
@@ -267,23 +272,27 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void setDivision(){
-        String[] divisions = new String[lstDivision.size()];
-        for (int i = 0; i < lstDivision.size(); i++) {
-            divisions[i] = lstDivision.get(i).getDivisionName();
+        if(lstDivision != null && lstDivision.size()!=0) {
+            String[] divisions = new String[lstDivision.size()];
+            for (int i = 0; i < lstDivision.size(); i++) {
+                divisions[i] = lstDivision.get(i).getDivisionName();
+            }
+            ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.simple_spinner_item, divisions);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spDivision.setAdapter(adapter);
         }
-        ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.simple_spinner_item, divisions);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spDivision.setAdapter(adapter);
     }
 
     private void setTownship(){
-        String[] townships = new String[lstTownship.size()];
-        for (int i = 0; i < lstTownship.size(); i++) {
-            townships[i] = lstTownship.get(i).getTownshipName();
+        if(lstTownship != null && lstTownship.size()!=0) {
+            String[] townships = new String[lstTownship.size()];
+            for (int i = 0; i < lstTownship.size(); i++) {
+                townships[i] = lstTownship.get(i).getTownshipName();
+            }
+            ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.simple_spinner_item, townships);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spTownship.setAdapter(adapter);
         }
-        ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.simple_spinner_item, townships);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spTownship.setAdapter(adapter);
     }
 
     private void setLayoutResource(){

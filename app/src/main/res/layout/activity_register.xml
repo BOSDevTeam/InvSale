@@ -90,8 +90,7 @@
                     android:text="@string/division"
                     style="@style/SmallTextView"/>
                 <Spinner android:id="@+id/spDivision"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    style="@style/Spinner"
                     android:layout_marginTop="5dp"/>
             </LinearLayout>
 
@@ -108,8 +107,7 @@
                     android:text="@string/township"
                     style="@style/SmallTextView"/>
                 <Spinner android:id="@+id/spTownship"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    style="@style/Spinner"
                     android:layout_marginTop="10dp"/>
             </LinearLayout>
 
