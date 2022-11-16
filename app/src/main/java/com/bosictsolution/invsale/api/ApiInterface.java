@@ -50,6 +50,9 @@ public interface ApiInterface {
     @GET("client")
     Call<ClientData> checkClient(@Query("phone") String phone);
 
+    @GET("client")
+    Call<ClientData> checkClient(@Query("phone") String phone,@Query("isSalePerson") boolean isSalePerson);
+
     @Headers("Content-type: application/json")
     @POST("client/UpdateClient")
     Call<Void> updateClient(@Query("clientId") int clientId,@Body ClientData clientData);
