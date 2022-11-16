@@ -47,10 +47,10 @@
                 <ImageView android:id="@+id/imgPhoto"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
-                    android:src="@mipmap/ic_launcher_foreground"
+                    android:src="@drawable/ic_picture_70"
                     android:layout_gravity="right|center"
                     android:padding="10dp"
-                    tools:ignore="MissingConstraints"/>
+                    tools:ignore="MissingConstraints" />
 
             </LinearLayout>
 
