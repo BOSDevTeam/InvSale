@@ -10,7 +10,7 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginLeft="40dp"
-        android:src="@mipmap/ic_launcher_foreground2"/>
+        android:src="@drawable/ic_picture_30"/>
 
     <TextView
         android:id="@+id/tvChild"
