@@ -11,6 +11,6 @@
     <ImageView android:id="@+id/imgLogo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@mipmap/ic_launcher_foreground" />
+        android:src="@mipmap/ic_launcher_foreground2" />
 
 </LinearLayout>

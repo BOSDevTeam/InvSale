@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary_200">#82B1FF</color>
-    <color name="primary_500">#448AFF</color>
-    <color name="primary_700">#2979FF</color>
+    <color name="primary_200">#039BE5</color>
+    <color name="primary_500">#0288D1</color>
+    <color name="primary_700">#0277BD</color>
     <color name="accent_200">#FFC107</color>
     <color name="accent_700">#FF9800</color>
     <color name="black">#333333</color>
     <color name="black_soft">#666666</color>
     <color name="white">#FFFFFF</color>
-    <color name="gray_dark">#CCCCCC</color>
+    <color name="gray_dark">#DDDADA</color>
     <color name="gray">#E1DFDF</color>
     <color name="gray_soft">#F1EFEF</color>
-    <color name="primary_soft">#D9EFE1</color>
+    <color name="primary_soft">#D9E7EF</color>
     <color name="transparent">@android:color/transparent</color>
     <color name="red">#E91E36</color>
-    <color name="primary_extra_soft">#E7F4EC</color>
+    <color name="primary_extra_soft">#E7F0F4</color>
     <color name="yellow">#FFEB3B</color>
     <color name="makeup">#F4D988</color>
 </resources>
