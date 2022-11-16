@@ -10,7 +10,7 @@
         android:layout_width="30dp"
         android:layout_height="30dp"
         android:layout_marginLeft="25dp"
-        android:src="@mipmap/ic_launcher_foreground"/>
+        android:src="@mipmap/ic_launcher_foreground2"/>
 
     <TextView
         android:id="@+id/tvGroup"

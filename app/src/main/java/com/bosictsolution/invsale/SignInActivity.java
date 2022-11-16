@@ -49,7 +49,7 @@ public class SignInActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(validateControl()){
-                    checkClient(etPhone.getText().toString());
+                    checkClient(etPhone.getText().toString(),false);
                 }
             }
         });
@@ -72,10 +72,10 @@ public class SignInActivity extends AppCompatActivity {
         appSetting.setupProgress(progressDialog);
     }
 
-    private void checkClient(String phone) {
+    private void checkClient(String phone,boolean isSalePerson) {
         progressDialog.show();
         progressDialog.setMessage(getResources().getString(R.string.loading));
-        Api.getClient().checkClient(phone).enqueue(new Callback<ClientData>() {
+        Api.getClient().checkClient(phone,isSalePerson).enqueue(new Callback<ClientData>() {
             @Override
             public void onResponse(Call<ClientData> call, Response<ClientData> response) {
                 progressDialog.dismiss();
