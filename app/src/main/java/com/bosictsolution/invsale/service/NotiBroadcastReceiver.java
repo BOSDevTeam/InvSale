@@ -138,7 +138,7 @@ public class NotiBroadcastReceiver extends BroadcastReceiver {
         }
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context)
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.mipmap.ic_launcher2)
                 .setColor(context.getResources().getColor(R.color.primary_500))
                 .setContentTitle(title)
                 .setContentText(message)
