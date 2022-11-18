@@ -13,7 +13,7 @@
     <ImageView android:id="@+id/imgLogo"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        tools:src="@mipmap/ic_launcher"/>
+        tools:src="@mipmap/ic_launcher2"/>
 
     <TextView android:id="@+id/tvTitle1"
         style="@style/BillTitle1"
