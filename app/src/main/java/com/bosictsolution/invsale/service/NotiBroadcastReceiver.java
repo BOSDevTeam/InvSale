@@ -40,8 +40,8 @@ public class NotiBroadcastReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         this.context = context;
         sharedpreferences = context.getSharedPreferences(AppConstant.MYPREFERENCES, Context.MODE_PRIVATE);
-        clientId=sharedpreferences.getInt(AppConstant.CLIENT_ID,0);
-        if(appSetting.checkConnection(context)) {
+        clientId = sharedpreferences.getInt(AppConstant.CLIENT_ID, 0);
+        if (appSetting.checkConnection(context)) {
             getClientNotification(clientId);
         }
     }
