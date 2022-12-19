@@ -57,7 +57,8 @@ public class SplashActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                permission();
+                appStart();
+//                permission();
             }
         }, 3000);
     }
@@ -146,7 +147,11 @@ public class SplashActivity extends AppCompatActivity {
         Api.getClient().getCompanySetting().enqueue(new Callback<CompanySettingData>() {
             @Override
             public void onResponse(Call<CompanySettingData> call, Response<CompanySettingData> response) {
-                if (response.body() == null) return;
+                if (response.body() == null) {
+                    progressDialog.dismiss();
+                    Toast.makeText(context, response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 if (db.insertCompanySetting(response.body())) {
                     int clientId = sharedpreferences.getInt(AppConstant.CLIENT_ID, 0);
                     Intent i;

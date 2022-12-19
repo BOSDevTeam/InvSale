@@ -42,8 +42,7 @@
                 style="@style/TitleTextView" />
 
             <com.google.android.material.textfield.TextInputLayout android:id="@+id/inputUserName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/TextInputLayout"
                 app:boxBackgroundMode="none">
                 <EditText android:id="@+id/etUserName"
                     style="@style/ColorEditText"
@@ -54,8 +53,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout android:id="@+id/inputShopName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/TextInputLayout"
                 app:boxBackgroundMode="none">
                 <EditText android:id="@+id/etShopName"
                     style="@style/ColorEditText"
@@ -66,8 +64,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout android:id="@+id/inputPhone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/TextInputLayout"
                 app:boxBackgroundMode="none">
                 <EditText android:id="@+id/etPhone"
                     style="@style/ColorEditText"
@@ -112,8 +109,7 @@
             </LinearLayout>
 
             <com.google.android.material.textfield.TextInputLayout android:id="@+id/inputAddress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/TextInputLayout"
                 app:boxBackgroundMode="none">
                 <EditText android:id="@+id/etAddress"
                     style="@style/ColorEditText"

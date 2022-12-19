@@ -130,7 +130,10 @@ public class OTPConfirmActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
                 progressDialog.dismiss();
-                if (response.body() == null) return;
+                if (response.body() == null) {
+                    Toast.makeText(context, response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 int clientId = response.body();
                 if (clientId != 0) {
                     Toast.makeText(context, getResources().getString(R.string.register_success), Toast.LENGTH_LONG).show();

@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/SDKPath/android-sdk/platforms/android-31/data/res/layout/simple_spinner_item.xml" value="0.1814814814814815" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/drawable-v24/bd_edittext.xml" value="0.1671875" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/drawable-v24/bd_gray_1r_white.xml" value="0.16574074074074074" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/drawable-v24/bd_gray_1r_white_content.xml" value="0.16574074074074074" />
@@ -14,17 +15,22 @@
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/drawable-v24/btn_gray.xml" value="0.19583333333333333" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/drawable-v24/btn_primary.xml" value="0.16574074074074074" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/drawable-v24/btn_transparent.xml" value="0.16574074074074074" />
+        <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/drawable/bd_edittext.xml" value="0.125" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/drawable/bd_quantity.xml" value="0.16458333333333333" />
+        <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/drawable/bd_register.xml" value="0.1" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/drawable/bg_circle.xml" value="0.16458333333333333" />
+        <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/drawable/btn_transparent.xml" value="0.10740740740740741" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/drawable/circle_background.xml" value="0.18333333333333332" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/drawable/ic_check_circle_24.xml" value="0.1638888888888889" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/drawable/ic_check_circle_outline_24.xml" value="0.16018518518518518" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/drawable/ic_check_circle_outline_80.xml" value="0.1638888888888889" />
+        <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/drawable/ic_picture_30.xml" value="0.14351851851851852" />
+        <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/drawable/ic_picture_70.xml" value="0.14351851851851852" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/drawable/side_nav_bar.xml" value="0.15555555555555556" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/drawable/top_shadow.xml" value="0.16018518518518518" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/action_bar_notification.xml" value="0.67" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/activity_bond_bt.xml" value="0.14479166666666668" />
-        <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/activity_btprinter_setting.xml" value="0.1703125" />
+        <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/activity_btprinter_setting.xml" value="0.5" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/activity_category.xml" value="0.15416666666666667" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/activity_customer.xml" value="0.33" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/activity_login.xml" value="0.25" />
@@ -34,7 +40,7 @@
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/activity_otpconfirm.xml" value="0.25" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/activity_pay_detail.xml" value="0.25" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/activity_product.xml" value="0.15416666666666667" />
-        <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/activity_register.xml" value="0.25" />
+        <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/activity_register.xml" value="0.33" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/activity_sale.xml" value="0.33" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/activity_sale_bill.xml" value="0.33" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/activity_sale_order_detail.xml" value="0.33" />
@@ -54,7 +60,7 @@
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/content_product.xml" value="0.25" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/content_sale_bill.xml" value="0.33" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/dialog_category_filter.xml" value="0.33" />
-        <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/dialog_confirm.xml" value="0.25" />
+        <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/dialog_confirm.xml" value="0.12" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/dialog_date_filter.xml" value="0.25" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/dialog_from_to_date.xml" value="0.25" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/dialog_number.xml" value="0.39314516129032256" />
@@ -81,7 +87,7 @@
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/fragment_sale_summary.xml" value="0.5" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/fragment_setting.xml" value="0.1578125" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/item_notification.xml" value="0.25" />
-        <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/item_product.xml" value="0.5" />
+        <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/item_product.xml" value="0.2268041237113402" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/item_product_info.xml" value="0.33" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/item_sale.xml" value="0.16770833333333332" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/item_sale_bill.xml" value="0.18854166666666666" />
@@ -97,6 +103,7 @@
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/list_item_sale_tran.xml" value="0.33" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/nav_header_main.xml" value="0.15677083333333333" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/notification_view.xml" value="0.2" />
+        <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/layout/spinner_item.xml" value="0.1814814814814815" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/menu/activity_main_drawer.xml" value="0.33" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/menu/home.xml" value="0.5" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/menu/main.xml" value="0.1609375" />
@@ -104,7 +111,9 @@
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/menu/refresh.xml" value="0.18854166666666666" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/menu/search.xml" value="0.1609375" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/menu/search_refresh.xml" value="0.12129629629629629" />
+        <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/mipmap-anydpi-v26/ic_launcher2.xml" value="0.15555555555555556" />
+        <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.1" />
         <entry key="..\:/Workspace/2-Inventory System/QuickInventory Project/InvSale/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round2.xml" value="0.18194444444444444" />
         <entry key="..\:/Workspace/BOS Inventory Project/InvSale/app/src/main/res/drawable/side_nav_bar.xml" value="0.12864583333333332" />
         <entry key="..\:/Workspace/BOS Inventory Project/InvSale/app/src/main/res/layout/activity_customer.xml" value="0.1796875" />

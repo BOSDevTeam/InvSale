@@ -190,5 +190,6 @@
     <string name="today_sale">Today Sale</string>
     <string name="total_sale">Total Sale</string>
     <string name="total_order">Total Order</string>
+    <string name="exit_app">Exit App?</string>
 
 </resources>

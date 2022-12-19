@@ -18,7 +18,7 @@ public class Confirmation {
         this.iConfirmation = iConfirmation;
     }
 
-    public void showConfirmDialog(Context context, String message) {
+    public void showConfirmDialog(Context context, String message,String... title) {
         LayoutInflater reg = LayoutInflater.from(context);
         View v = reg.inflate(R.layout.dialog_confirm, null);
         android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(context);
@@ -28,7 +28,9 @@ public class Confirmation {
         final Button btnCancel = v.findViewById(R.id.btnCancel);
         final Button btnOK = v.findViewById(R.id.btnOK);
         final TextView tvMessage = v.findViewById(R.id.tvMessage);
+        final TextView tvTitle = v.findViewById(R.id.tvTitle);
 
+        if(title.length!=0)tvTitle.setText(title[0]);
         tvMessage.setText(message);
 
         dialog.setCancelable(true);

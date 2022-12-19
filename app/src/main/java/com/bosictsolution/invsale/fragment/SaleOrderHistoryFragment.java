@@ -277,7 +277,10 @@ public class SaleOrderHistoryFragment extends Fragment implements SaleOrderFragm
             @Override
             public void onResponse(Call<List<SaleOrderMasterData>> call, Response<List<SaleOrderMasterData>> response) {
                 progressDialog.dismiss();
-                if (response.body() == null) return;
+                if (response.body() == null){
+                    Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 lstSaleOrder=response.body();
                 setAdapter(lstSaleOrder);
             }
@@ -297,7 +300,10 @@ public class SaleOrderHistoryFragment extends Fragment implements SaleOrderFragm
             @Override
             public void onResponse(Call<List<SaleOrderMasterData>> call, Response<List<SaleOrderMasterData>> response) {
                 progressDialog.dismiss();
-                if (response.body() == null) return;
+                if (response.body() == null){
+                    Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 lstSaleOrder=response.body();
                 setAdapter(lstSaleOrder);
             }
@@ -317,7 +323,10 @@ public class SaleOrderHistoryFragment extends Fragment implements SaleOrderFragm
             @Override
             public void onResponse(Call<List<SaleOrderMasterData>> call, Response<List<SaleOrderMasterData>> response) {
                 progressDialog.dismiss();
-                if (response.body() == null) return;
+                if (response.body() == null){
+                    Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 lstSaleOrder=response.body();
                 setAdapter(lstSaleOrder);
             }

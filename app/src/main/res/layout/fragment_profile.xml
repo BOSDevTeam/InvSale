@@ -133,8 +133,7 @@
         </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout android:id="@+id/inputAddress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/TextInputLayout"
             android:layout_marginTop="10dp">
             <EditText android:id="@+id/etAddress"
                 style="@style/DefaultEditText"

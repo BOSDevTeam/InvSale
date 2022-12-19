@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements IConfirmation {
                 NavigationUI.onNavDestinationSelected(item, navController);
                 if (item.getItemId() == R.id.nav_home) navController.navigate(R.id.nav_home);
                 else if (item.getItemId() == R.id.nav_logout)
-                    confirmation.showConfirmDialog(MainActivity.this, getResources().getString(R.string.exit_confirm_message));
+                    confirmation.showConfirmDialog(MainActivity.this, getResources().getString(R.string.exit_confirm_message), getResources().getString(R.string.exit_app));
                 drawer.closeDrawer(GravityCompat.START);
                 return true;
             }
@@ -136,7 +136,10 @@ public class MainActivity extends AppCompatActivity implements IConfirmation {
         Api.getClient().getClientNotiCount(clientId).enqueue(new Callback<Integer>() {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
-                if (response.body() == null) return;
+                if (response.body() == null) {
+                    Toast.makeText(context, response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 int notiCount = response.body();
                 setNotificationBadge(notiCount, context);
             }
@@ -166,6 +169,6 @@ public class MainActivity extends AppCompatActivity implements IConfirmation {
 
     @Override
     public void onBackPressed() {
-        confirmation.showConfirmDialog(MainActivity.this, getResources().getString(R.string.exit_confirm_message));
+        confirmation.showConfirmDialog(MainActivity.this, getResources().getString(R.string.exit_confirm_message), getResources().getString(R.string.exit_app));
     }
 }
