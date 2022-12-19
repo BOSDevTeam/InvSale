@@ -77,9 +77,14 @@ public class AppSetting {
     public boolean checkAndRequestBluetoothOn(Activity activity, BluetoothAdapter BA) {
         if (BA != null && activity != null) {
             if (!BA.isEnabled()) {
-                Intent turnOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                activity.startActivityForResult(turnOn, 0);
-                Toast.makeText(activity, activity.getResources().getString(R.string.turn_on), Toast.LENGTH_LONG).show();
+                try {
+                    Intent turnOn = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                    activity.startActivityForResult(turnOn, 0);
+                    Toast.makeText(activity, activity.getResources().getString(R.string.turn_on), Toast.LENGTH_LONG).show();
+                }
+                catch(Exception ex){
+                    Toast.makeText(activity, ex.getMessage(), Toast.LENGTH_LONG).show();
+                }
                 return false;
             } else {
                 return true;

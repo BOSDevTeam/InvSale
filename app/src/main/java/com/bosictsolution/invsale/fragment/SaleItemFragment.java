@@ -237,7 +237,10 @@ public class SaleItemFragment extends Fragment implements SaleFragment.onFragmen
             @Override
             public void onResponse(Call<List<SaleTranData>> call, Response<List<SaleTranData>> response) {
                 progressDialog.dismiss();
-                if (response.body() == null) return;
+                if (response.body() == null){
+                    Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 List<SaleTranData> list=response.body();
                 setAdapter(list);
                 tvTotal.setText(db.getHomeCurrency()+getResources().getString(R.string.space)+calculateAmountTotal(list));
@@ -259,7 +262,10 @@ public class SaleItemFragment extends Fragment implements SaleFragment.onFragmen
             @Override
             public void onResponse(Call<List<SaleTranData>> call, Response<List<SaleTranData>> response) {
                 progressDialog.dismiss();
-                if (response.body() == null) return;
+                if (response.body() == null){
+                    Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 List<SaleTranData> list=response.body();
                 setAdapter(list);
                 tvTotal.setText(db.getHomeCurrency()+getResources().getString(R.string.space)+calculateAmountTotal(list));
@@ -280,7 +286,10 @@ public class SaleItemFragment extends Fragment implements SaleFragment.onFragmen
             @Override
             public void onResponse(Call<List<SaleTranData>> call, Response<List<SaleTranData>> response) {
                 progressDialog.dismiss();
-                if (response.body() == null) return;
+                if (response.body() == null){
+                    Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 List<SaleTranData> list=response.body();
                 setAdapter(list);
                 tvTotal.setText(db.getHomeCurrency()+getResources().getString(R.string.space)+calculateAmountTotal(list));

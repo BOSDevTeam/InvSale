@@ -9,6 +9,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -60,6 +61,8 @@ public class SaleBillActivity extends AppCompatActivity {
         setLayoutResource();
         init();
         ActionBar actionbar = getSupportActionBar();
+        ColorDrawable colorDrawable = new ColorDrawable(getResources().getColor(R.color.primary_500));
+        actionbar.setBackgroundDrawable(colorDrawable);
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setDisplayShowTitleEnabled(true);
         setTitle(getResources().getString(R.string.sale_completed));

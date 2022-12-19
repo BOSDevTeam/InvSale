@@ -132,7 +132,10 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
             @Override
             public void onResponse(Call<List<SaleMasterData>> call, Response<List<SaleMasterData>> response) {
                 progressDialog.dismiss();
-                if (response.body() == null) return;
+                if (response.body() == null){
+                    Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 list=response.body();
                 setAdapter(list);
                 tvTotal.setText(db.getHomeCurrency()+getResources().getString(R.string.space)+calculateNetAmtTotal(list));
@@ -153,7 +156,10 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
             @Override
             public void onResponse(Call<List<SaleMasterData>> call, Response<List<SaleMasterData>> response) {
                 progressDialog.dismiss();
-                if (response.body() == null) return;
+                if (response.body() == null){
+                    Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 list=response.body();
                 setAdapter(list);
                 tvTotal.setText(db.getHomeCurrency()+getResources().getString(R.string.space)+calculateNetAmtTotal(list));
@@ -174,7 +180,10 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
             @Override
             public void onResponse(Call<List<SaleMasterData>> call, Response<List<SaleMasterData>> response) {
                 progressDialog.dismiss();
-                if (response.body() == null) return;
+                if (response.body() == null){
+                    Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 list=response.body();
                 setAdapter(list);
                 tvTotal.setText(db.getHomeCurrency()+getResources().getString(R.string.space)+calculateNetAmtTotal(list));

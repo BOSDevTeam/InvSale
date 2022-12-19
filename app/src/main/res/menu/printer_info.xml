@@ -7,5 +7,5 @@
         android:icon="@drawable/ic_print_24"
         android:title="@string/printer"
         app:showAsAction="always"
-        app:iconTint="@color/primary_200"/>
+        app:iconTint="@color/primary_300"/>
 </menu>

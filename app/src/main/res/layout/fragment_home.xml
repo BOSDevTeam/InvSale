@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="5dp"
-            android:indeterminateTint="@color/primary_200"
+            android:indeterminateTint="@color/primary_300"
             android:indeterminateBehavior="repeat"
             android:indeterminateDuration="@integer/material_motion_duration_medium_1"/>
 
@@ -102,7 +102,7 @@
             style="@style/HomeInfoLayout">
 
             <View style="@style/HomeViewBorder"
-                android:background="@color/primary_200"/>
+                android:background="@color/primary_300"/>
 
             <TextView android:text="@string/total_sale"
                 style="@style/HomeLabel" />

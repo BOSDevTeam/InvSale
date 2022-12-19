@@ -10,7 +10,8 @@
     <LinearLayout style="@style/DialogLayout"
         android:gravity="center">
 
-        <TextView android:text="@string/confirm"
+        <TextView android:id="@+id/tvTitle"
+            android:text="@string/confirm"
             style="@style/DialogTitle" />
 
         <ImageButton android:id="@+id/btnClose"

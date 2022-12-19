@@ -42,8 +42,7 @@
             style="@style/TitleTextView" />
 
         <com.google.android.material.textfield.TextInputLayout android:id="@+id/inputPhone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/TextInputLayout"
             app:boxBackgroundMode="none">
             <EditText android:id="@+id/etPhone"
                 style="@style/ColorEditText"

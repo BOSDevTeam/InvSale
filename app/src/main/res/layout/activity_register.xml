@@ -42,8 +42,7 @@
                 style="@style/TitleTextView" />
 
             <com.google.android.material.textfield.TextInputLayout android:id="@+id/inputUserName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/TextInputLayout"
                 app:boxBackgroundMode="none">
                 <EditText android:id="@+id/etUserName"
                     style="@style/ColorEditText"
@@ -54,8 +53,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout android:id="@+id/inputShopName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/TextInputLayout"
                 app:boxBackgroundMode="none">
                 <EditText android:id="@+id/etShopName"
                     style="@style/ColorEditText"
@@ -66,8 +64,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout android:id="@+id/inputPhone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/TextInputLayout"
                 app:boxBackgroundMode="none">
                 <EditText android:id="@+id/etPhone"
                     style="@style/ColorEditText"
@@ -82,7 +79,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:orientation="vertical"
-                android:background="@color/primary_extra_soft"
+                android:background="@color/primary_100"
                 android:padding="10dp">
                 <TextView
                     android:layout_width="match_parent"
@@ -91,7 +88,7 @@
                     style="@style/SmallTextView"/>
                 <Spinner android:id="@+id/spDivision"
                     style="@style/Spinner"
-                    android:layout_marginTop="5dp"/>
+                    android:layout_marginTop="5dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -99,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:orientation="vertical"
-                android:background="@color/primary_extra_soft"
+                android:background="@color/primary_100"
                 android:padding="10dp">
                 <TextView
                     android:layout_width="match_parent"
@@ -112,8 +109,7 @@
             </LinearLayout>
 
             <com.google.android.material.textfield.TextInputLayout android:id="@+id/inputAddress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/TextInputLayout"
                 app:boxBackgroundMode="none">
                 <EditText android:id="@+id/etAddress"
                     style="@style/ColorEditText"

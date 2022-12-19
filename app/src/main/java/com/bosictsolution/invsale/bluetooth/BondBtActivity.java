@@ -1,11 +1,14 @@
 package com.bosictsolution.invsale.bluetooth;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -15,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.bosictsolution.invsale.BTPrinterSettingActivity;
 import com.bosictsolution.invsale.R;
 import com.bosictsolution.invsale.bluetooth.bt.BluetoothActivity;
 import com.bosictsolution.invsale.bluetooth.bt.BtUtil;
@@ -24,6 +28,9 @@ import com.bosictsolution.invsale.bluetooth.print.PrintUtil;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Set;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 public class BondBtActivity extends BluetoothActivity {
 
@@ -116,6 +123,12 @@ public class BondBtActivity extends BluetoothActivity {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, OPEN_BLUETOOTH_REQUEST);
         } else {
+            if (ContextCompat.checkSelfPermission(BondBtActivity.this, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_DENIED) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    ActivityCompat.requestPermissions(BondBtActivity.this, new String[]{Manifest.permission.BLUETOOTH_SCAN}, 2);
+                    return;
+                }
+            }
             BtUtil.searchDevices(bluetoothAdapter);
         }
     }

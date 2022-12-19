@@ -70,8 +70,7 @@
                 style="@style/TitleTextView" />
 
             <com.google.android.material.textfield.TextInputLayout android:id="@+id/inputName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                style="@style/TextInputLayout">
                 <EditText android:id="@+id/etName"
                     style="@style/DefaultEditText"
                     android:hint="@string/name"
@@ -85,8 +84,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout android:id="@+id/inputPhone"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                style="@style/TextInputLayout">
                 <EditText android:id="@+id/etPhone"
                     style="@style/DefaultEditText"
                     android:hint="@string/phone"
@@ -100,8 +98,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                style="@style/TextInputLayout">
                 <EditText android:id="@+id/etEmail"
                     style="@style/DefaultEditText"
                     android:hint="@string/email"
@@ -115,8 +112,7 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                style="@style/TextInputLayout">
                 <EditText android:id="@+id/etContactPerson"
                     style="@style/DefaultEditText"
                     android:hint="@string/contact_person"
@@ -164,8 +160,7 @@
             </LinearLayout>
 
             <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                style="@style/TextInputLayout"
                 android:layout_marginTop="10dp">
                 <EditText android:id="@+id/etAddress"
                     style="@style/DefaultEditText"

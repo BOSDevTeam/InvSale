@@ -42,7 +42,8 @@
             <com.google.android.material.textfield.TextInputLayout android:id="@+id/inputVoucherDiscount"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                style="@style/TextInputLayout">
                 <EditText android:id="@+id/etVoucherDiscount"
                     style="@style/DefaultEditText"
                     android:hint="@string/zero"
@@ -105,7 +106,8 @@
                 <com.google.android.material.textfield.TextInputLayout android:id="@+id/inputAdvancedPay"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2">
+                    android:layout_weight="2"
+                    style="@style/TextInputLayout">
                     <EditText android:id="@+id/etAdvancedPay"
                         style="@style/DefaultEditText"
                         android:hint="@string/advanced_pay"
@@ -149,8 +151,7 @@
                     android:layout_marginTop="5dp"/>
 
                 <com.google.android.material.textfield.TextInputLayout android:id="@+id/inputPaymentPercent"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    style="@style/TextInputLayout">
                     <EditText android:id="@+id/etPaymentPercent"
                         style="@style/DefaultEditText"
                         android:hint="@string/percent"
@@ -164,8 +165,7 @@
         </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/TextInputLayout"
             android:layout_marginTop="10dp">
             <EditText android:id="@+id/etRemark"
                 style="@style/DefaultEditText"

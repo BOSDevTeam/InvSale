@@ -17,6 +17,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -74,6 +75,8 @@ public class SaleOrderItemReportActivity extends AppCompatActivity implements Ca
         setLayoutResource();
         init();
         ActionBar actionbar = getSupportActionBar();
+        ColorDrawable colorDrawable = new ColorDrawable(getResources().getColor(R.color.primary_500));
+        actionbar.setBackgroundDrawable(colorDrawable);
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setDisplayShowTitleEnabled(true);
         setTitle(getResources().getString(R.string.report_sale_order_item));
@@ -181,7 +184,10 @@ public class SaleOrderItemReportActivity extends AppCompatActivity implements Ca
             @Override
             public void onResponse(Call<List<SaleOrderTranData>> call, Response<List<SaleOrderTranData>> response) {
                 progressDialog.dismiss();
-                if (response.body() == null) return;
+                if (response.body() == null){
+                    Toast.makeText(context, response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 List<SaleOrderTranData> list=response.body();
                 setAdapter(list);
             }
@@ -202,7 +208,10 @@ public class SaleOrderItemReportActivity extends AppCompatActivity implements Ca
             @Override
             public void onResponse(Call<List<SaleOrderTranData>> call, Response<List<SaleOrderTranData>> response) {
                 progressDialog.dismiss();
-                if (response.body() == null) return;
+                if (response.body() == null){
+                    Toast.makeText(context, response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 List<SaleOrderTranData> list=response.body();
                 setAdapter(list);
             }
@@ -222,7 +231,10 @@ public class SaleOrderItemReportActivity extends AppCompatActivity implements Ca
             @Override
             public void onResponse(Call<List<SaleOrderTranData>> call, Response<List<SaleOrderTranData>> response) {
                 progressDialog.dismiss();
-                if (response.body() == null) return;
+                if (response.body() == null){
+                    Toast.makeText(context, response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 List<SaleOrderTranData> list=response.body();
                 setAdapter(list);
             }

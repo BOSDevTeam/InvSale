@@ -108,7 +108,10 @@ public class NotificationFragment extends Fragment implements ListItemNotificati
             @Override
             public void onResponse(Call<List<NotificationData>> call, Response<List<NotificationData>> response) {
                 progressDialog.dismiss();
-                if (response.body() == null) return;
+                if (response.body() == null){
+                    Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 lstNotification=response.body();
                 setAdapter(lstNotification);
                 if(lstNotification != null) MainActivity.setNotificationBadge(lstNotification.size(),getContext());
@@ -239,7 +242,10 @@ public class NotificationFragment extends Fragment implements ListItemNotificati
             @Override
             public void onResponse(Call<ProductData> call, Response<ProductData> response) {
                 progressDialog.dismiss();
-                if (response.body() == null) return;
+                if (response.body() == null){
+                    Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 ProductData data=response.body();
                 showNewProductDialog(data);
                 deleteClientNotification(clientId,productId,AppConstant.NOTI_NEW_PRODUCT);

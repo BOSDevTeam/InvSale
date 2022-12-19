@@ -13,6 +13,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -78,6 +79,8 @@ public class PayDetailActivity extends AppCompatActivity {
         setLayoutResource();
         init();
         ActionBar actionbar = getSupportActionBar();
+        ColorDrawable colorDrawable = new ColorDrawable(getResources().getColor(R.color.primary_500));
+        actionbar.setBackgroundDrawable(colorDrawable);
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setDisplayShowTitleEnabled(true);
         setTitle(getResources().getString(R.string.menu_sale));
@@ -253,7 +256,10 @@ public class PayDetailActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
                 progressDialog.dismiss();
-                if (response.body() == null) return;
+                if (response.body() == null){
+                    Toast.makeText(context, response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 if (response.isSuccessful()) {
                     int slipId=response.body();
                     int position = spCustomer.getSelectedItemPosition();
@@ -482,7 +488,7 @@ public class PayDetailActivity extends AppCompatActivity {
         for (int i = 0; i < lstCustomer.size(); i++) {
             customers[i] = lstCustomer.get(i).getCustomerName();
         }
-        ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.simple_spinner_item, customers);
+        ArrayAdapter adapter = new ArrayAdapter(context, R.layout.spinner_item, customers);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spCustomer.setAdapter(adapter);
     }
@@ -492,7 +498,7 @@ public class PayDetailActivity extends AppCompatActivity {
         for (int i = 0; i < lstLocation.size(); i++) {
             locations[i] = lstLocation.get(i).getShortName();
         }
-        ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.simple_spinner_item, locations);
+        ArrayAdapter adapter = new ArrayAdapter(context, R.layout.spinner_item, locations);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spLocation.setAdapter(adapter);
         spLocation.setEnabled(false);
@@ -503,7 +509,7 @@ public class PayDetailActivity extends AppCompatActivity {
         for (int i = 0; i < lstPayment.size(); i++) {
             payments[i] = lstPayment.get(i).getKeyword();
         }
-        ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.simple_spinner_item, payments);
+        ArrayAdapter adapter = new ArrayAdapter(context, R.layout.spinner_item, payments);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spPayment.setAdapter(adapter);
     }
@@ -513,7 +519,7 @@ public class PayDetailActivity extends AppCompatActivity {
         for (int i = 0; i < lstPaymentMethod.size(); i++) {
             paymentMethods[i] = lstPaymentMethod.get(i).getPayMethodName();
         }
-        ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.simple_spinner_item, paymentMethods);
+        ArrayAdapter adapter = new ArrayAdapter(context, R.layout.spinner_item, paymentMethods);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spPaymentMethod.setAdapter(adapter);
     }
@@ -523,7 +529,7 @@ public class PayDetailActivity extends AppCompatActivity {
         for (int i = 0; i < lstBankPayment.size(); i++) {
             bankPayments[i] = lstBankPayment.get(i).getBankPaymentName();
         }
-        ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.simple_spinner_item, bankPayments);
+        ArrayAdapter adapter = new ArrayAdapter(context, R.layout.spinner_item, bankPayments);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spBankPayment.setAdapter(adapter);
     }
@@ -533,7 +539,7 @@ public class PayDetailActivity extends AppCompatActivity {
         for (int i = 0; i < lstLimitedDay.size(); i++) {
             limitedDays[i] = lstLimitedDay.get(i).getLimitedDayName();
         }
-        ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.simple_spinner_item, limitedDays);
+        ArrayAdapter adapter = new ArrayAdapter(context, R.layout.spinner_item, limitedDays);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spLimitedDay.setAdapter(adapter);
     }
@@ -545,7 +551,10 @@ public class PayDetailActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<CustomerData>> call, Response<List<CustomerData>> response) {
                 progressDialog.dismiss();
-                if (response.body() == null) return;
+                if (response.body() == null){
+                    Toast.makeText(context, response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 lstCustomer = response.body();
                 setCustomer();
             }

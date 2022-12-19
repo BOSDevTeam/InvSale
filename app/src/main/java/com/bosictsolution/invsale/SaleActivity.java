@@ -3,6 +3,7 @@ package com.bosictsolution.invsale;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatEditText;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -18,6 +19,8 @@ import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -31,7 +34,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.Spinner;
@@ -69,7 +71,7 @@ import java.util.List;
 
 public class SaleActivity extends AppCompatActivity implements ListItemSaleListener, ListItemProductInfoListener, IConfirmation {
 
-    EditText etSearch;
+    AppCompatEditText etSearch;
     Button btnPay;
     RecyclerView rvItemSale;
     ImageButton btnAllProduct,btnRemove;
@@ -103,6 +105,8 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         setLayoutResource();
         init();
         ActionBar actionbar = getSupportActionBar();
+        ColorDrawable colorDrawable = new ColorDrawable(getResources().getColor(R.color.primary_500));
+        actionbar.setBackgroundDrawable(colorDrawable);
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setDisplayShowTitleEnabled(true);
         setTitle(getResources().getString(R.string.menu_sale));
@@ -609,7 +613,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         for (int i = 0; i < lstMainMenu.size(); i++) {
             mainMenus[i] = lstMainMenu.get(i).getMainMenuName();
         }
-        ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.simple_spinner_item, mainMenus);
+        ArrayAdapter adapter = new ArrayAdapter(context, R.layout.spinner_item, mainMenus);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spMainMenu.setAdapter(adapter);
     }

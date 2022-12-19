@@ -18,8 +18,9 @@
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="wrap_content">
-            <EditText android:id="@+id/etSearch"
+            android:layout_height="wrap_content"
+            style="@style/TextInputLayout">
+            <androidx.appcompat.widget.AppCompatEditText android:id="@+id/etSearch"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/code_name"
@@ -30,7 +31,8 @@
                 android:drawableTint="@color/primary_500"
                 android:inputType="text"
                 android:imeOptions="actionDone"
-                android:background="@android:color/transparent"/>
+                android:background="@android:color/transparent"
+                android:backgroundTint="@color/primary_500"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <ImageButton android:id="@+id/btnAllProduct"

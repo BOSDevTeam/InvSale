@@ -169,7 +169,11 @@ public class RegisterActivity extends AppCompatActivity {
         Api.getClient().getDivision().enqueue(new Callback<List<DivisionData>>() {
             @Override
             public void onResponse(Call<List<DivisionData>> call, Response<List<DivisionData>> response) {
-                if (response.body() == null) return;
+                if (response.body() == null){
+                    progressDialog.dismiss();
+                    Toast.makeText(context, response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 lstDivision = response.body();
                 setDivision();
             }
@@ -191,7 +195,10 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<TownshipData>> call, Response<List<TownshipData>> response) {
                 progressDialog.dismiss();
-                if (response.body() == null) return;
+                if (response.body() == null){
+                    Toast.makeText(context, response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 lstTownship = response.body();
                 setTownship();
             }
@@ -211,7 +218,10 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
                 progressDialog.dismiss();
-                if (response.body() == null) return;
+                if (response.body() == null){
+                    Toast.makeText(context, response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 int clientId = response.body();
                 if (clientId != 0) {
                     Toast.makeText(context, getResources().getString(R.string.register_success), Toast.LENGTH_LONG).show();
@@ -248,7 +258,11 @@ public class RegisterActivity extends AppCompatActivity {
         Api.getClient().checkClient(clientData.getPhone()).enqueue(new Callback<ClientData>() {
             @Override
             public void onResponse(Call<ClientData> call, Response<ClientData> response) {
-                if (response.body() == null) return;
+                if (response.body() == null){
+                    progressDialog.dismiss();
+                    Toast.makeText(context, response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 ClientData data = response.body();
                 if (data.getClientID() == 0) {
                     PhoneAuthProvider.getInstance().verifyPhoneNumber(
@@ -277,7 +291,7 @@ public class RegisterActivity extends AppCompatActivity {
             for (int i = 0; i < lstDivision.size(); i++) {
                 divisions[i] = lstDivision.get(i).getDivisionName();
             }
-            ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.simple_spinner_item, divisions);
+            ArrayAdapter adapter = new ArrayAdapter(context, R.layout.spinner_item, divisions);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spDivision.setAdapter(adapter);
         }
@@ -289,7 +303,7 @@ public class RegisterActivity extends AppCompatActivity {
             for (int i = 0; i < lstTownship.size(); i++) {
                 townships[i] = lstTownship.get(i).getTownshipName();
             }
-            ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.simple_spinner_item, townships);
+            ArrayAdapter adapter = new ArrayAdapter(context, R.layout.spinner_item, townships);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spTownship.setAdapter(adapter);
         }

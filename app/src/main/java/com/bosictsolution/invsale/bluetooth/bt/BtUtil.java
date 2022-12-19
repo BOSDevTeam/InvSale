@@ -5,6 +5,8 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
+import android.util.Log;
+import android.widget.Toast;
 
 /**
  * Created by yefeng on 6/2/15.
@@ -29,7 +31,11 @@ public class BtUtil {
     public static void searchDevices(BluetoothAdapter adapter) {
         // 寻找蓝牙设备，android会将查找到的设备以广播形式发出去
         if (null != adapter) {
-            adapter.startDiscovery();
+            try {
+                adapter.startDiscovery();
+            }catch(Exception ex){
+                Log.e("BtUtil",ex.getMessage());
+            }
         }
     }
 

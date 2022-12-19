@@ -201,7 +201,11 @@ public class ProfileFragment extends Fragment {
         Api.getClient().getDivision().enqueue(new Callback<List<DivisionData>>() {
             @Override
             public void onResponse(Call<List<DivisionData>> call, Response<List<DivisionData>> response) {
-                if (response.body() == null) return;
+                if (response.body() == null){
+                    progressDialog.dismiss();
+                    Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 lstDivision = response.body();
                 setDivision();
                 for(int i=0;i<lstDivision.size();i++){
@@ -229,7 +233,10 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onResponse(Call<List<TownshipData>> call, Response<List<TownshipData>> response) {
                 progressDialog.dismiss();
-                if (response.body() == null) return;
+                if (response.body() == null){
+                    Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 lstTownship = response.body();
                 setTownship();
                 for(int i=0;i<lstTownship.size();i++){
@@ -253,7 +260,7 @@ public class ProfileFragment extends Fragment {
         for (int i = 0; i < lstDivision.size(); i++) {
             divisions[i] = lstDivision.get(i).getDivisionName();
         }
-        ArrayAdapter adapter = new ArrayAdapter(getContext(), android.R.layout.simple_spinner_item, divisions);
+        ArrayAdapter adapter = new ArrayAdapter(getContext(), R.layout.spinner_item, divisions);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spDivision.setAdapter(adapter);
     }
@@ -263,7 +270,7 @@ public class ProfileFragment extends Fragment {
         for (int i = 0; i < lstTownship.size(); i++) {
             townships[i] = lstTownship.get(i).getTownshipName();
         }
-        ArrayAdapter adapter = new ArrayAdapter(getContext(), android.R.layout.simple_spinner_item, townships);
+        ArrayAdapter adapter = new ArrayAdapter(getContext(), R.layout.spinner_item, townships);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spTownship.setAdapter(adapter);
     }

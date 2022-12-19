@@ -79,7 +79,10 @@ public class SignInActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<ClientData> call, Response<ClientData> response) {
                 progressDialog.dismiss();
-                if (response.body() == null) return;
+                if (response.body() == null){
+                    Toast.makeText(context, response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 ClientData data = response.body();
                 if (data.getClientID() != 0) {
                     SharedPreferences.Editor editor = sharedpreferences.edit();

@@ -2,10 +2,16 @@ package com.bosictsolution.invsale;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
@@ -43,6 +49,8 @@ public class BTPrinterSettingActivity extends AppCompatActivity {
         setLayoutResource();
         init();
         ActionBar actionbar = getSupportActionBar();
+        ColorDrawable colorDrawable = new ColorDrawable(getResources().getColor(R.color.primary_500));
+        actionbar.setBackgroundDrawable(colorDrawable);
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setDisplayShowTitleEnabled(true);
         setTitle(getResources().getString(R.string.bluetooth_printer_setting));
@@ -51,7 +59,13 @@ public class BTPrinterSettingActivity extends AppCompatActivity {
         btnFindPrinter.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (appSetting.checkAndRequestBluetoothOn(BTPrinterSettingActivity.this,BA)) {
+                if (ContextCompat.checkSelfPermission(BTPrinterSettingActivity.this, android.Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_DENIED) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        ActivityCompat.requestPermissions(BTPrinterSettingActivity.this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 2);
+                        return;
+                    }
+                }
+                if (appSetting.checkAndRequestBluetoothOn(BTPrinterSettingActivity.this, BA)) {
                     Intent i = new Intent(BTPrinterSettingActivity.this, BondBtActivity.class);
                     startActivity(i);
                 }

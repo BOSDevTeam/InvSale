@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -64,6 +65,8 @@ public class CustomerActivity extends AppCompatActivity {
         setLayoutResource();
         init();
         ActionBar actionbar = getSupportActionBar();
+        ColorDrawable colorDrawable = new ColorDrawable(getResources().getColor(R.color.primary_500));
+        actionbar.setBackgroundDrawable(colorDrawable);
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setDisplayShowTitleEnabled(true);
         setTitle(getResources().getString(R.string.customer_detail));
@@ -136,7 +139,11 @@ public class CustomerActivity extends AppCompatActivity {
         Api.getClient().insertCustomer(customerData).enqueue(new Callback<Integer>() {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
-                if (response.body() == null) return;
+                if (response.body() == null){
+                    progressDialog.dismiss();
+                    Toast.makeText(context, response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 int customerId = response.body();
                 if (customerId != 0) {
                     if (moduleType == AppConstant.SALE_MODULE_TYPE) insertSale(customerId);
@@ -167,7 +174,10 @@ public class CustomerActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
                 progressDialog.dismiss();
-                if (response.body() == null) return;
+                if (response.body() == null){
+                    Toast.makeText(context, response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 if(response.isSuccessful()){
                     db.deleteMasterSaleOrder();
                     db.deleteTranSaleOrder();
@@ -200,7 +210,10 @@ public class CustomerActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
                 progressDialog.dismiss();
-                if (response.body() == null) return;
+                if (response.body() == null){
+                    Toast.makeText(context, response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 if (response.isSuccessful()) {
                     int slipId=response.body();
                     Intent intent = new Intent();
@@ -270,7 +283,11 @@ public class CustomerActivity extends AppCompatActivity {
         Api.getClient().getDivision().enqueue(new Callback<List<DivisionData>>() {
             @Override
             public void onResponse(Call<List<DivisionData>> call, Response<List<DivisionData>> response) {
-                if (response.body() == null) return;
+                if (response.body() == null){
+                    progressDialog.dismiss();
+                    Toast.makeText(context, response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 lstDivision = response.body();
                 setDivision();
             }
@@ -292,7 +309,10 @@ public class CustomerActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<TownshipData>> call, Response<List<TownshipData>> response) {
                 progressDialog.dismiss();
-                if (response.body() == null) return;
+                if (response.body() == null){
+                    Toast.makeText(context, response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
                 lstTownship = response.body();
                 setTownship();
             }
@@ -310,7 +330,7 @@ public class CustomerActivity extends AppCompatActivity {
         for (int i = 0; i < lstDivision.size(); i++) {
             divisions[i] = lstDivision.get(i).getDivisionName();
         }
-        ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.simple_spinner_item, divisions);
+        ArrayAdapter adapter = new ArrayAdapter(context, R.layout.spinner_item, divisions);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spDivision.setAdapter(adapter);
     }
@@ -320,7 +340,7 @@ public class CustomerActivity extends AppCompatActivity {
         for (int i = 0; i < lstTownship.size(); i++) {
             townships[i] = lstTownship.get(i).getTownshipName();
         }
-        ArrayAdapter adapter = new ArrayAdapter(context, android.R.layout.simple_spinner_item, townships);
+        ArrayAdapter adapter = new ArrayAdapter(context, R.layout.spinner_item, townships);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spTownship.setAdapter(adapter);
     }

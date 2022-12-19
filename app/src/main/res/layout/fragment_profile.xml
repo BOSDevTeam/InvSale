@@ -46,8 +46,7 @@
         </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout android:id="@+id/inputUserName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/TextInputLayout"
             app:boxBackgroundMode="none"
             android:layout_marginTop="20dp">
             <EditText android:id="@+id/etUserName"
@@ -65,8 +64,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout android:id="@+id/inputShopName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/TextInputLayout"
             app:boxBackgroundMode="none">
             <EditText android:id="@+id/etShopName"
                 style="@style/DefaultEditText"
@@ -133,8 +131,7 @@
         </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout android:id="@+id/inputAddress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            style="@style/TextInputLayout"
             android:layout_marginTop="10dp">
             <EditText android:id="@+id/etAddress"
                 style="@style/DefaultEditText"
