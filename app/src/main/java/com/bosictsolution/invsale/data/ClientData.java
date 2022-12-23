@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 public class ClientData implements Parcelable {
     private int ClientID,DivisionID,TownshipID;
-    private String ClientName,ClientPassword,ShopName,Phone,Address,DivisionName,TownshipName;
+    private String ClientName,ClientPassword,ShopName,Phone,Address,DivisionName,TownshipName,Token;
     private boolean IsSalePerson;
 
     public ClientData(Parcel in) {
@@ -20,6 +20,7 @@ public class ClientData implements Parcelable {
         DivisionName = in.readString();
         TownshipName = in.readString();
         IsSalePerson = in.readByte() != 0;
+        Token = in.readString();
     }
 
     public static final Creator<ClientData> CREATOR = new Creator<ClientData>() {
@@ -36,6 +37,11 @@ public class ClientData implements Parcelable {
 
     public ClientData() {
 
+    }
+
+    public ClientData(String phone,String token) {
+        this.setPhone(phone);
+        this.setToken(token);
     }
 
     public int getClientID() {
@@ -126,6 +132,14 @@ public class ClientData implements Parcelable {
         TownshipName = townshipName;
     }
 
+    public String getToken() {
+        return Token;
+    }
+
+    public void setToken(String token) {
+        Token = token;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -144,5 +158,6 @@ public class ClientData implements Parcelable {
         parcel.writeString(DivisionName);
         parcel.writeString(TownshipName);
         parcel.writeByte((byte) (IsSalePerson ? 1 : 0));
+        parcel.writeString(Token);
     }
 }

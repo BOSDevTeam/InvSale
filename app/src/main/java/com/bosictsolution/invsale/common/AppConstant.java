@@ -32,4 +32,11 @@ public class AppConstant {
     public static final String COLOR_RED = "#E91E36";
     public static final String COLOR_BLACK = "#333333";
     public static final String COLOR_WHITE = "#FFFFFF";
+
+    public static final String FB_NOTE_USER = "users";
+
+    public static final String CHANNEL_ID="blue_ocean_ict";
+    public static final String CHANNEL_NAME="BlueOceanICT";
+    public static final String CHANNEL_DESC="BlueOceanICT Notification";
+
 }
