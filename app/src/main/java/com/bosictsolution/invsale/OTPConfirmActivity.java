@@ -28,6 +28,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class OTPConfirmActivity extends AppCompatActivity {
 
@@ -116,7 +119,7 @@ public class OTPConfirmActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            insertClient();
+                            getToken();
                         } else {
                             progressDialog.dismiss();
                             Toast.makeText(OTPConfirmActivity.this, getResources().getString(R.string.incorrect_otp), Toast.LENGTH_SHORT).show();
@@ -125,7 +128,8 @@ public class OTPConfirmActivity extends AppCompatActivity {
                 });
     }
 
-    private void insertClient() {
+    private void insertClient(String token) {
+        clientData.setToken(token);
         Api.getClient().insertClient(clientData).enqueue(new Callback<Integer>() {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
@@ -183,5 +187,34 @@ public class OTPConfirmActivity extends AppCompatActivity {
 
     private void fillData(){
         tvSubtitle.setText(getResources().getString(R.string.sms_code_message) + clientData.getPhone());
+    }
+
+    private void getToken() {
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(new OnCompleteListener<String>() {
+                    @Override
+                    public void onComplete(@NonNull Task<String> task) {
+                        if (task.isSuccessful()) {
+                            String token = task.getResult();
+                            saveToken(token);
+                        }
+                    }
+                });
+    }
+
+    private void saveToken(String token) {
+        String phone = auth.getCurrentUser().getPhoneNumber();
+        ClientData user = new ClientData(phone, token);
+        DatabaseReference dbUsers = FirebaseDatabase.getInstance().getReference(AppConstant.FB_NOTE_USER);
+        dbUsers.child(auth.getCurrentUser().getUid())
+                .setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Toast.makeText(OTPConfirmActivity.this, "Token Saved", Toast.LENGTH_LONG).show();
+                    insertClient(token);
+                }
+            }
+        });
     }
 }

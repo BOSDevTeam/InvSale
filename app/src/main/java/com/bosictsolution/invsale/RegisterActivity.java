@@ -32,8 +32,11 @@ import com.bosictsolution.invsale.data.DivisionData;
 import com.bosictsolution.invsale.data.TownshipData;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.FirebaseException;
+import com.google.firebase.FirebaseTooManyRequestsException;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
 
 import java.util.ArrayList;
@@ -106,8 +109,9 @@ public class RegisterActivity extends AppCompatActivity {
                     clientData.setTownshipID(townshipId);
                     clientData.setTownshipName(townshipName);
                     clientData.setSalePerson(true);
-                    if (db.getIsClientPhoneVerify() == 1) checkClientPhone();
-                    else insertClient(clientData);  // insert client to database
+                    checkClientPhone();
+                    /*if (db.getIsClientPhoneVerify() == 1) checkClientPhone();
+                    else insertClient(clientData);  // insert client to database*/
                 }
             }
         });
@@ -265,12 +269,14 @@ public class RegisterActivity extends AppCompatActivity {
                 }
                 ClientData data = response.body();
                 if (data.getClientID() == 0) {
-                    PhoneAuthProvider.getInstance().verifyPhoneNumber(
-                            clientData.getPhone(),           // Phone number to verify
-                            60,                           // Timeout duration
-                            TimeUnit.SECONDS,                // Unit of timeout
-                            RegisterActivity.this,   // Activity (for callback binding)
-                            mCallback);
+                    PhoneAuthOptions options =
+                            PhoneAuthOptions.newBuilder(auth)
+                                    .setPhoneNumber("+95"+clientData.getPhone())       // Phone number to verify
+                                    .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
+                                    .setActivity(RegisterActivity.this)                 // Activity (for callback binding)
+                                    .setCallbacks(mCallback)          // OnVerificationStateChangedCallbacks
+                                    .build();
+                    PhoneAuthProvider.verifyPhoneNumber(options);
                 } else {
                     progressDialog.dismiss();
                     Toast.makeText(context, getResources().getString(R.string.already_register_phone), Toast.LENGTH_LONG).show();
@@ -332,24 +338,30 @@ public class RegisterActivity extends AppCompatActivity {
             public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
                 progressDialog.dismiss();
                 Toast.makeText(context,getResources().getString(R.string.verification_completed), Toast.LENGTH_SHORT).show();
-                Intent i = new Intent(RegisterActivity.this, OTPConfirmActivity.class);
-                i.putExtra("ClientData", (Parcelable) clientData);
-                i.putExtra("VerificationCode",verificationCode);
-                startActivity(i);
-                finish();
             }
 
             @Override
             public void onVerificationFailed(FirebaseException e) {
                 progressDialog.dismiss();
-                Toast.makeText(context,getResources().getString(R.string.invalid_verification),Toast.LENGTH_SHORT).show();
+                if (e instanceof FirebaseAuthInvalidCredentialsException) {
+                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                } else if (e instanceof FirebaseTooManyRequestsException) {
+                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context, getResources().getString(R.string.invalid_verification), Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
-            public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-                super.onCodeSent(s, forceResendingToken);
-                verificationCode = s;
+            public void onCodeSent(String verificationId, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+                super.onCodeSent(verificationId, forceResendingToken);
+                verificationCode = verificationId;
                 Toast.makeText(context,getResources().getString(R.string.code_sent),Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(RegisterActivity.this, OTPConfirmActivity.class);
+                i.putExtra("ClientData", (Parcelable) clientData);
+                i.putExtra("VerificationCode",verificationCode);
+                startActivity(i);
+                finish();
             }
         };
     }

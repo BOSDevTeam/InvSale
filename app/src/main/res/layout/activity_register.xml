@@ -69,7 +69,7 @@
                 <EditText android:id="@+id/etPhone"
                     style="@style/ColorEditText"
                     android:hint="@string/phone"
-                    android:inputType="number"
+                    android:inputType="phone"
                     android:imeOptions="actionNext"
                     android:layout_marginTop="10dp" />
             </com.google.android.material.textfield.TextInputLayout>

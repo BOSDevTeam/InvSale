@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements IConfirmation {
 
         getClientNotiCount(clientId);
 
-        if(isAccessNoti) startupStatusBarNoti();
+        //if(isAccessNoti) startupStatusBarNoti();
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
