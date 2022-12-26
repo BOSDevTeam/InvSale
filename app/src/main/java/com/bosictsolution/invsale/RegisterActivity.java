@@ -348,7 +348,7 @@ public class RegisterActivity extends AppCompatActivity {
                 } else if (e instanceof FirebaseTooManyRequestsException) {
                     Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(context, getResources().getString(R.string.invalid_verification), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             }
 
