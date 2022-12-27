@@ -26,27 +26,34 @@ import android.widget.Toast;
 import com.bosictsolution.invsale.api.Api;
 import com.bosictsolution.invsale.common.AppConstant;
 import com.bosictsolution.invsale.common.AppSetting;
+import com.bosictsolution.invsale.common.Confirmation;
 import com.bosictsolution.invsale.common.ConnectionLiveData;
 import com.bosictsolution.invsale.common.DatabaseAccess;
+import com.bosictsolution.invsale.data.ClientData;
 import com.bosictsolution.invsale.data.ConnectionData;
 import com.bosictsolution.invsale.data.MainMenuData;
 import com.bosictsolution.invsale.data.ProductData;
 import com.bosictsolution.invsale.data.SubMenuData;
+import com.bosictsolution.invsale.listener.IConfirmation;
+import com.google.firebase.auth.PhoneAuthOptions;
+import com.google.firebase.auth.PhoneAuthProvider;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements IConfirmation {
 
     Button btnClear,btnDel,btnZero,btnOne,btnTwo,btnThree,btnFour,btnFive,btnSix,btnSeven,btnEight,btnNine;
     TextView tvUser,tvEnterPassword,tvCode1,tvCode2,tvCode3,tvCode4;
     SharedPreferences sharedpreferences;
     int status,status_new=1,status_confirm=2,status_existing=3;
-    String clientPassword,newPassword;
+    String clientPassword,newPassword,clientPhone;
     private Context context=this;
     private ProgressDialog progressDialog;
     DatabaseAccess db;
     ConnectionLiveData connectionLiveData;
     AppSetting appSetting=new AppSetting();
+    Confirmation confirmation=new Confirmation(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -153,10 +160,7 @@ public class LoginActivity extends AppCompatActivity {
                     Toast.makeText(context, getResources().getString(R.string.incorrect_confirm_password), Toast.LENGTH_LONG).show();
                 }
             } else if (status == status_existing) {
-                String inputPassword = tvCode1.getText().toString() + tvCode2.getText().toString() + tvCode3.getText().toString() + tvCode4.getText().toString();
-                if (clientPassword.equals(inputPassword)) loadData();
-                else
-                    Toast.makeText(context, getResources().getString(R.string.incorrect_password), Toast.LENGTH_LONG).show();
+                checkClientPhone();
             }
         }
     }
@@ -214,6 +218,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void fillData() {
         String clientName = sharedpreferences.getString(AppConstant.CLIENT_NAME, "");
+        clientPhone = sharedpreferences.getString(AppConstant.CLIENT_PHONE, "");
         tvUser.setText(clientName);
         getPasswordStatus();
         if (status == status_existing)
@@ -252,7 +257,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void loadData() {
         progressDialog.show();
-        progressDialog.setMessage(getResources().getString(R.string.loading));
+        progressDialog.setMessage(getResources().getString(R.string.data_loading));
         Observable<List<MainMenuData>> obMainMenu = Api.getClient().getMainMenu();
         Observable<List<SubMenuData>> obSubMenu = Api.getClient().getSubMenu();
         Observable<List<ProductData>> obProduct = Api.getClient().getProduct();
@@ -295,5 +300,43 @@ public class LoginActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    private void checkClientPhone() {
+        progressDialog.show();
+        progressDialog.setMessage(getResources().getString(R.string.check_client));
+        Api.getClient().checkClient(clientPhone).enqueue(new Callback<ClientData>() {
+            @Override
+            public void onResponse(Call<ClientData> call, Response<ClientData> response) {
+                progressDialog.dismiss();
+                if (response.body() == null){
+                    Toast.makeText(context, response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
+                ClientData data = response.body();
+                if (data.getClientID() == 0) {
+                    confirmation.showConfirmDialog(LoginActivity.this, getResources().getString(R.string.invalid_user_message),getResources().getString(R.string.invalid_user));
+                } else {
+                    String inputPassword = tvCode1.getText().toString() + tvCode2.getText().toString() + tvCode3.getText().toString() + tvCode4.getText().toString();
+                    if (clientPassword.equals(inputPassword)) loadData();
+                    else
+                        Toast.makeText(context, getResources().getString(R.string.incorrect_password), Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ClientData> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    @Override
+    public void setOnConfirmOKClick() {
+        sharedpreferences.edit().clear().commit();
+        Intent i=new Intent(LoginActivity.this,RegisterActivity.class);
+        startActivity(i);
+        finish();
     }
 }
