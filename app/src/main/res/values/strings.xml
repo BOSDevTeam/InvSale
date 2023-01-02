@@ -195,5 +195,11 @@
     <string name="data_loading">Data Loading...</string>
     <string name="invalid_user">Invalid User</string>
     <string name="invalid_user_message">Your account has been deleted.Please register again.</string>
+    <string name="sign_in_phone">Sign in with Phone...</string>
+    <string name="get_token">Getting Token...</string>
+    <string name="save_token">Saving Token...</string>
+    <string name="update_token">Updating Token...</string>
+    <string name="update_client_token">Updating Client Token...</string>
+    <string name="insert_client">Inserting Client...</string>
 
 </resources>

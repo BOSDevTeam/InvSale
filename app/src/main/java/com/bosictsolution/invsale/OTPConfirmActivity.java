@@ -38,12 +38,13 @@ public class OTPConfirmActivity extends AppCompatActivity {
     EditText etOTP1,etOTP2,etOTP3,etOTP4,etOTP5,etOTP6;
     TextView tvSubtitle;
     ClientData clientData;
-    String verificationCode,otp;
+    String verificationCode,otp,signInPhone;
     FirebaseAuth auth;
     private ProgressDialog progressDialog;
     private Context context=this;
     AppSetting appSetting=new AppSetting();
     SharedPreferences sharedpreferences;
+    boolean isFromSignIn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,8 +57,10 @@ public class OTPConfirmActivity extends AppCompatActivity {
         Intent i=getIntent();
         clientData=i.getParcelableExtra("ClientData");
         verificationCode=i.getStringExtra("VerificationCode");
+        isFromSignIn=i.getBooleanExtra("IsFromSignIn",false);
+        signInPhone=i.getStringExtra("Phone");
 
-        fillData();
+        fillData(signInPhone);
 
         etOTP1.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -112,7 +115,7 @@ public class OTPConfirmActivity extends AppCompatActivity {
 
     private void signInWithPhone(PhoneAuthCredential credential) {
         progressDialog.show();
-        progressDialog.setMessage(getResources().getString(R.string.loading));
+        progressDialog.setMessage(getResources().getString(R.string.sign_in_phone));
         auth = FirebaseAuth.getInstance();
         auth.signInWithCredential(credential)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -129,6 +132,7 @@ public class OTPConfirmActivity extends AppCompatActivity {
     }
 
     private void insertClient(String token) {
+        progressDialog.setMessage(getResources().getString(R.string.insert_client));
         clientData.setToken(token);
         Api.getClient().insertClient(clientData).enqueue(new Callback<Integer>() {
             @Override
@@ -185,8 +189,8 @@ public class OTPConfirmActivity extends AppCompatActivity {
         appSetting.setupProgress(progressDialog);
     }
 
-    private void fillData(){
-        tvSubtitle.setText(getResources().getString(R.string.sms_code_message) + clientData.getPhone());
+    private void fillData(String phone){
+        tvSubtitle.setText(getResources().getString(R.string.sms_code_message) + phone);
     }
 
     private void getToken() {
@@ -196,13 +200,15 @@ public class OTPConfirmActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<String> task) {
                         if (task.isSuccessful()) {
                             String token = task.getResult();
-                            saveToken(token);
+                            if(!isFromSignIn) saveTokenInFirebase(token);
+                            else updateTokenInFirebase(token);
                         }
                     }
                 });
     }
 
-    private void saveToken(String token) {
+    private void saveTokenInFirebase(String token) {
+        progressDialog.setMessage(getResources().getString(R.string.save_token));
         String phone = auth.getCurrentUser().getPhoneNumber();
         ClientData user = new ClientData(phone, token);
         DatabaseReference dbUsers = FirebaseDatabase.getInstance().getReference(AppConstant.FB_NOTE_USER);
@@ -214,6 +220,55 @@ public class OTPConfirmActivity extends AppCompatActivity {
                     Toast.makeText(OTPConfirmActivity.this, "Token Saved", Toast.LENGTH_LONG).show();
                     insertClient(token);
                 }
+            }
+        });
+    }
+
+    private void updateTokenInFirebase(String token){
+        progressDialog.setMessage(getResources().getString(R.string.update_token));
+        String phone = auth.getCurrentUser().getPhoneNumber();
+        ClientData user = new ClientData(phone, token);
+        DatabaseReference dbUsers = FirebaseDatabase.getInstance().getReference(AppConstant.FB_NOTE_USER);
+        dbUsers.child(auth.getCurrentUser().getUid())
+                .setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if (task.isSuccessful()) {
+                    Toast.makeText(OTPConfirmActivity.this, "Token Updated", Toast.LENGTH_LONG).show();
+                    updateClientToken(token);
+                }
+            }
+        });
+    }
+
+    private void updateClientToken(String token){
+        progressDialog.setMessage(getResources().getString(R.string.update_client_token));
+        Api.getClient().updateClientToken(signInPhone,token).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                progressDialog.dismiss();
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+                editor.putInt(AppConstant.CLIENT_ID, clientData.getClientID());
+                editor.putString(AppConstant.CLIENT_NAME, clientData.getClientName());
+                editor.putString(AppConstant.CLIENT_PASSWORD, clientData.getClientPassword());
+                editor.putString(AppConstant.CLIENT_SHOP_NAME, clientData.getShopName());
+                editor.putString(AppConstant.CLIENT_PHONE, clientData.getPhone());
+                editor.putInt(AppConstant.CLIENT_DIVISION_ID, clientData.getDivisionID());
+                editor.putString(AppConstant.CLIENT_DIVISION_NAME, clientData.getDivisionName());
+                editor.putInt(AppConstant.CLIENT_TOWNSHIP_ID, clientData.getTownshipID());
+                editor.putString(AppConstant.CLIENT_TOWNSHIP_NAME, clientData.getTownshipName());
+                editor.putString(AppConstant.CLIENT_ADDRESS, clientData.getAddress());
+                editor.putBoolean(AppConstant.ACCESS_NOTI, true);
+                editor.commit();
+                Intent i = new Intent(OTPConfirmActivity.this, LoginActivity.class);
+                startActivity(i);
+                finish();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }

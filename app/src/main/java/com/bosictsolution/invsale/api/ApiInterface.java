@@ -47,6 +47,10 @@ public interface ApiInterface {
     @POST("client/UpdateClientPassword")
     Call<Void> updateClientPassword(@Query("clientId") int clientId, @Query("password") String password);
 
+    @Headers("Content-type: application/json")
+    @POST("client/UpdateClientToken")
+    Call<Void> updateClientToken(@Query("phone") String phone, @Query("token") String token);
+
     @GET("client")
     Call<ClientData> checkClient(@Query("phone") String phone);
 
