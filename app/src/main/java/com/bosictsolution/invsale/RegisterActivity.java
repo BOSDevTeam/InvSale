@@ -360,6 +360,8 @@ public class RegisterActivity extends AppCompatActivity {
                 Intent i = new Intent(RegisterActivity.this, OTPConfirmActivity.class);
                 i.putExtra("ClientData", (Parcelable) clientData);
                 i.putExtra("VerificationCode",verificationCode);
+                i.putExtra("IsFromSignIn", false);
+                i.putExtra("Phone",clientData.getPhone());
                 startActivity(i);
                 finish();
             }

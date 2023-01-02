@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,6 +24,15 @@ import com.bosictsolution.invsale.common.ConnectionLiveData;
 import com.bosictsolution.invsale.data.ClientData;
 import com.bosictsolution.invsale.data.ConnectionData;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.FirebaseException;
+import com.google.firebase.FirebaseTooManyRequestsException;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.PhoneAuthCredential;
+import com.google.firebase.auth.PhoneAuthOptions;
+import com.google.firebase.auth.PhoneAuthProvider;
+
+import java.util.concurrent.TimeUnit;
 
 public class SignInActivity extends AppCompatActivity {
 
@@ -34,6 +44,10 @@ public class SignInActivity extends AppCompatActivity {
     SharedPreferences sharedpreferences;
     ConnectionLiveData connectionLiveData;
     AppSetting appSetting=new AppSetting();
+    PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallback;
+    FirebaseAuth auth;
+    private String verificationCode;
+    ClientData clientData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +58,7 @@ public class SignInActivity extends AppCompatActivity {
         init();
 
         checkConnection();
+        startFirebaseLogin();
 
         btnContinue.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,18 +89,18 @@ public class SignInActivity extends AppCompatActivity {
 
     private void checkClient(String phone,boolean isSalePerson) {
         progressDialog.show();
-        progressDialog.setMessage(getResources().getString(R.string.loading));
-        Api.getClient().checkClient(phone,isSalePerson).enqueue(new Callback<ClientData>() {
+        progressDialog.setMessage(getResources().getString(R.string.check_client));
+        Api.getClient().checkClient(phone, isSalePerson).enqueue(new Callback<ClientData>() {
             @Override
             public void onResponse(Call<ClientData> call, Response<ClientData> response) {
-                progressDialog.dismiss();
-                if (response.body() == null){
+                if (response.body() == null) {
+                    progressDialog.dismiss();
                     Toast.makeText(context, response.message(), Toast.LENGTH_LONG).show();
                     return;
                 }
-                ClientData data = response.body();
-                if (data.getClientID() != 0) {
-                    SharedPreferences.Editor editor = sharedpreferences.edit();
+                clientData = response.body();
+                if (clientData.getClientID() != 0) {
+                    /*SharedPreferences.Editor editor = sharedpreferences.edit();
                     editor.putInt(AppConstant.CLIENT_ID, data.getClientID());
                     editor.putString(AppConstant.CLIENT_NAME, data.getClientName());
                     editor.putString(AppConstant.CLIENT_PASSWORD, data.getClientPassword());
@@ -97,18 +112,28 @@ public class SignInActivity extends AppCompatActivity {
                     editor.putString(AppConstant.CLIENT_TOWNSHIP_NAME, data.getTownshipName());
                     editor.putString(AppConstant.CLIENT_ADDRESS, data.getAddress());
                     editor.putBoolean(AppConstant.ACCESS_NOTI, true);
-                    editor.commit();
-                    Intent i = new Intent(SignInActivity.this, LoginActivity.class);
+                    editor.commit();*/
+                    /*Intent i = new Intent(SignInActivity.this, LoginActivity.class);
                     startActivity(i);
-                    finish();
-                } else
+                    finish();*/
+                    PhoneAuthOptions options =
+                            PhoneAuthOptions.newBuilder(auth)
+                                    .setPhoneNumber("+95" + phone)       // Phone number to verify
+                                    .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
+                                    .setActivity(SignInActivity.this)                 // Activity (for callback binding)
+                                    .setCallbacks(mCallback)          // OnVerificationStateChangedCallbacks
+                                    .build();
+                    PhoneAuthProvider.verifyPhoneNumber(options);
+                } else {
+                    progressDialog.dismiss();
                     Toast.makeText(context, getResources().getString(R.string.registration_not_found), Toast.LENGTH_LONG).show();
+                }
             }
 
             @Override
             public void onFailure(Call<ClientData> call, Throwable t) {
                 progressDialog.dismiss();
-                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
+                Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -125,5 +150,43 @@ public class SignInActivity extends AppCompatActivity {
         btnContinue=findViewById(R.id.btnContinue);
         etPhone=findViewById(R.id.etPhone);
         inputPhone=findViewById(R.id.inputPhone);
+    }
+
+    private void startFirebaseLogin() {
+        auth = FirebaseAuth.getInstance();
+        mCallback = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+            @Override
+            public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
+                progressDialog.dismiss();
+                Toast.makeText(context,getResources().getString(R.string.verification_completed), Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onVerificationFailed(FirebaseException e) {
+                progressDialog.dismiss();
+                if (e instanceof FirebaseAuthInvalidCredentialsException) {
+                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                } else if (e instanceof FirebaseTooManyRequestsException) {
+                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCodeSent(String verificationId, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+                super.onCodeSent(verificationId, forceResendingToken);
+                verificationCode = verificationId;
+                Toast.makeText(context,getResources().getString(R.string.code_sent),Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(SignInActivity.this, OTPConfirmActivity.class);
+                i.putExtra("ClientData", (Parcelable) clientData);
+                i.putExtra("VerificationCode",verificationCode);
+                i.putExtra("IsFromSignIn", true);
+                i.putExtra("Phone",etPhone.getText().toString());
+                startActivity(i);
+                finish();
+            }
+        };
     }
 }

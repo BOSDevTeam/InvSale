@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -154,6 +155,14 @@ public class ProductActivity extends AppCompatActivity implements ListItemProduc
         if (totalSaleOrderItem != 0) {
             fab.setText("Order:" + totalSaleOrderItem + "(" + totalSaleOrderQty + ") Items - " + db.getHomeCurrency() + getResources().getString(R.string.space) + appSetting.df.format(db.getTotalSaleOrderAmount()));
             fab.setVisibility(View.VISIBLE);
+            try {
+                LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) rvProduct.getLayoutParams();
+                if (lp instanceof LinearLayout.MarginLayoutParams) {
+                    lp.bottomMargin = 150;
+                }
+            }catch(Exception ex){
+                Log.e("ProductActivity",ex.getMessage());
+            }
         } else fab.setVisibility(View.GONE);
     }
 
