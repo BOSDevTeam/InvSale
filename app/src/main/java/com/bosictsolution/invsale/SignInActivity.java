@@ -100,22 +100,6 @@ public class SignInActivity extends AppCompatActivity {
                 }
                 clientData = response.body();
                 if (clientData.getClientID() != 0) {
-                    /*SharedPreferences.Editor editor = sharedpreferences.edit();
-                    editor.putInt(AppConstant.CLIENT_ID, data.getClientID());
-                    editor.putString(AppConstant.CLIENT_NAME, data.getClientName());
-                    editor.putString(AppConstant.CLIENT_PASSWORD, data.getClientPassword());
-                    editor.putString(AppConstant.CLIENT_SHOP_NAME, data.getShopName());
-                    editor.putString(AppConstant.CLIENT_PHONE, phone);
-                    editor.putInt(AppConstant.CLIENT_DIVISION_ID, data.getDivisionID());
-                    editor.putString(AppConstant.CLIENT_DIVISION_NAME, data.getDivisionName());
-                    editor.putInt(AppConstant.CLIENT_TOWNSHIP_ID, data.getTownshipID());
-                    editor.putString(AppConstant.CLIENT_TOWNSHIP_NAME, data.getTownshipName());
-                    editor.putString(AppConstant.CLIENT_ADDRESS, data.getAddress());
-                    editor.putBoolean(AppConstant.ACCESS_NOTI, true);
-                    editor.commit();*/
-                    /*Intent i = new Intent(SignInActivity.this, LoginActivity.class);
-                    startActivity(i);
-                    finish();*/
                     PhoneAuthOptions options =
                             PhoneAuthOptions.newBuilder(auth)
                                     .setPhoneNumber("+95" + phone)       // Phone number to verify
