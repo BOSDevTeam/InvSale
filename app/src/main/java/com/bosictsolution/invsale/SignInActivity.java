@@ -93,8 +93,8 @@ public class SignInActivity extends AppCompatActivity {
         Api.getClient().checkClient(phone,isSalePerson).enqueue(new Callback<ClientData>() {
             @Override
             public void onResponse(Call<ClientData> call, Response<ClientData> response) {
-                progressDialog.dismiss();
                 if (response.body() == null){
+                    progressDialog.dismiss();
                     Toast.makeText(context, response.message(), Toast.LENGTH_LONG).show();
                     return;
                 }
