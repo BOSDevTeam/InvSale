@@ -149,53 +149,53 @@
     <style name="BillTitle1">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/bill</item>
         <item name="android:textStyle">bold</item>
     </style>
 
     <style name="BillOtherTitle">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/bill</item>
     </style>
 
     <style name="BillMessage">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/bill</item>
     </style>
 
     <style name="BillSubHeader">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_weight">1</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/bill</item>
     </style>
 
     <style name="BillListHeader">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/bill</item>
     </style>
 
     <style name="BillListItem">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/bill</item>
     </style>
 
     <style name="BillOtherTotal">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_weight">1</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/bill</item>
     </style>
 
     <style name="BillGrandTotal">
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_weight">1</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/bill</item>
         <item name="android:textStyle">bold</item>
     </style>
 

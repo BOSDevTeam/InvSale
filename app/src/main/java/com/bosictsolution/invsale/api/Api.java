@@ -15,6 +15,7 @@ public class Api {
 
 //        String BASE_URL = "http://192.168.100.11/InventoryWebService/api/";
         String BASE_URL = "http://bosasp-001-site15.gtempurl.com/api/";
+//        String BASE_URL = "genius hosting";
 
         OkHttpClient.Builder httpClient = new OkHttpClient.Builder()
                 .callTimeout(5, TimeUnit.MINUTES)
