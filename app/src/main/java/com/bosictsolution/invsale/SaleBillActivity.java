@@ -40,7 +40,7 @@ public class SaleBillActivity extends AppCompatActivity {
             tvSlipID,tvDate,tvCustomer,tvSalePerson,tvMessage1,tvMessage2,tvMessage3,
             tvSubtotal,tvLabelTax,tvTax,tvLabelCharges,tvCharges,tvTotal,tvLabelVoucherDiscount,tvVoucherDiscount,
             tvAdvancedPay,tvGrandTotal,tvLabelPercent,tvPercentAmount,tvPercentGrandTotal;
-    LinearLayout layoutList,layoutAdvancedPay,layoutPercent,layoutPercentGrandTotal,layoutBill;
+    LinearLayout layoutList,layoutAdvancedPay,layoutPercent,layoutPercentGrandTotal,layoutBill,layoutTax,layoutCharges,layoutSubtotal;
     Button btnBack,btnPrint;
     AppSetting appSetting=new AppSetting();
     int locationId,slipId;
@@ -53,6 +53,7 @@ public class SaleBillActivity extends AppCompatActivity {
     public static BluetoothAdapter BA;
     private BtDeviceListAdapter deviceAdapter;
     private BluetoothAdapter bluetoothAdapter;
+    boolean isCredit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +72,7 @@ public class SaleBillActivity extends AppCompatActivity {
         locationId=intent.getIntExtra("LocationID",0);
         customerName=intent.getStringExtra("CustomerName");
         slipId=intent.getIntExtra("SlipID",0);
+        isCredit=intent.getBooleanExtra("IsCredit",false);
 
         checkConnection();
         fillData();
@@ -91,6 +93,7 @@ public class SaleBillActivity extends AppCompatActivity {
                         i.putExtra("LocationID",locationId);
                         i.putExtra("SlipID",slipId);
                         i.putExtra("CustomerName",customerName);
+                        i.putExtra("IsCredit",isCredit);
                         startActivity(i);
                         finish();
                     }else{
@@ -164,20 +167,25 @@ public class SaleBillActivity extends AppCompatActivity {
         tvCustomer.setText(customerName);
         tvDate.setText(appSetting.getTodayDate());
         SaleMasterData data=db.getMasterSale();
-        tvSubtotal.setText(appSetting.df.format(data.getSubtotal()));
 
-        if (data.getTaxAmt() != 0)
-            tvTax.setText(getResources().getString(R.string.tax_colon) + "(" + data.getTaxAmt() + "%)");
-        tvTax.setText(appSetting.df.format(data.getTaxAmt()));
+        if(data.getTax() == 0 && data.getCharges() == 0)
+            layoutSubtotal.setVisibility(View.GONE);
+        else tvSubtotal.setText(appSetting.df.format(data.getSubtotal()));
 
-        if (data.getChargesAmt() != 0)
-            tvCharges.setText(getResources().getString(R.string.charges_colon) + "(" + data.getChargesAmt() + "%)");
-        tvCharges.setText(appSetting.df.format(data.getChargesAmt()));
+        if(data.getTax() != 0){
+            tvLabelTax.setText(getResources().getString(R.string.tax) + "(" + data.getTax() + "%)"+getResources().getString(R.string.colon_sign));
+            tvTax.setText(appSetting.df.format(data.getTaxAmt()));
+        }else layoutTax.setVisibility(View.GONE);
+
+        if(data.getCharges() != 0) {
+            tvLabelCharges.setText(getResources().getString(R.string.charges) + "(" + data.getCharges() + "%)"+getResources().getString(R.string.colon_sign));
+            tvCharges.setText(appSetting.df.format(data.getChargesAmt()));
+        }else layoutCharges.setVisibility(View.GONE);
 
         tvTotal.setText(appSetting.df.format(data.getSubtotal()+data.getTaxAmt()+data.getChargesAmt()));
 
         if (data.getVouDisPercent() != 0)
-            tvLabelVoucherDiscount.setText(getResources().getString(R.string.voucher_discount_colon) + "(" + data.getVouDisPercent() + "%)");
+            tvLabelVoucherDiscount.setText(getResources().getString(R.string.voucher_discount) + "(" + data.getVouDisPercent() + "%)"+getResources().getString(R.string.colon_sign));
         tvVoucherDiscount.setText(appSetting.df.format(data.getVoucherDiscount()));
 
         if (data.getAdvancedPay() !=0) {
@@ -280,5 +288,8 @@ public class SaleBillActivity extends AppCompatActivity {
         tvPercentGrandTotal=findViewById(R.id.tvPercentGrandTotal);
         btnBack=findViewById(R.id.btnBack);
         btnPrint=findViewById(R.id.btnPrint);
+        layoutTax=findViewById(R.id.layoutTax);
+        layoutCharges=findViewById(R.id.layoutCharges);
+        layoutSubtotal=findViewById(R.id.layoutSubtotal);
     }
 }

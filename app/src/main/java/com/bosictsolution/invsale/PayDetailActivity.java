@@ -198,7 +198,7 @@ public class PayDetailActivity extends AppCompatActivity {
             layoutAdvancedPay.setVisibility(View.GONE);
 
         if (saleMasterData.getVouDisPercent() != 0)
-            tvLabelVoucherDiscount.setText(getResources().getString(R.string.voucher_discount_colon) + "(" + saleMasterData.getVouDisPercent() + "%)");
+            tvLabelVoucherDiscount.setText(getResources().getString(R.string.voucher_discount) + "(" + saleMasterData.getVouDisPercent() + "%)"+getResources().getString(R.string.colon_sign));
         tvVoucherDiscount.setText(appSetting.df.format(saleMasterData.getVoucherDiscount()));
 
         int grandTotal = saleMasterData.getTotal() - (saleMasterData.getAdvancedPay() + saleMasterData.getVoucherDiscount());
@@ -264,10 +264,14 @@ public class PayDetailActivity extends AppCompatActivity {
                     int slipId=response.body();
                     int position = spCustomer.getSelectedItemPosition();
                     String customerName = lstCustomer.get(position).getCustomerName();
+                    boolean isCredit=false;
+                    int paymentPosition=spPayment.getSelectedItemPosition();
+                    if(paymentPosition == 1)isCredit=true;
                     Intent intent = new Intent(PayDetailActivity.this, SaleBillActivity.class);
                     intent.putExtra("LocationID", data.getLocationID());
                     intent.putExtra("CustomerName", customerName);
                     intent.putExtra("SlipID",slipId);
+                    intent.putExtra("IsCredit",isCredit);
                     startActivity(intent);
                     finish();
                 }

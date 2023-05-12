@@ -50,7 +50,7 @@ public class SalePrintActivity extends AppCompatActivity {
             tvAdvancedPay,tvGrandTotal,tvLabelPercent,tvPercentAmount,tvPercentGrandTotal,tvLabelSubtotal,tvLabelTotal,
             tvLabelAdvancedPay,tvLabelGrandTotal,tvHeaderNo,tvHeaderProduct,tvHeaderQuantity,tvHeaderPrice,tvHeaderAmount,
             tvNumber,tvProductName,tvQuantity,tvPrice,tvAmount;
-    LinearLayout layoutList,layoutAdvancedPay,layoutPercent,layoutPercentGrandTotal,layoutPrint;
+    LinearLayout layoutList,layoutAdvancedPay,layoutPercent,layoutPercentGrandTotal,layoutPrint,layoutTax,layoutCharges,layoutSubtotal;
     int paperWidth;
     private ProgressDialog progressDialog;
     private Context context=this;
@@ -60,6 +60,7 @@ public class SalePrintActivity extends AppCompatActivity {
     DatabaseAccess db;
     SharedPreferences sharedpreferences;
     ConnectionLiveData connectionLiveData;
+    boolean isCredit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +75,7 @@ public class SalePrintActivity extends AppCompatActivity {
         locationId = i.getIntExtra("LocationID", 0);
         slipId = i.getIntExtra("SlipID", 0);
         customerName = i.getStringExtra("CustomerName");
+        isCredit=i.getBooleanExtra("IsCredit",false);
 
         setLayoutPrintSize(paperWidth);
         if (paperWidth == 58) setHeaderTextSize(8);
@@ -84,9 +86,21 @@ public class SalePrintActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (convertBillLayoutToBitmap()) {
-                    printBitmapOrder();
-                    printCompleted();
+                if(convertBillLayoutToBitmap()){
+                    printBitmap();
+
+                    if(isCredit){
+                        new Handler().postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                printBitmap();
+                                printCompleted();
+                            }
+                        },5000);
+                    }else{
+                        printCompleted();
+                    }
+
                 }
             }
         }, 2000);
@@ -140,7 +154,7 @@ public class SalePrintActivity extends AppCompatActivity {
         return directory.getAbsolutePath();
     }
 
-    private void printBitmapOrder() {
+    private void printBitmap() {
         Bitmap bitmap = null;
         File directory = new File(Environment.getExternalStorageDirectory().getPath(), "/" +getResources().getString(R.string.storage_path));
         if (!directory.exists()) {
@@ -214,20 +228,24 @@ public class SalePrintActivity extends AppCompatActivity {
         tvCustomer.setText(customerName);
         tvDate.setText(appSetting.getTodayDate());
         SaleMasterData data=db.getMasterSale();
-        tvSubtotal.setText(appSetting.df.format(data.getSubtotal()));
+        if(data.getTax() == 0 && data.getCharges() == 0)
+            layoutSubtotal.setVisibility(View.GONE);
+        else tvSubtotal.setText(appSetting.df.format(data.getSubtotal()));
 
-        if (data.getTaxAmt() != 0)
-            tvTax.setText(getResources().getString(R.string.tax_colon) + "(" + data.getTaxAmt() + "%)");
-        tvTax.setText(appSetting.df.format(data.getTaxAmt()));
+        if(data.getTax() != 0){
+            tvLabelTax.setText(getResources().getString(R.string.tax) + "(" + data.getTax() + "%)"+getResources().getString(R.string.colon_sign));
+            tvTax.setText(appSetting.df.format(data.getTaxAmt()));
+        }else layoutTax.setVisibility(View.GONE);
 
-        if (data.getChargesAmt() != 0)
-            tvCharges.setText(getResources().getString(R.string.charges_colon) + "(" + data.getChargesAmt() + "%)");
-        tvCharges.setText(appSetting.df.format(data.getChargesAmt()));
+        if(data.getCharges() != 0) {
+            tvLabelCharges.setText(getResources().getString(R.string.charges) + "(" + data.getCharges() + "%)"+getResources().getString(R.string.colon_sign));
+            tvCharges.setText(appSetting.df.format(data.getChargesAmt()));
+        }else layoutCharges.setVisibility(View.GONE);
 
         tvTotal.setText(appSetting.df.format(data.getSubtotal()+data.getTaxAmt()+data.getChargesAmt()));
 
         if (data.getVouDisPercent() != 0)
-            tvLabelVoucherDiscount.setText(getResources().getString(R.string.voucher_discount_colon) + "(" + data.getVouDisPercent() + "%)");
+            tvLabelVoucherDiscount.setText(getResources().getString(R.string.voucher_discount) + "(" + data.getVouDisPercent() + "%)"+getResources().getString(R.string.colon_sign));
         tvVoucherDiscount.setText(appSetting.df.format(data.getVoucherDiscount()));
 
         if (data.getAdvancedPay() !=0) {
@@ -325,6 +343,9 @@ public class SalePrintActivity extends AppCompatActivity {
         tvHeaderQuantity=findViewById(R.id.tvHeaderQuantity);
         tvHeaderPrice=findViewById(R.id.tvHeaderPrice);
         tvHeaderAmount=findViewById(R.id.tvHeaderAmount);
+        layoutTax=findViewById(R.id.layoutTax);
+        layoutCharges=findViewById(R.id.layoutCharges);
+        layoutSubtotal=findViewById(R.id.layoutSubtotal);
     }
 
     private void setLayoutPrintSize(int paperWidth) {

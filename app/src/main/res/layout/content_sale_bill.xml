@@ -137,7 +137,8 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <LinearLayout android:layout_width="match_parent"
+        <LinearLayout android:id="@+id/layoutSubtotal"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <TextView android:id="@+id/tvLabelSubtotal"
@@ -151,7 +152,8 @@
 
         </LinearLayout>
 
-        <LinearLayout android:layout_width="match_parent"
+        <LinearLayout android:id="@+id/layoutTax"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <TextView android:id="@+id/tvLabelTax"
@@ -165,7 +167,8 @@
 
         </LinearLayout>
 
-        <LinearLayout android:layout_width="match_parent"
+        <LinearLayout android:id="@+id/layoutCharges"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <TextView android:id="@+id/tvLabelCharges"

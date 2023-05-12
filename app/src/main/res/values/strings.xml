@@ -57,6 +57,7 @@
     <string name="advanced_pay">Advanced Pay</string>
     <string name="ok">OK</string>
     <string name="voucher_discount_colon">Voucher Discount:</string>
+    <string name="voucher_discount">Voucher Discount</string>
     <string name="no_discount">No Discount</string>
     <string name="debt">(Debt)</string>
     <string name="dollar_sign">$</string>
@@ -85,6 +86,8 @@
     <string name="subtotal_colon">Subtotal:</string>
     <string name="tax_colon">Tax:</string>
     <string name="charges_colon">Charges:</string>
+    <string name="tax">Tax</string>
+    <string name="charges">Charges</string>
     <string name="grandtotal_colon">Grandtotal:</string>
     <string name="sale_completed">Sale Completed</string>
     <string name="bluetooth_printer_mac_address">Bluetooth Printer Mac Address</string>
