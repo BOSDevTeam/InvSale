@@ -24,6 +24,11 @@
         android:layout_weight="1"
         tools:text="2,000"
         android:gravity="right"/>
+    <TextView android:id="@+id/tvDiscount"
+        style="@style/BillListItem"
+        android:layout_weight="1"
+        tools:text="200"
+        android:gravity="right"/>
     <TextView android:id="@+id/tvAmount"
         style="@style/BillListItem"
         android:layout_weight="1"

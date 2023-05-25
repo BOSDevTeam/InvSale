@@ -58,7 +58,7 @@
     <string name="ok">OK</string>
     <string name="voucher_discount_colon">Voucher Discount:</string>
     <string name="voucher_discount">Voucher Discount</string>
-    <string name="no_discount">No Discount</string>
+    <string name="discount">Discount</string>
     <string name="debt">(Debt)</string>
     <string name="dollar_sign">$</string>
     <string name="percent_sign">%</string>
@@ -141,7 +141,7 @@
     <string name="enter_your_phone">Enter your phone number</string>
     <string name="registration_not_found">Not found registration data with this phone number.Check your number and try again!</string>
     <string name="product_not_found_by_value">Not found product for this search value!</string>
-    <string name="foc_item">FOC Item</string>
+    <string name="pay_foc">Pay FOC</string>
     <string name="confirm">Confirm</string>
     <string name="delete_confirm_message">Are you sure you want to delete?</string>
     <string name="product_not_found_by_menu">Not found product for this menu!</string>
@@ -204,5 +204,12 @@
     <string name="update_token">Updating Token...</string>
     <string name="update_client_token">Updating Client Token...</string>
     <string name="insert_client">Inserting Client...</string>
+    <string name="pay_discount">Pay Discount</string>
+    <string name="delete_item">Delete Item</string>
+    <string name="cancel_foc">Cancel FOC</string>
+    <string name="enter_discount_percent">Enter Discount Percent</string>
+    <string name="edit_discount">Edit Discount</string>
+    <string name="remove_discount">Remove Discount</string>
+    <string name="dis">Dis</string>
 
 </resources>

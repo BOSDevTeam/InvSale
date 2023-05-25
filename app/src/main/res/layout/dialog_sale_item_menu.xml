@@ -22,22 +22,46 @@
     <LinearLayout style="@style/DialogLayout"
         android:orientation="vertical">
 
-        <CheckBox android:id="@+id/chkFOC"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/foc_item"
-            android:textColor="@color/black" android:drawableRight="@drawable/ic_giftcard_24"
-            android:drawableTint="@color/gray"/>
+        <TextView android:id="@+id/tvPayDiscount"
+            android:text="@string/pay_discount"
+            android:drawableLeft="@drawable/ic_discount_24"
+            style="@style/SaleItemMenuTextView"
+            android:drawableTint="@color/primary_500"
+            android:background="@drawable/border_bottom"/>
 
-    </LinearLayout>
+        <TextView android:id="@+id/tvEditDiscount"
+            android:text="@string/edit_discount"
+            android:drawableLeft="@drawable/ic_discount_24"
+            style="@style/SaleItemMenuTextView"
+            android:drawableTint="@color/primary_500"
+            android:background="@drawable/border_bottom"/>
 
-    <View style="@style/Divider"/>
+        <TextView android:id="@+id/tvRemoveDiscount"
+            android:text="@string/remove_discount"
+            android:drawableLeft="@drawable/ic_discount_24"
+            style="@style/SaleItemMenuTextView"
+            android:drawableTint="@color/black_soft"
+            android:background="@drawable/border_bottom"/>
 
-    <LinearLayout style="@style/DialogLayout"
-        android:gravity="right">
+        <TextView android:id="@+id/tvPayFOC"
+            android:text="@string/pay_foc"
+            android:drawableLeft="@drawable/ic_giftcard_24"
+            style="@style/SaleItemMenuTextView"
+            android:background="@drawable/border_bottom"/>
 
-        <Button android:id="@+id/btnOK"
-            style="@style/DialogOk"/>
+        <TextView android:id="@+id/tvCancelFOC"
+            android:text="@string/cancel_foc"
+            android:drawableLeft="@drawable/ic_giftcard_24"
+            style="@style/SaleItemMenuTextView"
+            android:drawableTint="@color/black_soft"
+            android:background="@drawable/border_bottom"/>
+
+        <TextView android:id="@+id/tvDeleteItem"
+            android:text="@string/delete_item"
+            android:drawableLeft="@drawable/ic_clear_24"
+            style="@style/SaleItemMenuTextView"
+            android:drawableTint="@color/red"
+            android:background="@drawable/border_bottom"/>
 
     </LinearLayout>
 

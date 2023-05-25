@@ -307,13 +307,23 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
     public void onRemoveClickListener(int position) {
         if(db.deleteTranSaleOrderByProduct(lstSaleOrderTran.get(position).getProductID())) {
             lstSaleOrderTran.remove(position);
+            int number=1;
+            for(int i=0;i<lstSaleOrderTran.size();i++){
+                lstSaleOrderTran.get(i).setNumber(number);
+                number+=1;
+            }
             setSaleOrderAdapter();
             calculateAmount();
         }
     }
 
     @Override
-    public void onItemLongClickListener(int position, TextView tvPrice, TextView tvAmount) {
+    public void onMoreClickListener(int position, TextView tvPrice, TextView tvAmount, TextView tvDiscount) {
+
+    }
+
+    @Override
+    public void onItemLongClickListener(int position, TextView tvPrice, TextView tvAmount, TextView tvDiscount) {
 
     }
 

@@ -219,12 +219,14 @@ public class SaleBillActivity extends AppCompatActivity {
             TextView tvQuantity = row.findViewById(R.id.tvQuantity);
             TextView tvNumber = row.findViewById(R.id.tvNumber);
             TextView tvAmount = row.findViewById(R.id.tvAmount);
+            TextView tvDiscount = row.findViewById(R.id.tvDiscount);
 
             tvProductName.setText(lstSaleTran.get(i).getProductName());
             tvPrice.setText(appSetting.df.format(lstSaleTran.get(i).getSalePrice()));
             tvQuantity.setText(String.valueOf(lstSaleTran.get(i).getQuantity()));
             tvNumber.setText(String.valueOf(lstSaleTran.get(i).getNumber()));
             tvAmount.setText(appSetting.df.format(lstSaleTran.get(i).getAmount()));
+            tvDiscount.setText(appSetting.df.format(lstSaleTran.get(i).getDiscount()));
 
             layoutList.addView(row);
         }

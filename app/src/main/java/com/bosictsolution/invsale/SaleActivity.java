@@ -19,7 +19,6 @@ import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
@@ -33,7 +32,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.Spinner;
@@ -64,6 +63,7 @@ import com.bosictsolution.invsale.data.VoucherSettingData;
 import com.bosictsolution.invsale.listener.IConfirmation;
 import com.bosictsolution.invsale.listener.ListItemProductInfoListener;
 import com.bosictsolution.invsale.listener.ListItemSaleListener;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -254,13 +254,18 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
 
     @Override
     public void onRemoveClickListener(int position) {
-        lstSaleTran.remove(position);
-        setSaleTranAdapter();
+        /*lstSaleTran.remove(position);
+        setSaleTranAdapter();*/
     }
 
     @Override
-    public void onItemLongClickListener(int position, TextView tvPrice, TextView tvAmount) {
-        showSaleItemMenuDialog(lstSaleTran.get(position).getProductName(), position, tvPrice, tvAmount);
+    public void onMoreClickListener(int position, TextView tvPrice, TextView tvAmount, TextView tvDiscount) {
+        showSaleItemMenuDialog(lstSaleTran.get(position).getProductName(), position, tvPrice, tvAmount, tvDiscount);
+    }
+
+    @Override
+    public void onItemLongClickListener(int position, TextView tvPrice, TextView tvAmount, TextView tvDiscount) {
+        showSaleItemMenuDialog(lstSaleTran.get(position).getProductName(), position, tvPrice, tvAmount, tvDiscount);
     }
 
     @Override
@@ -399,7 +404,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         });
     }
 
-    private void showSaleItemMenuDialog(String productName,int position,TextView tvPrice, TextView tvAmount) {
+    private void showSaleItemMenuDialog(String productName,int position,TextView tvPrice, TextView tvAmount, TextView tvDiscount) {
         LayoutInflater reg = LayoutInflater.from(context);
         View v = reg.inflate(R.layout.dialog_sale_item_menu, null);
         android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(context);
@@ -407,47 +412,159 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
 
         final ImageButton btnClose = v.findViewById(R.id.btnClose);
         final TextView tvTitle = v.findViewById(R.id.tvTitle);
-        final CheckBox chkFOC = v.findViewById(R.id.chkFOC);
-        final Button btnOK = v.findViewById(R.id.btnOK);
+        final TextView tvPayDiscount = v.findViewById(R.id.tvPayDiscount);
+        final TextView tvEditDiscount = v.findViewById(R.id.tvEditDiscount);
+        final TextView tvRemoveDiscount = v.findViewById(R.id.tvRemoveDiscount);
+        final TextView tvPayFOC = v.findViewById(R.id.tvPayFOC);
+        final TextView tvCancelFOC = v.findViewById(R.id.tvCancelFOC);
+        final TextView tvDeleteItem = v.findViewById(R.id.tvDeleteItem);
 
         tvTitle.setText(productName);
-        if(tvPrice.getText().toString()=="0")chkFOC.setChecked(true);
+        if(lstSaleTran.get(position).isFOC())tvPayFOC.setVisibility(View.GONE);
+        else tvCancelFOC.setVisibility(View.GONE);
+
+        if(lstSaleTran.get(position).getDiscountPercent() == 0){
+            tvEditDiscount.setVisibility(View.GONE);
+            tvRemoveDiscount.setVisibility(View.GONE);
+        }else tvPayDiscount.setVisibility(View.GONE);
 
         dialog.setCancelable(true);
         android.app.AlertDialog alertDialog = dialog.create();
         alertDialog.show();
 
-        btnOK.setOnClickListener(new View.OnClickListener() {
+        tvPayDiscount.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
                 alertDialog.dismiss();
-                if(chkFOC.isChecked()){
-                    tvPrice.setText("0");
-                    tvAmount.setText("0");
-                    lstSaleTran.get(position).setDefaultSalePrice(lstSaleTran.get(position).getSalePrice());
-                    lstSaleTran.get(position).setSalePrice(0);
-                    lstSaleTran.get(position).setAmount(0);
-                    lstSaleTran.get(position).setFOC(true);
+                showDiscountDialog(position,tvDiscount,tvAmount,false);
+            }
+        });
+
+        tvEditDiscount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+                showDiscountDialog(position,tvDiscount,tvAmount,true);
+            }
+        });
+
+        tvRemoveDiscount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+                lstSaleTran.get(position).setDiscountPercent(0);
+                tvDiscount.setText("");
+                calculateDiscountAmount(position,0,tvAmount);
+                calculateAmount();
+            }
+        });
+
+        tvPayFOC.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+                tvPrice.setText("0");
+                tvAmount.setText("0");
+                lstSaleTran.get(position).setDefaultSalePrice(lstSaleTran.get(position).getSalePrice());
+                lstSaleTran.get(position).setSalePrice(0);
+                lstSaleTran.get(position).setAmount(0);
+                lstSaleTran.get(position).setFOC(true);
+                calculateAmount();
+            }
+        });
+
+        tvCancelFOC.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+                if(lstSaleTran.get(position).isFOC()){
+                    tvPrice.setText(appSetting.df.format(lstSaleTran.get(position).getDefaultSalePrice()));
+                    lstSaleTran.get(position).setSalePrice(lstSaleTran.get(position).getDefaultSalePrice());
+                    lstSaleTran.get(position).setDefaultSalePrice(0);
+                    lstSaleTran.get(position).setFOC(false);
+                    int discountPercent=lstSaleTran.get(position).getDiscountPercent();
+                    calculateDiscountAmount(position,discountPercent,tvAmount);
                     calculateAmount();
-                }else{
-                    if(lstSaleTran.get(position).isFOC()){
-                        tvPrice.setText(String.valueOf(lstSaleTran.get(position).getDefaultSalePrice()));
-                        tvAmount.setText(String.valueOf(lstSaleTran.get(position).getQuantity()*lstSaleTran.get(position).getDefaultSalePrice()));
-                        lstSaleTran.get(position).setSalePrice(lstSaleTran.get(position).getDefaultSalePrice());
-                        lstSaleTran.get(position).setAmount(lstSaleTran.get(position).getQuantity()*lstSaleTran.get(position).getDefaultSalePrice());
-                        lstSaleTran.get(position).setDefaultSalePrice(0);
-                        lstSaleTran.get(position).setFOC(false);
-                        calculateAmount();
-                    }
                 }
             }
         });
+
+        tvDeleteItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                lstSaleTran.remove(position);
+                int number=1;
+                for(int i=0;i<lstSaleTran.size();i++){
+                    lstSaleTran.get(i).setNumber(number);
+                    number+=1;
+                }
+                setSaleTranAdapter();
+                alertDialog.dismiss();
+            }
+        });
+
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 alertDialog.dismiss();
             }
         });
+    }
+
+    private void showDiscountDialog(int position,TextView tvDiscount,TextView tvAmount,boolean isEdit) {
+        LayoutInflater reg = LayoutInflater.from(context);
+        View v = reg.inflate(R.layout.dialog_discount, null);
+        android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(context);
+        dialog.setView(v);
+
+        final ImageButton btnClose = v.findViewById(R.id.btnClose);
+        final TextInputLayout inputDiscount = v.findViewById(R.id.inputDiscount);
+        final EditText etDiscount = v.findViewById(R.id.etDiscount);
+        final Button btnCancel = v.findViewById(R.id.btnCancel);
+        final Button btnOK = v.findViewById(R.id.btnOK);
+
+        if(isEdit)etDiscount.setText(String.valueOf(lstSaleTran.get(position).getDiscountPercent()));
+
+        dialog.setCancelable(true);
+        android.app.AlertDialog alertDialog = dialog.create();
+        alertDialog.show();
+
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
+        btnOK.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(etDiscount.getText().toString().length() == 0){
+                    inputDiscount.setError(getResources().getString(R.string.enter_value));
+                    return;
+                }
+                int discountPercent=Integer.parseInt(etDiscount.getText().toString());
+                if(validatePercent(discountPercent)){
+                    lstSaleTran.get(position).setDiscountPercent(discountPercent);
+                    tvDiscount.setText(discountPercent+"%");
+                    calculateDiscountAmount(position,discountPercent,tvAmount);
+                    calculateAmount();
+                    alertDialog.dismiss();
+                }else{
+                    inputDiscount.setError(getResources().getString(R.string.enter_valid_value));
+                }
+            }
+        });
+    }
+
+    private boolean validatePercent(int value) {
+        if (value == 0 || value > 100) return false;
+        return true;
     }
 
     private void showProductMenuDialog() {
@@ -588,10 +705,20 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
 
     private void editQuantity(int position,TextView tvQuantity, TextView tvAmount,int quantity){
         tvQuantity.setText(String.valueOf(quantity));
-        tvAmount.setText(appSetting.df.format(quantity*lstSaleTran.get(position).getSalePrice()));
         lstSaleTran.get(position).setQuantity(quantity);
-        lstSaleTran.get(position).setAmount(quantity*lstSaleTran.get(position).getSalePrice());
+        int discountPercent=lstSaleTran.get(position).getDiscountPercent();
+        calculateDiscountAmount(position,discountPercent,tvAmount);
         calculateAmount();
+    }
+
+    private void calculateDiscountAmount(int position,int discountPercent,TextView tvAmount){
+        int salePrice=lstSaleTran.get(position).getSalePrice();
+        int quantity=lstSaleTran.get(position).getQuantity();
+        int discountAmount=((salePrice*quantity)*discountPercent)/100;
+        int amount=(quantity*salePrice)-discountAmount;
+        lstSaleTran.get(position).setDiscount(discountAmount);
+        lstSaleTran.get(position).setAmount(amount);
+        tvAmount.setText(appSetting.df.format(amount));
     }
 
     private void calculateAmount() {

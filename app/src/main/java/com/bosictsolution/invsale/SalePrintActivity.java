@@ -49,7 +49,7 @@ public class SalePrintActivity extends AppCompatActivity {
             tvSubtotal,tvLabelTax,tvTax,tvLabelCharges,tvCharges,tvTotal,tvLabelVoucherDiscount,tvVoucherDiscount,
             tvAdvancedPay,tvGrandTotal,tvLabelPercent,tvPercentAmount,tvPercentGrandTotal,tvLabelSubtotal,tvLabelTotal,
             tvLabelAdvancedPay,tvLabelGrandTotal,tvHeaderNo,tvHeaderProduct,tvHeaderQuantity,tvHeaderPrice,tvHeaderAmount,
-            tvNumber,tvProductName,tvQuantity,tvPrice,tvAmount;
+            tvHeaderDiscount,tvNumber,tvProductName,tvQuantity,tvPrice,tvAmount,tvDiscount;
     LinearLayout layoutList,layoutAdvancedPay,layoutPercent,layoutPercentGrandTotal,layoutPrint,layoutTax,layoutCharges,layoutSubtotal;
     int paperWidth;
     private ProgressDialog progressDialog;
@@ -279,6 +279,7 @@ public class SalePrintActivity extends AppCompatActivity {
             tvQuantity = row.findViewById(R.id.tvQuantity);
             tvNumber = row.findViewById(R.id.tvNumber);
             tvAmount = row.findViewById(R.id.tvAmount);
+            tvDiscount = row.findViewById(R.id.tvDiscount);
 
             if (paperWidth == 58) setItemTextSize(8);
             else if (paperWidth == 80) setItemTextSize(10);
@@ -288,6 +289,7 @@ public class SalePrintActivity extends AppCompatActivity {
             tvQuantity.setText(String.valueOf(lstSaleTran.get(i).getQuantity()));
             tvNumber.setText(String.valueOf(lstSaleTran.get(i).getNumber()));
             tvAmount.setText(appSetting.df.format(lstSaleTran.get(i).getAmount()));
+            tvDiscount.setText(appSetting.df.format(lstSaleTran.get(i).getDiscount()));
 
             layoutList.addView(row);
         }
@@ -343,6 +345,7 @@ public class SalePrintActivity extends AppCompatActivity {
         tvHeaderQuantity=findViewById(R.id.tvHeaderQuantity);
         tvHeaderPrice=findViewById(R.id.tvHeaderPrice);
         tvHeaderAmount=findViewById(R.id.tvHeaderAmount);
+        tvHeaderDiscount=findViewById(R.id.tvHeaderDiscount);
         layoutTax=findViewById(R.id.layoutTax);
         layoutCharges=findViewById(R.id.layoutCharges);
         layoutSubtotal=findViewById(R.id.layoutSubtotal);
@@ -393,6 +396,7 @@ public class SalePrintActivity extends AppCompatActivity {
         tvHeaderQuantity.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
         tvHeaderPrice.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
         tvHeaderAmount.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
+        tvHeaderDiscount.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
     }
 
     private void setItemTextSize(int size) {
@@ -401,5 +405,6 @@ public class SalePrintActivity extends AppCompatActivity {
         tvPrice.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
         tvAmount.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
         tvNumber.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
+        tvDiscount.setTextSize(TypedValue.COMPLEX_UNIT_SP, size);
     }
 }

@@ -49,13 +49,14 @@ public class ListItemSaleAdapter extends RecyclerView.Adapter<ListItemSaleAdapte
         holder.tvQuantity.setText(String.valueOf(list.get(position).getQuantity()));
         holder.tvNumber.setText(String.valueOf(list.get(position).getNumber()));
         holder.tvAmount.setText(appSetting.df.format(list.get(position).getAmount()));
+        if(list.get(position).getDiscountPercent() != 0) holder.tvDiscount.setText(list.get(position).getDiscountPercent()+"%");
 
         if(isAllowEdit){
             holder.tvQuantity.setBackground(context.getResources().getDrawable(R.drawable.bd_quantity));
-            holder.btnRemove.setVisibility(View.VISIBLE);
+            holder.btnMore.setVisibility(View.VISIBLE);
         }else{
             holder.tvQuantity.setBackgroundColor(context.getResources().getColor(R.color.transparent));
-            holder.btnRemove.setVisibility(View.GONE);
+            holder.btnMore.setVisibility(View.GONE);
         }
 
         holder.tvQuantity.setOnClickListener(new View.OnClickListener() {
@@ -67,12 +68,12 @@ public class ListItemSaleAdapter extends RecyclerView.Adapter<ListItemSaleAdapte
                 }
             }
         });
-        holder.btnRemove.setOnClickListener(new View.OnClickListener() {
+        holder.btnMore.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View arg0) {
                 if(listItemSaleListener !=null){
-                    listItemSaleListener.onRemoveClickListener(position);
+                    listItemSaleListener.onMoreClickListener(position, holder.tvPrice, holder.tvAmount, holder.tvDiscount);
                 }
             }
         });
@@ -80,7 +81,7 @@ public class ListItemSaleAdapter extends RecyclerView.Adapter<ListItemSaleAdapte
             @Override
             public boolean onLongClick(View view) {
                 if (listItemSaleListener != null) {
-                    listItemSaleListener.onItemLongClickListener(position, holder.tvPrice, holder.tvAmount);
+                    listItemSaleListener.onItemLongClickListener(position, holder.tvPrice, holder.tvAmount, holder.tvDiscount);
                 }
                 return false;
             }
@@ -104,8 +105,8 @@ public class ListItemSaleAdapter extends RecyclerView.Adapter<ListItemSaleAdapte
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvNumber,tvProductName,tvPrice,tvQuantity,tvAmount;
-        ImageButton btnRemove;
+        TextView tvNumber,tvProductName,tvPrice,tvQuantity,tvAmount,tvDiscount;
+        ImageButton btnRemove,btnMore;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -114,7 +115,10 @@ public class ListItemSaleAdapter extends RecyclerView.Adapter<ListItemSaleAdapte
             tvPrice =  itemView.findViewById(R.id.tvPrice);
             tvQuantity =  itemView.findViewById(R.id.tvQuantity);
             tvAmount =  itemView.findViewById(R.id.tvAmount);
+            tvDiscount =  itemView.findViewById(R.id.tvDiscount);
             btnRemove =  itemView.findViewById(R.id.btnRemove);
+            btnMore =  itemView.findViewById(R.id.btnMore);
+            btnRemove.setVisibility(View.GONE);
         }
     }
 }

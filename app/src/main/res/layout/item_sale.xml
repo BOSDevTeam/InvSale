@@ -18,9 +18,11 @@
         android:layout_weight="2"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-        <TextView android:id="@+id/tvProductName"
-            style="@style/DefaultTextView"
-            tools:text="Product Name"/>
+
+            <TextView android:id="@+id/tvProductName"
+                style="@style/DefaultTextView"
+                tools:text="Product Name" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -43,6 +45,12 @@
                 style="@style/SmallTextView"
                 android:layout_width="wrap_content"
                 tools:text="2,000" />
+            <TextView android:id="@+id/tvDiscount"
+                style="@style/SmallTextView"
+                android:layout_width="wrap_content"
+                android:background="@color/accent_200"
+                android:layout_marginLeft="10dp"
+                tools:text="10%"/>
         </LinearLayout>
     </LinearLayout>
     <TextView android:id="@+id/tvAmount"
@@ -54,7 +62,17 @@
     <LinearLayout android:layout_width="0dp"
         android:layout_weight="0.5"
         android:layout_height="wrap_content"
-        android:gravity="right">
+        android:gravity="right"
+        app:tint="@color/black">
+
+        <ImageButton android:id="@+id/btnMore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_more_vert_24"
+            android:background="@drawable/btn_transparent"
+            android:padding="5dp"
+            app:tint="@color/black"/>
+
         <ImageButton android:id="@+id/btnRemove"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -62,6 +80,8 @@
             android:background="@drawable/btn_transparent"
             android:padding="5dp"
             app:tint="@color/black"/>
+
     </LinearLayout>
 
 </LinearLayout>
+

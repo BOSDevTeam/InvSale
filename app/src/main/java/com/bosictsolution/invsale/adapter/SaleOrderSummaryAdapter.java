@@ -80,7 +80,7 @@ public class SaleOrderSummaryAdapter extends RecyclerView.Adapter<SaleOrderSumma
             @Override
             public boolean onLongClick(View view) {
                 if (listItemSaleListener != null) {
-                    listItemSaleListener.onItemLongClickListener(position, holder.tvPrice, holder.tvAmount);
+                    listItemSaleListener.onItemLongClickListener(position, holder.tvPrice, holder.tvAmount,holder.tvDiscount);
                 }
                 return false;
             }
@@ -104,8 +104,8 @@ public class SaleOrderSummaryAdapter extends RecyclerView.Adapter<SaleOrderSumma
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView tvNumber,tvProductName,tvPrice,tvQuantity,tvAmount;
-        ImageButton btnRemove;
+        TextView tvNumber,tvProductName,tvPrice,tvQuantity,tvAmount,tvDiscount;
+        ImageButton btnRemove,btnMore;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -114,7 +114,10 @@ public class SaleOrderSummaryAdapter extends RecyclerView.Adapter<SaleOrderSumma
             tvPrice =  itemView.findViewById(R.id.tvPrice);
             tvQuantity =  itemView.findViewById(R.id.tvQuantity);
             tvAmount =  itemView.findViewById(R.id.tvAmount);
+            tvDiscount =  itemView.findViewById(R.id.tvDiscount);
             btnRemove =  itemView.findViewById(R.id.btnRemove);
+            btnMore =  itemView.findViewById(R.id.btnMore);
+            btnMore.setVisibility(View.GONE);
         }
     }
 }

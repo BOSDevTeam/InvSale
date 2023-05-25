@@ -110,6 +110,13 @@
             android:gravity="right"
             android:maxLines="1"
             android:ellipsize="end"/>
+        <TextView android:id="@+id/tvHeaderDiscount"
+            style="@style/BillListHeader"
+            android:layout_weight="1"
+            android:text="@string/dis"
+            android:gravity="right"
+            android:maxLines="1"
+            android:ellipsize="end"/>
         <TextView android:id="@+id/tvHeaderAmount"
             style="@style/BillListHeader"
             android:layout_weight="1"

@@ -136,6 +136,8 @@ public class DatabaseAccess {
             cv.put("Amount", list.get(i).getAmount());
             cv.put("IsFOC", list.get(i).isFOC());
             cv.put("ProductName",list.get(i).getProductName());
+            cv.put("Discount", list.get(i).getDiscount());
+            cv.put("DiscountPercent", list.get(i).getDiscountPercent());
             database.insert("TranSaleTemp", null, cv);
         }
         return true;
@@ -157,6 +159,8 @@ public class DatabaseAccess {
             number+=1;
             data.setNumber(number);
             data.setProductName(cur.getString(5));
+            data.setDiscount(cur.getInt(6));
+            data.setDiscountPercent(cur.getInt(7));
             list.add(data);
         }
         return list;
