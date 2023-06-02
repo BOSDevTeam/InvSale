@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+    <LinearLayout style="@style/DialogLayout"
+        android:gravity="center">
+
+        <TextView android:text="@string/customer"
+            style="@style/DialogTitle" />
+
+        <ImageButton android:id="@+id/btnClose"
+            style="@style/DialogClose"/>
+
+    </LinearLayout>
+
+    <View style="@style/Divider"/>
+
+    <LinearLayout style="@style/DialogLayout"
+        android:orientation="vertical">
+
+        <EditText android:id="@+id/etSearchCustomer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Search..."
+            android:padding="10dp"
+            android:singleLine="true"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@android:drawable/editbox_background" />
+
+        <ListView android:id="@+id/lvCustomer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+
+</LinearLayout>
