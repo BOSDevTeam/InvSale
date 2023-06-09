@@ -1,6 +1,5 @@
 package com.bosictsolution.invsale;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,7 +14,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -51,6 +49,7 @@ import com.bosictsolution.invsale.data.SaleMasterData;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class PayDetailActivity extends AppCompatActivity {
@@ -654,6 +653,7 @@ public class PayDetailActivity extends AppCompatActivity {
 
     private void getLocation() {
         lstLocation = db.getLocation();
+        //Collections.reverse(lstLocation);
         setLocation();
     }
 

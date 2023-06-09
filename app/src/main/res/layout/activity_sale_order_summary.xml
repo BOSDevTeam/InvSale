@@ -63,9 +63,16 @@
         <TextView style="@style/SmallTextView"
             android:text="@string/customer" />
 
-        <Spinner android:id="@+id/spCustomer"
-            style="@style/Spinner"
-            android:layout_marginTop="5dp"/>
+        <TextView android:id="@+id/tvCustomer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:padding="10dp"
+            android:drawableEnd="@drawable/ic_arrow_drop_down_24"
+            android:background="@android:drawable/editbox_background"
+            android:layout_marginTop="5dp"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_regular"/>
 
     </LinearLayout>
 

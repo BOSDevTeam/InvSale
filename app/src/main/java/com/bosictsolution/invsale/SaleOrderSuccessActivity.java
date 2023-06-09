@@ -7,6 +7,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bosictsolution.invsale.common.AppSetting;
@@ -19,6 +23,7 @@ public class SaleOrderSuccessActivity extends AppCompatActivity {
 
     FloatingActionButton fab;
     TextView tvDate,tvOrderNumber,tvTotal;
+    ImageView imgSuccess;
     int total;
     String orderNumber;
     AppSetting appSetting=new AppSetting();
@@ -33,6 +38,12 @@ public class SaleOrderSuccessActivity extends AppCompatActivity {
         setLayoutResource();
         init();
         getSupportActionBar().hide();
+
+        RotateAnimation anim = new RotateAnimation(0.0f, 360.0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        anim.setInterpolator(new LinearInterpolator());
+        anim.setRepeatCount(1);
+        anim.setDuration(500);
+        imgSuccess.startAnimation(anim);
 
         Intent i=getIntent();
         orderNumber=i.getStringExtra("OrderNumber");
@@ -88,5 +99,6 @@ public class SaleOrderSuccessActivity extends AppCompatActivity {
         tvDate=findViewById(R.id.tvDate);
         tvOrderNumber=findViewById(R.id.tvOrderNumber);
         tvTotal=findViewById(R.id.tvTotal);
+        imgSuccess=findViewById(R.id.imgSuccess);
     }
 }

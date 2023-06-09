@@ -17,6 +17,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,7 +28,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,9 +52,8 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
 
     Button btnContinue;
     RecyclerView rvItemSaleOrder;
-    TextView tvTax,tvSubtotal,tvCharges,tvTotal;
+    TextView tvTax,tvSubtotal,tvCharges,tvTotal,tvCustomer;
     EditText etRemark;
-    Spinner spCustomer;
     SaleOrderSummaryAdapter saleOrderSummaryAdapter;
     LinearLayout layoutProcessCustomer;
     List<SaleOrderTranData> lstSaleOrderTran =new ArrayList<>();
@@ -61,7 +62,7 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
     AppSetting appSetting=new AppSetting();
     private Context context=this;
     List<CustomerData> lstCustomer = new ArrayList<>();
-    int tax, charges, total, subtotal , taxAmount, chargesAmount,clientId;
+    int tax, charges, total, subtotal , taxAmount, chargesAmount,clientId,selectedCustomerPosition,selectedCustomerId;
     SharedPreferences sharedpreferences;
     public static Activity activity;
     ConnectionLiveData connectionLiveData;
@@ -100,22 +101,10 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
                     insertSaleOrder();
             }
         });
-        spCustomer.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        tvCustomer.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                if(!lstCustomer.get(i).isDefault()){
-                    btnContinue.setText(getResources().getString(R.string.order_confirm));
-                    layoutProcessCustomer.setVisibility(View.GONE);
-                }
-                else {
-                    btnContinue.setText(getResources().getString(R.string.str_continue));
-                    layoutProcessCustomer.setVisibility(View.VISIBLE);
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
+            public void onClick(View v) {
+                showCustomerDialog();
             }
         });
     }
@@ -187,10 +176,10 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
         boolean isDefaultCustomer;
         String remark;
 
-        position = spCustomer.getSelectedItemPosition();
-        isDefaultCustomer = lstCustomer.get(position).isDefault();
+        //position = spCustomer.getSelectedItemPosition();
+        isDefaultCustomer = lstCustomer.get(selectedCustomerPosition).isDefault();
         if (isDefaultCustomer) customerId = 0;
-        else customerId = lstCustomer.get(position).getCustomerID();
+        else customerId = selectedCustomerId;
 
         remark = etRemark.getText().toString();
 
@@ -253,14 +242,10 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
     }
 
     private void setCustomer() {
-        if(lstCustomer.size()!=0) {
-            String[] customers = new String[lstCustomer.size()];
-            for (int i = 0; i < lstCustomer.size(); i++) {
-                customers[i] = lstCustomer.get(i).getCustomerName();
-            }
-            ArrayAdapter adapter = new ArrayAdapter(context, R.layout.spinner_item, customers);
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spCustomer.setAdapter(adapter);
+        if(lstCustomer.size() != 0) {
+            selectedCustomerPosition=0;
+            selectedCustomerId=lstCustomer.get(0).getCustomerID();
+            tvCustomer.setText(lstCustomer.get(0).getCustomerName());
         }
     }
 
@@ -289,7 +274,7 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
     private void setLayoutResource(){
         btnContinue=findViewById(R.id.btnContinue);
         rvItemSaleOrder=findViewById(R.id.rvItemSaleOrder);
-        spCustomer=findViewById(R.id.spCustomer);
+        tvCustomer = findViewById(R.id.tvCustomer);
         tvTax=findViewById(R.id.tvTax);
         tvCharges=findViewById(R.id.tvCharges);
         tvSubtotal=findViewById(R.id.tvSubtotal);
@@ -470,5 +455,75 @@ public class SaleOrderSummaryActivity extends AppCompatActivity implements ListI
     private void updateListByQuantity(int position,int quantity) {
         lstSaleOrderTran.get(position).setQuantity(quantity);
         lstSaleOrderTran.get(position).setAmount(quantity * lstSaleOrderTran.get(position).getSalePrice());
+    }
+
+    private void showCustomerDialog() {
+        LayoutInflater reg = LayoutInflater.from(context);
+        View v = reg.inflate(R.layout.dialog_search_spinner, null);
+        android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(context);
+        dialog.setView(v);
+
+        final ImageButton btnClose = v.findViewById(R.id.btnClose);
+        final EditText etSearchCustomer = v.findViewById(R.id.etSearchCustomer);
+        final ListView lvCustomer = v.findViewById(R.id.lvCustomer);
+
+        String[] customers = new String[lstCustomer.size()];
+        for (int i = 0; i < lstCustomer.size(); i++) {
+            customers[i] = lstCustomer.get(i).getCustomerName();
+        }
+        ArrayAdapter<String> adapter=new ArrayAdapter<String>(SaleOrderSummaryActivity.this, android.R.layout.simple_list_item_1,customers);
+        lvCustomer.setAdapter(adapter);
+
+        dialog.setCancelable(true);
+        android.app.AlertDialog alertDialog = dialog.create();
+        alertDialog.show();
+
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
+
+        etSearchCustomer.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                adapter.getFilter().filter(s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+        lvCustomer.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String customerName=adapter.getItem(position);
+                for (int i = 0; i < lstCustomer.size(); i++) {
+                    if(lstCustomer.get(i).getCustomerName().equals(customerName)){
+                        selectedCustomerPosition=i;
+                        selectedCustomerId=lstCustomer.get(i).getCustomerID();
+                        if(!lstCustomer.get(i).isDefault()){
+                            btnContinue.setText(getResources().getString(R.string.order_confirm));
+                            layoutProcessCustomer.setVisibility(View.GONE);
+                        }
+                        else {
+                            btnContinue.setText(getResources().getString(R.string.str_continue));
+                            layoutProcessCustomer.setVisibility(View.VISIBLE);
+                        }
+                        break;
+                    }
+                }
+                tvCustomer.setText(customerName);
+                alertDialog.dismiss();
+            }
+        });
     }
 }
