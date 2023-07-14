@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Function6;
+import io.reactivex.functions.Function7;
 import io.reactivex.schedulers.Schedulers;
 
 import android.app.ProgressDialog;
@@ -58,6 +58,7 @@ import com.bosictsolution.invsale.data.PaymentData;
 import com.bosictsolution.invsale.data.PaymentMethodData;
 import com.bosictsolution.invsale.data.ProductData;
 import com.bosictsolution.invsale.data.SaleTranData;
+import com.bosictsolution.invsale.data.StaffData;
 import com.bosictsolution.invsale.data.SubMenuData;
 import com.bosictsolution.invsale.data.VoucherSettingData;
 import com.bosictsolution.invsale.listener.IConfirmation;
@@ -819,20 +820,22 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         Observable<List<BankPaymentData>> obBankPayment = Api.getClient().getBankPayment();
         Observable<List<LimitedDayData>> obLimitedDay = Api.getClient().getLimitedDay();
         Observable<List<VoucherSettingData>> obVoucherSetting = Api.getClient().getVoucherSetting();
+        Observable<List<StaffData>> obStaff = Api.getClient().getStaff();
 
         Observable<Boolean> result = io.reactivex.Observable.zip(obLocation.subscribeOn(Schedulers.io()),
                 obPayment.subscribeOn(Schedulers.io()), obPaymentMethod.subscribeOn(Schedulers.io()), obBankPayment.subscribeOn(Schedulers.io()),
-                obLimitedDay.subscribeOn(Schedulers.io()), obVoucherSetting.subscribeOn(Schedulers.io()),
-                new Function6<List<LocationData>, List<PaymentData>, List<PaymentMethodData>, List<BankPaymentData>, List<LimitedDayData>, List<VoucherSettingData>, Boolean>() {
+                obLimitedDay.subscribeOn(Schedulers.io()), obVoucherSetting.subscribeOn(Schedulers.io()),obStaff.subscribeOn(Schedulers.io()),
+                new Function7<List<LocationData>, List<PaymentData>, List<PaymentMethodData>, List<BankPaymentData>, List<LimitedDayData>, List<VoucherSettingData>, List<StaffData>, Boolean>() {
                     @NonNull
                     @Override
-                    public Boolean apply(@NonNull List<LocationData> locationData, @NonNull List<PaymentData> paymentData, @NonNull List<PaymentMethodData> paymentMethodData, @NonNull List<BankPaymentData> bankPaymentData, @NonNull List<LimitedDayData> limitedDayData, @NonNull List<VoucherSettingData> voucherSettingData) throws Exception {
+                    public Boolean apply(@NonNull List<LocationData> locationData, @NonNull List<PaymentData> paymentData, @NonNull List<PaymentMethodData> paymentMethodData, @NonNull List<BankPaymentData> bankPaymentData, @NonNull List<LimitedDayData> limitedDayData, @NonNull List<VoucherSettingData> voucherSettingData, @NonNull List<StaffData> staffData) throws Exception {
                         db.insertLocation(locationData);
                         db.insertPayment(paymentData);
                         db.insertPaymentMethod(paymentMethodData);
                         db.insertBankPayment(bankPaymentData);
                         db.insertLimitedDay(limitedDayData);
                         db.insertVoucherSetting(voucherSettingData);
+                        db.insertStaff(staffData);
                         progressDialog.dismiss();
                         return true;
                     }

@@ -7,7 +7,7 @@ public class SaleMasterData {
     private String SaleDateTime, SystemVoucherNo, CustomerName,Remark,UserVoucherNo;
     private int Grandtotal,CustomerID,LocationID,PaymentID, VoucherDiscount, AdvancedPay,TaxAmt,ChargesAmt,
                 Total,VouDisPercent,VouDisAmount,PayMethodID,BankPaymentID,PaymentPercent,ClientID,LimitedDayID,
-                PayPercentAmt,Subtotal,Tax,Charges;
+                PayPercentAmt,Subtotal,Tax,Charges,StaffID;
     private boolean IsClientSale,IsDefaultCustomer,IsAdvancedPay;
     private List<SaleTranData> lstSaleTran;
 
@@ -241,5 +241,13 @@ public class SaleMasterData {
 
     public void setCharges(int charges) {
         Charges = charges;
+    }
+
+    public int getStaffID() {
+        return StaffID;
+    }
+
+    public void setStaffID(int staffID) {
+        StaffID = staffID;
     }
 }

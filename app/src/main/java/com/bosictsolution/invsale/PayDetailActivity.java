@@ -46,6 +46,7 @@ import com.bosictsolution.invsale.data.LocationData;
 import com.bosictsolution.invsale.data.PaymentData;
 import com.bosictsolution.invsale.data.PaymentMethodData;
 import com.bosictsolution.invsale.data.SaleMasterData;
+import com.bosictsolution.invsale.data.StaffData;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
@@ -54,9 +55,9 @@ import java.util.List;
 
 public class PayDetailActivity extends AppCompatActivity {
 
-    Spinner spLocation, spPayment, spPaymentMethod, spBankPayment, spLimitedDay;
+    Spinner spLocation, spPayment, spPaymentMethod, spBankPayment, spLimitedDay, spStaff;
     Button btnDollar, btnPercent, btnOK;
-    LinearLayout layoutPaymentCredit, layoutPaymentMethod, layoutOnlinePayment;
+    LinearLayout layoutPaymentCredit, layoutPaymentMethod, layoutOnlinePayment,layoutStaff;
     EditText etAdvancedPay, etVoucherDiscount, etPaymentPercent,etRemark;
     CheckBox chkAdvancedPay;
     TextView tvCustomer;
@@ -67,6 +68,7 @@ public class PayDetailActivity extends AppCompatActivity {
     List<PaymentMethodData> lstPaymentMethod = new ArrayList<>();
     List<BankPaymentData> lstBankPayment = new ArrayList<>();
     List<LimitedDayData> lstLimitedDay = new ArrayList<>();
+    List<StaffData> lstStaff = new ArrayList<>();
     private ProgressDialog progressDialog;
     private Context context = this;
     int voucherDiscountType, discountPercentType = 1, discountAmountType = 2, total,
@@ -76,6 +78,7 @@ public class PayDetailActivity extends AppCompatActivity {
     SharedPreferences sharedpreferences;
     public static Activity activity;
     ConnectionLiveData connectionLiveData;
+    String shopTypeCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -361,7 +364,7 @@ public class PayDetailActivity extends AppCompatActivity {
     private SaleMasterData prepareSaleMasterData() {
         int advancedPay = 0, vouDisPercent = 0, vouDisAmount = 0, voucherDiscount = 0, payPercent = 0, payPercentAmt = 0, grandTotal,
                 percentGrandTotal = 0, position, paymentId, customerId, locationId, limitedDayId = 0, payMethodId,
-                bankPaymentId = 0;
+                bankPaymentId = 0, staffId = 0;
         boolean isAdvancedPay = false, isDefaultCustomer;
         String remark;
         SaleMasterData saleMasterData = new SaleMasterData();
@@ -372,6 +375,13 @@ public class PayDetailActivity extends AppCompatActivity {
 
         position = spLocation.getSelectedItemPosition();
         locationId = lstLocation.get(position).getLocationID();
+
+        if (shopTypeCode.equals(AppConstant.ShopType.BeautyAndHairStyleShop)) {
+            if(lstStaff.size()!=0){
+                position = spStaff.getSelectedItemPosition();
+                staffId = lstStaff.get(position).getStaffID();
+            }
+        }
 
         position = spPayment.getSelectedItemPosition();
         paymentId = lstPayment.get(position).getPaymentID();
@@ -430,6 +440,7 @@ public class PayDetailActivity extends AppCompatActivity {
         if (payPercent != 0) saleMasterData.setGrandtotal(percentGrandTotal);
         else saleMasterData.setGrandtotal(grandTotal);
         saleMasterData.setRemark(remark);
+        saleMasterData.setStaffID(staffId);
 
         return saleMasterData;
     }
@@ -557,6 +568,9 @@ public class PayDetailActivity extends AppCompatActivity {
         getBankPayment();
         getLimitedDay();
         getCustomer();
+        shopTypeCode=db.getShopTypeCode();
+        if(shopTypeCode.equals(AppConstant.ShopType.BeautyAndHairStyleShop)) getStaff();
+        else layoutStaff.setVisibility(View.GONE);
     }
 
  /*   private void setCustomer() {
@@ -628,6 +642,16 @@ public class PayDetailActivity extends AppCompatActivity {
         spLimitedDay.setAdapter(adapter);
     }
 
+    private void setStaff() {
+        String[] staffs = new String[lstStaff.size()];
+        for (int i = 0; i < lstStaff.size(); i++) {
+            staffs[i] = lstStaff.get(i).getStaffName();
+        }
+        ArrayAdapter adapter = new ArrayAdapter(context, R.layout.spinner_item, staffs);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spStaff.setAdapter(adapter);
+    }
+
     private void getCustomer() {
         progressDialog.show();
         progressDialog.setMessage(getResources().getString(R.string.loading));
@@ -653,7 +677,7 @@ public class PayDetailActivity extends AppCompatActivity {
 
     private void getLocation() {
         lstLocation = db.getLocation();
-        //Collections.reverse(lstLocation);
+        Collections.reverse(lstLocation);
         setLocation();
     }
 
@@ -677,6 +701,11 @@ public class PayDetailActivity extends AppCompatActivity {
         setLimitedDay();
     }
 
+    private void getStaff() {
+        lstStaff = db.getStaff();
+        setStaff();
+    }
+
     private void setLayoutResource() {
         spLocation = findViewById(R.id.spLocation);
         spPayment = findViewById(R.id.spPayment);
@@ -698,5 +727,7 @@ public class PayDetailActivity extends AppCompatActivity {
         inputPaymentPercent = findViewById(R.id.inputPaymentPercent);
         etRemark = findViewById(R.id.etRemark);
         tvCustomer = findViewById(R.id.tvCustomer);
+        spStaff = findViewById(R.id.spStaff);
+        layoutStaff = findViewById(R.id.layoutStaff);
     }
 }

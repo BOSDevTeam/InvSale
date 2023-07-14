@@ -38,4 +38,9 @@ public class AppConstant {
     public static final String CHANNEL_ID="blue_ocean_ict";
     public static final String CHANNEL_NAME="BlueOceanICT";
     public static final String CHANNEL_DESC="BlueOceanICT Notification";
+
+    public class ShopType{
+        public static final String GeneralShop = "ST001";
+        public static final String BeautyAndHairStyleShop = "ST002";
+    }
 }

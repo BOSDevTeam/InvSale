@@ -18,6 +18,7 @@ import com.bosictsolution.invsale.data.SaleMasterData;
 import com.bosictsolution.invsale.data.SaleOrderMasterData;
 import com.bosictsolution.invsale.data.SaleOrderTranData;
 import com.bosictsolution.invsale.data.SaleTranData;
+import com.bosictsolution.invsale.data.StaffData;
 import com.bosictsolution.invsale.data.SubMenuData;
 import com.bosictsolution.invsale.data.VoucherSettingData;
 
@@ -94,6 +95,7 @@ public class DatabaseAccess {
         cv.put("PayPercentAmt", data.getPayPercentAmt());
         cv.put("Grandtotal", data.getGrandtotal());
         cv.put("Remark", data.getRemark());
+        cv.put("StaffID", data.getStaffID());
         database.insert("MasterSaleTemp", null, cv);
         return true;
     }
@@ -122,6 +124,7 @@ public class DatabaseAccess {
             data.setPayPercentAmt(cur.getInt(17));
             data.setGrandtotal(cur.getInt(18));
             data.setRemark(cur.getString(19));
+            data.setStaffID(cur.getInt(20));
         }
         return data;
     }
@@ -322,6 +325,7 @@ public class DatabaseAccess {
             cv.put("ServiceCharges", data.getServiceCharges());
             cv.put("HomeCurrency",data.getHomeCurrency());
             cv.put("IsClientPhoneVerify",data.getIsClientPhoneVerify());
+            cv.put("ShopTypeCode",data.getShopTypeCode());
             database.insert("CompanySettingTemp", null, cv);
         }
         return true;
@@ -351,6 +355,14 @@ public class DatabaseAccess {
         if (cur.moveToFirst())
             result = cur.getInt(0);
         return result;
+    }
+    public String getShopTypeCode() {
+        database = openHelper.getReadableDatabase();
+        String shopTypeCode = "";
+        Cursor cur = database.rawQuery("SELECT ShopTypeCode FROM CompanySettingTemp", null);
+        if (cur.moveToFirst())
+            shopTypeCode = cur.getString(0);
+        return shopTypeCode;
     }
     public boolean insertLocation(List<LocationData> list){
         deleteLocation();
@@ -504,6 +516,29 @@ public class DatabaseAccess {
             data.setVoucherLogoUrl(cur.getString(10));
         }
         return data;
+    }
+    public boolean insertStaff(List<StaffData> list){
+        deleteStaff();
+        database = openHelper.getWritableDatabase();
+        for(int i=0;i<list.size();i++){
+            ContentValues cv = new ContentValues();
+            cv.put("StaffID", list.get(i).getStaffID());
+            cv.put("StaffName", list.get(i).getStaffName());
+            database.insert("StaffTemp", null, cv);
+        }
+        return true;
+    }
+    public List<StaffData> getStaff() {
+        database = openHelper.getReadableDatabase();
+        List<StaffData> list = new ArrayList<>();
+        Cursor cur = database.rawQuery("SELECT * FROM StaffTemp", null);
+        while (cur.moveToNext()) {
+            StaffData data = new StaffData();
+            data.setStaffID(cur.getInt(0));
+            data.setStaffName(cur.getString(1));
+            list.add(data);
+        }
+        return list;
     }
     public boolean insertMasterSaleOrder(SaleOrderMasterData data){
         deleteMasterSaleOrder();
@@ -690,6 +725,11 @@ public class DatabaseAccess {
     private boolean deleteVoucherSetting(){
         database=openHelper.getWritableDatabase();
         database.execSQL("DELETE FROM VoucherSettingTemp");
+        return true;
+    }
+    private boolean deleteStaff(){
+        database=openHelper.getWritableDatabase();
+        database.execSQL("DELETE FROM StaffTemp");
         return true;
     }
     public boolean deleteMasterSaleOrder(){

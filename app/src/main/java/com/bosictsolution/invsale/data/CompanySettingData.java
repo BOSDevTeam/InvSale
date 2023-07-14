@@ -14,6 +14,7 @@ public class CompanySettingData {
 
     private int IsClientPhoneVerify;
     private String HomeCurrency;
+    private String ShopTypeCode;
 
     public int getTax() {
         return Tax;
@@ -37,5 +38,13 @@ public class CompanySettingData {
 
     public void setHomeCurrency(String homeCurrency) {
         HomeCurrency = homeCurrency;
+    }
+
+    public String getShopTypeCode() {
+        return ShopTypeCode;
+    }
+
+    public void setShopTypeCode(String shopTypeCode) {
+        ShopTypeCode = shopTypeCode;
     }
 }

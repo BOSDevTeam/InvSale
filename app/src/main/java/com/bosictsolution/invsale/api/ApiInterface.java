@@ -5,6 +5,7 @@ import com.bosictsolution.invsale.data.ClientData;
 import com.bosictsolution.invsale.data.CompanySettingData;
 import com.bosictsolution.invsale.data.CustomerData;
 import com.bosictsolution.invsale.data.DivisionData;
+import com.bosictsolution.invsale.data.StaffData;
 import com.bosictsolution.invsale.data.SummaryData;
 import com.bosictsolution.invsale.data.LimitedDayData;
 import com.bosictsolution.invsale.data.LocationData;
@@ -78,6 +79,9 @@ public interface ApiInterface {
 
     @GET("limitedday")
     Observable<List<LimitedDayData>> getLimitedDay();
+
+    @GET("staff")
+    Observable<List<StaffData>> getStaff();
 
     @Headers("Content-type: application/json")
     @POST("customer")

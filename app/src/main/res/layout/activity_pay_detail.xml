@@ -30,6 +30,21 @@
             android:textColor="@color/black"
             android:textSize="@dimen/text_regular"/>
 
+        <LinearLayout android:id="@+id/layoutStaff"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="15dp">
+
+            <TextView style="@style/SmallTextView"
+                android:text="@string/staff" />
+
+            <Spinner android:id="@+id/spStaff"
+                style="@style/Spinner"
+                android:layout_marginTop="5dp" />
+
+        </LinearLayout>
+
         <TextView style="@style/SmallTextView"
             android:text="@string/location"
             android:layout_marginTop="15dp"/>

@@ -211,5 +211,6 @@
     <string name="edit_discount">Edit Discount</string>
     <string name="remove_discount">Remove Discount</string>
     <string name="dis">Dis</string>
+    <string name="staff">Staff</string>
 
 </resources>
