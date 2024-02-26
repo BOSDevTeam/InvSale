@@ -13,10 +13,10 @@
             android:id="@+id/nav_sale"
             android:icon="@drawable/ic_sale_24"
             android:title="@string/menu_sale" />
-       <!-- <item
+        <item
             android:id="@+id/nav_sale_order"
             android:icon="@drawable/ic_sale_order_24"
-            android:title="@string/menu_sale_order" />-->
+            android:title="@string/menu_sale_order" />
         <item
             android:id="@+id/nav_notification"
             android:icon="@drawable/ic_notifications_24"
