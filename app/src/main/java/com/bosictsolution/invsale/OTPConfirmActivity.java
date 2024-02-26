@@ -122,7 +122,26 @@ public class OTPConfirmActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            getToken();
+                            //getToken();
+                            if(!isFromSignIn) insertClient("");
+                            else {
+                                SharedPreferences.Editor editor = sharedpreferences.edit();
+                                editor.putInt(AppConstant.CLIENT_ID, clientData.getClientID());
+                                editor.putString(AppConstant.CLIENT_NAME, clientData.getClientName());
+                                editor.putString(AppConstant.CLIENT_PASSWORD, clientData.getClientPassword());
+                                editor.putString(AppConstant.CLIENT_SHOP_NAME, clientData.getShopName());
+                                editor.putString(AppConstant.CLIENT_PHONE, clientData.getPhone());
+                                editor.putInt(AppConstant.CLIENT_DIVISION_ID, clientData.getDivisionID());
+                                editor.putString(AppConstant.CLIENT_DIVISION_NAME, clientData.getDivisionName());
+                                editor.putInt(AppConstant.CLIENT_TOWNSHIP_ID, clientData.getTownshipID());
+                                editor.putString(AppConstant.CLIENT_TOWNSHIP_NAME, clientData.getTownshipName());
+                                editor.putString(AppConstant.CLIENT_ADDRESS, clientData.getAddress());
+                                editor.putBoolean(AppConstant.ACCESS_NOTI, true);
+                                editor.commit();
+                                Intent i = new Intent(OTPConfirmActivity.this, LoginActivity.class);
+                                startActivity(i);
+                                finish();
+                            }
                         } else {
                             progressDialog.dismiss();
                             Toast.makeText(OTPConfirmActivity.this, getResources().getString(R.string.incorrect_otp), Toast.LENGTH_SHORT).show();

@@ -12,5 +12,6 @@
         android:id="@+id/action_notification"
         app:actionLayout="@layout/action_bar_notification"
         android:title="@string/menu_notification"
-        app:showAsAction="always" />
+        app:showAsAction="always"
+        android:visible="false"/>
 </menu>

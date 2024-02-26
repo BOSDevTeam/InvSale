@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity implements IConfirmation {
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
-        getClientNotiCount(clientId);
+        //getClientNotiCount(clientId);
 
         //if(isAccessNoti) startupStatusBarNoti();
 

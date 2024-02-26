@@ -139,12 +139,12 @@ public class SaleBillActivity extends AppCompatActivity {
     private void setVoucherSetting(VoucherSettingData data) {
         if (data.getHeaderName().length() != 0) tvTitle1.setText(data.getHeaderName());
         else tvTitle1.setVisibility(View.GONE);
-        if (data.getHeaderDesp().length() != 0) tvTitle2.setText(data.getHeaderDesp());
+       /* if (data.getHeaderDesp().length() != 0) tvTitle2.setText(data.getHeaderDesp());
         else tvTitle2.setVisibility(View.GONE);
         if (data.getHeaderPhone().length() != 0) tvTitle3.setText(data.getHeaderPhone());
         else tvTitle3.setVisibility(View.GONE);
         if (data.getHeaderAddress().length() != 0) tvTitle4.setText(data.getHeaderAddress());
-        else tvTitle4.setVisibility(View.GONE);
+        else tvTitle4.setVisibility(View.GONE);*/
         if (data.getOtherHeader1().length() != 0) tvTitle5.setText(data.getOtherHeader1());
         else tvTitle5.setVisibility(View.GONE);
         if (data.getOtherHeader2().length() != 0) tvTitle6.setText(data.getOtherHeader2());

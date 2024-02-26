@@ -616,7 +616,8 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
 
                 setSaleTran(childPosition,list);
                 setSaleTranAdapter();
-                if(productMenuDialog!=null)productMenuDialog.dismiss();
+                Toast.makeText(context, getResources().getString(R.string.added), Toast.LENGTH_SHORT).show();
+                //if(productMenuDialog!=null)productMenuDialog.dismiss();
                 return false;
             }
         });
