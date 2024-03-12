@@ -81,7 +81,8 @@
         </LinearLayout>
 
         <LinearLayout android:id="@+id/layoutCurrentOrder"
-            style="@style/HomeInfoLayout">
+            style="@style/HomeInfoLayout"
+            android:visibility="gone">
 
             <View style="@style/HomeViewBorder"
                 android:background="@color/red"/>
@@ -117,7 +118,8 @@
         </LinearLayout>
 
         <LinearLayout android:id="@+id/layoutTotalOrder"
-            style="@style/HomeInfoLayout">
+            style="@style/HomeInfoLayout"
+            android:visibility="gone">
 
             <View style="@style/HomeViewBorder"
                 android:background="@color/accent_200"/>

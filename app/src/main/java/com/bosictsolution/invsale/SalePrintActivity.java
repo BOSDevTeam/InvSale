@@ -49,18 +49,18 @@ public class SalePrintActivity extends AppCompatActivity {
             tvSubtotal,tvLabelTax,tvTax,tvLabelCharges,tvCharges,tvTotal,tvLabelVoucherDiscount,tvVoucherDiscount,
             tvAdvancedPay,tvGrandTotal,tvLabelPercent,tvPercentAmount,tvPercentGrandTotal,tvLabelSubtotal,tvLabelTotal,
             tvLabelAdvancedPay,tvLabelGrandTotal,tvHeaderNo,tvHeaderProduct,tvHeaderQuantity,tvHeaderPrice,tvHeaderAmount,
-            tvHeaderDiscount,tvNumber,tvProductName,tvQuantity,tvPrice,tvAmount,tvDiscount;
-    LinearLayout layoutList,layoutAdvancedPay,layoutPercent,layoutPercentGrandTotal,layoutPrint,layoutTax,layoutCharges,layoutSubtotal;
+            tvHeaderDiscount,tvNumber,tvProductName,tvQuantity,tvPrice,tvAmount,tvDiscount,tvBankPay;
+    LinearLayout layoutList,layoutAdvancedPay,layoutPercent,layoutPercentGrandTotal,layoutPrint,layoutTax,layoutCharges,layoutSubtotal,layoutPayment;
     int paperWidth;
     private ProgressDialog progressDialog;
     private Context context=this;
     AppSetting appSetting=new AppSetting();
     int locationId,slipId;
-    String customerName,clientName;
+    String customerName,clientName,editDate;
     DatabaseAccess db;
     SharedPreferences sharedpreferences;
     ConnectionLiveData connectionLiveData;
-    boolean isCredit;
+    boolean isCredit,isSaleEdit,isReprint;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,19 +69,31 @@ public class SalePrintActivity extends AppCompatActivity {
         setLayoutResource();
         init();
         getSupportActionBar().hide();
+        checkConnection();
 
         Intent i = getIntent();
         paperWidth = i.getIntExtra("PaperWidth", 0);
-        locationId = i.getIntExtra("LocationID", 0);
-        slipId = i.getIntExtra("SlipID", 0);
-        customerName = i.getStringExtra("CustomerName");
-        isCredit=i.getBooleanExtra("IsCredit",false);
 
         setLayoutPrintSize(paperWidth);
         if (paperWidth == 58) setHeaderTextSize(8);
         else if (paperWidth == 80) setHeaderTextSize(10);
-        checkConnection();
-        fillData();
+
+        isReprint=i.getBooleanExtra("IsReprint",false);
+        if(!isReprint) {
+            locationId = i.getIntExtra("LocationID", 0);
+            slipId = i.getIntExtra("SlipID", 0);
+            customerName = i.getStringExtra("CustomerName");
+            isCredit = i.getBooleanExtra("IsCredit", false);
+            isSaleEdit = i.getBooleanExtra("IsSaleEdit", false);
+            if(isSaleEdit)editDate=i.getStringExtra("EditDate");
+            fillData();
+        }else{
+            progressDialog.show();
+            progressDialog.setMessage(getResources().getString(R.string.printing));
+            setVoucherSetting(db.getVoucherSettingByLocation(SaleBillActivity.lstSaleMasterData.get(0).getLocationID()));
+            fillMasterSale(SaleBillActivity.lstSaleMasterData.get(0));
+            fillTranSale(SaleBillActivity.lstSaleMasterData.get(0).getLstSaleTran());
+        }
 
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -89,7 +101,7 @@ public class SalePrintActivity extends AppCompatActivity {
                 if(convertBillLayoutToBitmap()){
                     printBitmap();
 
-                    if(isCredit){
+                    //if(isCredit){
                         new Handler().postDelayed(new Runnable() {
                             @Override
                             public void run() {
@@ -97,9 +109,9 @@ public class SalePrintActivity extends AppCompatActivity {
                                 printCompleted();
                             }
                         },5000);
-                    }else{
+                   /* }else{
                         printCompleted();
-                    }
+                    }*/
 
                 }
             }
@@ -107,8 +119,12 @@ public class SalePrintActivity extends AppCompatActivity {
     }
 
     private void printCompleted(){
-        if(PayDetailActivity.activity!=null) PayDetailActivity.activity.finish();
-        SaleActivity.isSaleCompleted=true;
+        if(!isReprint) {
+            if (PayDetailActivity.activity != null) PayDetailActivity.activity.finish();
+            if (isSaleEdit) {
+                if (SaleActivity.activity != null) SaleActivity.activity.finish();
+            } else SaleActivity.isSaleCompleted = true;
+        }
         finish();
     }
 
@@ -188,24 +204,28 @@ public class SalePrintActivity extends AppCompatActivity {
         progressDialog.show();
         progressDialog.setMessage(getResources().getString(R.string.printing));
         clientName=sharedpreferences.getString(AppConstant.CLIENT_NAME,"");
-        getVoucherSetting(locationId);
-    }
 
-    private void getVoucherSetting(int locationId){
         setVoucherSetting(db.getVoucherSettingByLocation(locationId));
-        getMasterSale();
-        getTranSale();
+        SaleMasterData saleMasterData = db.getMasterSale();
+        saleMasterData.setSlipID(slipId);
+        saleMasterData.setCustomerName(customerName);
+        saleMasterData.setClientName(clientName);
+        if (!isSaleEdit) saleMasterData.setSaleDateTime(appSetting.getTodayDate());
+        else saleMasterData.setSaleDateTime(editDate);
+
+        fillMasterSale(saleMasterData);
+        fillTranSale(db.getTranSale());
     }
 
     private void setVoucherSetting(VoucherSettingData data) {
         if (data.getHeaderName().length() != 0) tvTitle1.setText(data.getHeaderName());
         else tvTitle1.setVisibility(View.GONE);
-        if (data.getHeaderDesp().length() != 0) tvTitle2.setText(data.getHeaderDesp());
+        /*if (data.getHeaderDesp().length() != 0) tvTitle2.setText(data.getHeaderDesp());
         else tvTitle2.setVisibility(View.GONE);
         if (data.getHeaderPhone().length() != 0) tvTitle3.setText(data.getHeaderPhone());
         else tvTitle3.setVisibility(View.GONE);
         if (data.getHeaderAddress().length() != 0) tvTitle4.setText(data.getHeaderAddress());
-        else tvTitle4.setVisibility(View.GONE);
+        else tvTitle4.setVisibility(View.GONE);*/
         if (data.getOtherHeader1().length() != 0) tvTitle5.setText(data.getOtherHeader1());
         else tvTitle5.setVisibility(View.GONE);
         if (data.getOtherHeader2().length() != 0) tvTitle6.setText(data.getOtherHeader2());
@@ -222,12 +242,15 @@ public class SalePrintActivity extends AppCompatActivity {
         else imgLogo.setVisibility(View.GONE);
     }
 
-    private void getMasterSale(){
-        tvSlipID.setText(getResources().getString(R.string.slip_no)+slipId);
-        tvSalePerson.setText(clientName);
-        tvCustomer.setText(customerName);
-        tvDate.setText(appSetting.getTodayDate());
-        SaleMasterData data=db.getMasterSale();
+    private void fillMasterSale(SaleMasterData data){
+        tvSlipID.setText(getResources().getString(R.string.slip_no) + data.getSlipID());
+        tvSalePerson.setText(data.getClientName());
+        tvCustomer.setText(data.getCustomerName());
+
+        if(isSaleEdit)tvDate.setText(editDate);
+        else if(isReprint)tvDate.setText(data.getSaleDateTime());
+        else tvDate.setText(appSetting.getTodayDate());
+
         if(data.getTax() == 0 && data.getCharges() == 0)
             layoutSubtotal.setVisibility(View.GONE);
         else tvSubtotal.setText(appSetting.df.format(data.getSubtotal()));
@@ -267,10 +290,16 @@ public class SalePrintActivity extends AppCompatActivity {
             layoutPercent.setVisibility(View.GONE);
             layoutPercentGrandTotal.setVisibility(View.GONE);
         }
+
+        if (data.getBankPaymentID() != 0) {
+            layoutPayment.setVisibility(View.VISIBLE);
+            tvBankPay.setText(db.getBankPaymentName(data.getBankPaymentID()));
+        } else {
+            layoutPayment.setVisibility(View.GONE);
+        }
     }
 
-    private void getTranSale() {
-        List<SaleTranData> lstSaleTran = db.getTranSale();
+    private void fillTranSale(List<SaleTranData> lstSaleTran) {
         for (int i = 0; i < lstSaleTran.size(); i++) {
             LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View row = layoutInflater.inflate(R.layout.item_sale_bill, null);
@@ -309,6 +338,7 @@ public class SalePrintActivity extends AppCompatActivity {
         layoutAdvancedPay=findViewById(R.id.layoutAdvancedPay);
         layoutPercent=findViewById(R.id.layoutPercent);
         layoutPercentGrandTotal=findViewById(R.id.layoutPercentGrandTotal);
+        layoutPayment=findViewById(R.id.layoutPayment);
         imgLogo=findViewById(R.id.imgLogo);
         tvTitle1=findViewById(R.id.tvTitle1);
         tvTitle2=findViewById(R.id.tvTitle2);
@@ -349,6 +379,7 @@ public class SalePrintActivity extends AppCompatActivity {
         layoutTax=findViewById(R.id.layoutTax);
         layoutCharges=findViewById(R.id.layoutCharges);
         layoutSubtotal=findViewById(R.id.layoutSubtotal);
+        tvBankPay=findViewById(R.id.tvBankPay);
     }
 
     private void setLayoutPrintSize(int paperWidth) {

@@ -43,4 +43,13 @@ public class AppConstant {
         public static final String GeneralShop = "ST001";
         public static final String BeautyAndHairStyleShop = "ST002";
     }
+
+    public class Action{
+        public static final String NewActionCode = "1";  //SysAction table value
+        public static final String EditActionCode = "2";
+        public static final String DeleteActionCode = "3";
+        public static final String NewActionName = "New";
+        public static final String EditActionName = "Edit";
+        public static final String DeleteActionName = "Delete";
+    }
 }

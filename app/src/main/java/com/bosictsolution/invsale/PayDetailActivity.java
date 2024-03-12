@@ -16,9 +16,11 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -45,6 +47,7 @@ import com.bosictsolution.invsale.data.LimitedDayData;
 import com.bosictsolution.invsale.data.LocationData;
 import com.bosictsolution.invsale.data.PaymentData;
 import com.bosictsolution.invsale.data.PaymentMethodData;
+import com.bosictsolution.invsale.data.ProductData;
 import com.bosictsolution.invsale.data.SaleMasterData;
 import com.bosictsolution.invsale.data.StaffData;
 import com.google.android.material.textfield.TextInputLayout;
@@ -57,11 +60,11 @@ public class PayDetailActivity extends AppCompatActivity {
 
     Spinner spLocation, spPayment, spPaymentMethod, spBankPayment, spLimitedDay, spStaff;
     Button btnDollar, btnPercent, btnOK;
-    LinearLayout layoutPaymentCredit, layoutPaymentMethod, layoutOnlinePayment,layoutStaff;
-    EditText etAdvancedPay, etVoucherDiscount, etPaymentPercent,etRemark;
+    LinearLayout layoutPaymentCredit, layoutPaymentMethod, layoutOnlinePayment, layoutStaff;
+    EditText etAdvancedPay, etVoucherDiscount, etPaymentPercent, etRemark;
     CheckBox chkAdvancedPay;
-    TextView tvCustomer;
-    TextInputLayout inputAdvancedPay,inputVoucherDiscount,inputPaymentPercent;
+    TextView tvCustomer,tvChangeAmount,tvPaidAmount;
+    TextInputLayout inputAdvancedPay, inputVoucherDiscount, inputPaymentPercent;
     List<CustomerData> lstCustomer = new ArrayList<>();
     List<LocationData> lstLocation = new ArrayList<>();
     List<PaymentData> lstPayment = new ArrayList<>();
@@ -72,13 +75,15 @@ public class PayDetailActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private Context context = this;
     int voucherDiscountType, discountPercentType = 1, discountAmountType = 2, total,
-        subtotal,taxAmount,chargesAmount,clientId,tax,charges,selectedCustomerPosition,selectedCustomerId;
+            subtotal, taxAmount, chargesAmount, clientId, tax, charges, selectedCustomerPosition, selectedCustomerId,
+            editSaleID, editSlipID,paymentSpinnerSelected=0,payMethodSpinnerSelected=0,paymentCount=1,payMethodCount=1;
     AppSetting appSetting = new AppSetting();
     DatabaseAccess db;
     SharedPreferences sharedpreferences;
     public static Activity activity;
     ConnectionLiveData connectionLiveData;
-    String shopTypeCode;
+    String shopTypeCode,editDate;
+    boolean isSaleEdit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,18 +105,29 @@ public class PayDetailActivity extends AppCompatActivity {
         charges = i.getIntExtra("Charges", 0);
         chargesAmount = i.getIntExtra("ChargesAmount", 0);
         total = i.getIntExtra("Total", 0);
+        isSaleEdit = i.getBooleanExtra("IsSaleEdit", false);
 
         checkConnection();
         fillData();
-        setLayoutPaymentCredit();
-        setLayoutPaymentMethod();
-        setLayoutOnlinePayment();
+
+        if (isSaleEdit) {
+            setTitle(getResources().getString(R.string.menu_sale_edit));
+            editSaleID = i.getIntExtra("SaleID", 0);
+            getMasterSaleBySaleID(editSaleID);
+        } else {
+            setTitle(getResources().getString(R.string.menu_sale));
+            setLayoutPaymentCredit();
+            setLayoutPaymentMethod();
+            setLayoutOnlinePayment();
+        }
 
         spPayment.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                setLayoutPaymentCredit();
-                setLayoutPaymentMethod();
+                if(++paymentSpinnerSelected>paymentCount) {
+                    setLayoutPaymentCredit();
+                    setLayoutPaymentMethod();
+                }
             }
 
             @Override
@@ -122,7 +138,9 @@ public class PayDetailActivity extends AppCompatActivity {
         spPaymentMethod.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                setLayoutOnlinePayment();
+                if(++payMethodSpinnerSelected >payMethodCount){
+                    setLayoutOnlinePayment();
+                }
             }
 
             @Override
@@ -139,8 +157,9 @@ public class PayDetailActivity extends AppCompatActivity {
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (validateControl())
+                if (validateControl()) {
                     showAmountGroupDialog(prepareSaleMasterData());
+                }
             }
         });
         btnDollar.setOnClickListener(new View.OnClickListener() {
@@ -174,11 +193,11 @@ public class PayDetailActivity extends AppCompatActivity {
         }
     }
 
-    private void init(){
+    private void init() {
         connectionLiveData = new ConnectionLiveData(context);
         sharedpreferences = getSharedPreferences(AppConstant.MYPREFERENCES, Context.MODE_PRIVATE);
-        db=new DatabaseAccess(context);
-        activity=this;
+        db = new DatabaseAccess(context);
+        activity = this;
         progressDialog = new ProgressDialog(context);
         appSetting.setupProgress(progressDialog);
     }
@@ -197,7 +216,7 @@ public class PayDetailActivity extends AppCompatActivity {
         for (int i = 0; i < lstCustomer.size(); i++) {
             customers[i] = lstCustomer.get(i).getCustomerName();
         }
-        ArrayAdapter<String> adapter=new ArrayAdapter<String>(PayDetailActivity.this, android.R.layout.simple_list_item_1,customers);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(PayDetailActivity.this, android.R.layout.simple_list_item_1, customers);
         lvCustomer.setAdapter(adapter);
 
         dialog.setCancelable(true);
@@ -231,11 +250,11 @@ public class PayDetailActivity extends AppCompatActivity {
         lvCustomer.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String customerName=adapter.getItem(position);
+                String customerName = adapter.getItem(position);
                 for (int i = 0; i < lstCustomer.size(); i++) {
-                    if(lstCustomer.get(i).getCustomerName().equals(customerName)){
-                        selectedCustomerPosition=i;
-                        selectedCustomerId=lstCustomer.get(i).getCustomerID();
+                    if (lstCustomer.get(i).getCustomerName().equals(customerName)) {
+                        selectedCustomerPosition = i;
+                        selectedCustomerId = lstCustomer.get(i).getCustomerID();
                         break;
                     }
                 }
@@ -264,6 +283,8 @@ public class PayDetailActivity extends AppCompatActivity {
         final LinearLayout layoutAdvancedPay = v.findViewById(R.id.layoutAdvancedPay);
         final LinearLayout layoutPercent = v.findViewById(R.id.layoutPercent);
         final LinearLayout layoutPercentGrandTotal = v.findViewById(R.id.layoutPercentGrandTotal);
+        tvPaidAmount = v.findViewById(R.id.tvPaidAmount);
+        tvChangeAmount = v.findViewById(R.id.tvChangeAmount);
 
         tvTotal.setText(appSetting.df.format(total));
 
@@ -274,7 +295,7 @@ public class PayDetailActivity extends AppCompatActivity {
             layoutAdvancedPay.setVisibility(View.GONE);
 
         if (saleMasterData.getVouDisPercent() != 0)
-            tvLabelVoucherDiscount.setText(getResources().getString(R.string.voucher_discount) + "(" + saleMasterData.getVouDisPercent() + "%)"+getResources().getString(R.string.colon_sign));
+            tvLabelVoucherDiscount.setText(getResources().getString(R.string.voucher_discount) + "(" + saleMasterData.getVouDisPercent() + "%)" + getResources().getString(R.string.colon_sign));
         tvVoucherDiscount.setText(appSetting.df.format(saleMasterData.getVoucherDiscount()));
 
         int grandTotal = saleMasterData.getTotal() - (saleMasterData.getAdvancedPay() + saleMasterData.getVoucherDiscount());
@@ -285,7 +306,7 @@ public class PayDetailActivity extends AppCompatActivity {
             layoutPercentGrandTotal.setVisibility(View.VISIBLE);
             tvPercentAmount.setText(appSetting.df.format(saleMasterData.getPayPercentAmt()));
             tvPercentGrandTotal.setText(appSetting.df.format(saleMasterData.getGrandtotal()));
-            tvLabelPercent.setText(getResources().getString(R.string.percent) + "(" + saleMasterData.getPaymentPercent() + "%)"+getResources().getString(R.string.colon_sign));
+            tvLabelPercent.setText(getResources().getString(R.string.percent) + "(" + saleMasterData.getPaymentPercent() + "%)" + getResources().getString(R.string.colon_sign));
         } else {
             layoutPercent.setVisibility(View.GONE);
             layoutPercentGrandTotal.setVisibility(View.GONE);
@@ -294,10 +315,16 @@ public class PayDetailActivity extends AppCompatActivity {
         if (!saleMasterData.isDefaultCustomer())
             btnContinue.setText(getResources().getString(R.string.pay_confirm));
 
-        dialog.setCancelable(true);
+        dialog.setCancelable(false);
         android.app.AlertDialog alertDialog = dialog.create();
         alertDialog.show();
 
+        tvPaidAmount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showNumberDialog(saleMasterData.getGrandtotal());
+            }
+        });
         btnClose.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -307,7 +334,17 @@ public class PayDetailActivity extends AppCompatActivity {
         btnContinue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (db.insertMasterSale(saleMasterData)) {
+                if (db.insertMasterSale(prepareSaleMasterData())) {
+                    if(!isSaleEdit){
+                        insertSale();
+                    }else{
+                        updateSale();
+                    }
+                } else {
+                    Toast.makeText(context, getResources().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+                }
+
+               /* if (db.insertMasterSale(saleMasterData)) {
                     if (saleMasterData.isDefaultCustomer()) {
                         Intent i = new Intent(PayDetailActivity.this, CustomerActivity.class);
                         i.putExtra(AppSetting.EXTRA_MODULE_TYPE, AppConstant.SALE_MODULE_TYPE);
@@ -316,7 +353,7 @@ public class PayDetailActivity extends AppCompatActivity {
                     } else
                         insertSale();
                 } else
-                    Toast.makeText(context, getResources().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, getResources().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();*/
             }
         });
     }
@@ -332,22 +369,22 @@ public class PayDetailActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Integer> call, Response<Integer> response) {
                 progressDialog.dismiss();
-                if (response.body() == null){
+                if (response.body() == null) {
                     Toast.makeText(context, response.message(), Toast.LENGTH_LONG).show();
                     return;
                 }
                 if (response.isSuccessful()) {
-                    int slipId=response.body();
+                    int slipId = response.body();
                     //int position = spCustomer.getSelectedItemPosition();
                     String customerName = tvCustomer.getText().toString();
-                    boolean isCredit=false;
-                    int paymentPosition=spPayment.getSelectedItemPosition();
-                    if(paymentPosition == 1)isCredit=true;
+                    boolean isCredit = false;
+                    int paymentPosition = spPayment.getSelectedItemPosition();
+                    if (paymentPosition == 1) isCredit = true;
                     Intent intent = new Intent(PayDetailActivity.this, SaleBillActivity.class);
                     intent.putExtra("LocationID", data.getLocationID());
                     intent.putExtra("CustomerName", customerName);
-                    intent.putExtra("SlipID",slipId);
-                    intent.putExtra("IsCredit",isCredit);
+                    intent.putExtra("SlipID", slipId);
+                    intent.putExtra("IsCredit", isCredit);
                     startActivity(intent);
                     finish();
                 }
@@ -356,7 +393,7 @@ public class PayDetailActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<Integer> call, Throwable t) {
                 progressDialog.dismiss();
-                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
+                Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -377,7 +414,7 @@ public class PayDetailActivity extends AppCompatActivity {
         locationId = lstLocation.get(position).getLocationID();
 
         if (shopTypeCode.equals(AppConstant.ShopType.BeautyAndHairStyleShop)) {
-            if(lstStaff.size()!=0){
+            if (lstStaff.size() != 0) {
                 position = spStaff.getSelectedItemPosition();
                 staffId = lstStaff.get(position).getStaffID();
             }
@@ -529,8 +566,10 @@ public class PayDetailActivity extends AppCompatActivity {
         etPaymentPercent.setText("");
         if (spPaymentMethod.getSelectedItemPosition() == 0)  // if payment method is cashInHand
             layoutOnlinePayment.setVisibility(View.GONE);
-        else if (spPaymentMethod.getSelectedItemPosition() == 1) // if payment method is onlinePayment
+        else if (spPaymentMethod.getSelectedItemPosition() == 1){  // if payment method is onlinePayment
             layoutOnlinePayment.setVisibility(View.VISIBLE);
+//            if (isSaleEdit) etPaymentPercent.setText(String.valueOf(editPaymentPercent));
+        }
     }
 
     private void setLayoutPaymentMethod() {
@@ -549,7 +588,7 @@ public class PayDetailActivity extends AppCompatActivity {
             layoutPaymentCredit.setVisibility(View.VISIBLE);
     }
 
-    private void checkConnection(){
+    private void checkConnection() {
         connectionLiveData.observe(this, new Observer<ConnectionData>() {
             @Override
             public void onChanged(ConnectionData connectionData) {
@@ -560,7 +599,7 @@ public class PayDetailActivity extends AppCompatActivity {
     }
 
     private void fillData() {
-        clientId=sharedpreferences.getInt(AppConstant.CLIENT_ID,0);
+        clientId = sharedpreferences.getInt(AppConstant.CLIENT_ID, 0);
         voucherDiscountType = discountPercentType;
         getLocation();
         getPayment();
@@ -568,26 +607,22 @@ public class PayDetailActivity extends AppCompatActivity {
         getBankPayment();
         getLimitedDay();
         getCustomer();
-        shopTypeCode=db.getShopTypeCode();
-        if(shopTypeCode.equals(AppConstant.ShopType.BeautyAndHairStyleShop)) getStaff();
+        shopTypeCode = db.getShopTypeCode();
+        if (shopTypeCode.equals(AppConstant.ShopType.BeautyAndHairStyleShop)) getStaff();
         else layoutStaff.setVisibility(View.GONE);
     }
 
- /*   private void setCustomer() {
-        String[] customers = new String[lstCustomer.size()];
-        for (int i = 0; i < lstCustomer.size(); i++) {
-            customers[i] = lstCustomer.get(i).getCustomerName();
-        }
-        ArrayAdapter adapter = new ArrayAdapter(context, R.layout.spinner_item, customers);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spCustomer.setAdapter(adapter);
-    }*/
-
     private void setCustomer() {
-        if(lstCustomer.size() != 0) {
-            selectedCustomerPosition=0;
-            selectedCustomerId=lstCustomer.get(0).getCustomerID();
-            tvCustomer.setText(lstCustomer.get(0).getCustomerName());
+        if (lstCustomer.size() != 0) {
+            if (lstCustomer.size() == 1) {
+                selectedCustomerPosition = 0;
+                selectedCustomerId = lstCustomer.get(0).getCustomerID();
+                tvCustomer.setText(lstCustomer.get(0).getCustomerName());
+            } else {
+                selectedCustomerPosition = 1;
+                selectedCustomerId = lstCustomer.get(1).getCustomerID();
+                tvCustomer.setText(lstCustomer.get(1).getCustomerName());
+            }
         }
     }
 
@@ -659,7 +694,7 @@ public class PayDetailActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<List<CustomerData>> call, Response<List<CustomerData>> response) {
                 progressDialog.dismiss();
-                if (response.body() == null){
+                if (response.body() == null) {
                     Toast.makeText(context, response.message(), Toast.LENGTH_LONG).show();
                     return;
                 }
@@ -670,7 +705,7 @@ public class PayDetailActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<CustomerData>> call, Throwable t) {
                 progressDialog.dismiss();
-                Toast.makeText(context,t.getMessage(),Toast.LENGTH_LONG).show();
+                Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -729,5 +764,287 @@ public class PayDetailActivity extends AppCompatActivity {
         tvCustomer = findViewById(R.id.tvCustomer);
         spStaff = findViewById(R.id.spStaff);
         layoutStaff = findViewById(R.id.layoutStaff);
+    }
+
+    private void getMasterSaleBySaleID(int saleId) {
+        progressDialog.show();
+        progressDialog.setMessage(getResources().getString(R.string.get_edit_data));
+
+        Api.getClient().getMasterSaleBySaleID(saleId).enqueue(new Callback<List<SaleMasterData>>() {
+            @Override
+            public void onResponse(Call<List<SaleMasterData>> call, Response<List<SaleMasterData>> response) {
+                progressDialog.dismiss();
+                if (response.body() == null) {
+                    Toast.makeText(context, response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
+                hideLayouts();
+                fillSaleMasterEditData(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<List<SaleMasterData>> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void hideLayouts(){
+        layoutPaymentCredit.setVisibility(View.GONE);
+        layoutPaymentMethod.setVisibility(View.GONE);
+        layoutOnlinePayment.setVisibility(View.GONE);
+    }
+
+    private void fillSaleMasterEditData(List<SaleMasterData> list) {
+        for (int i = 0; i < lstCustomer.size(); i++) {
+            if (lstCustomer.get(i).getCustomerID() == list.get(0).getCustomerID()) {
+                selectedCustomerPosition = i;
+                selectedCustomerId = lstCustomer.get(i).getCustomerID();
+                tvCustomer.setText(lstCustomer.get(i).getCustomerName());
+                break;
+            }
+        }
+
+        for (int i = 0; i < lstLocation.size(); i++) {
+            if (lstLocation.get(i).getLocationID() == list.get(0).getLocationID()) {
+                spLocation.setSelection(i);
+                break;
+            }
+        }
+
+        for (int i = 0; i < lstPayment.size(); i++) {
+            if (lstPayment.get(i).getPaymentID() == list.get(0).getPaymentID()) {
+                spPayment.setSelection(i);
+                if (spPayment.getSelectedItemPosition() == 0) // cash
+                    layoutPaymentMethod.setVisibility(View.VISIBLE);
+                else if (spPayment.getSelectedItemPosition() == 1){ // credit
+                    paymentCount=2;
+                    layoutPaymentCredit.setVisibility(View.VISIBLE);
+                }
+                break;
+            }
+        }
+
+        for (int i = 0; i < lstPaymentMethod.size(); i++) {
+            if (lstPaymentMethod.get(i).getPayMethodID() == list.get(0).getPayMethodID()) {
+                spPaymentMethod.setSelection(i);
+                if (spPaymentMethod.getSelectedItemPosition() == 1) {  // if payment method is onlinePayment
+                    payMethodCount=2;
+                    layoutOnlinePayment.setVisibility(View.VISIBLE);
+                }
+                break;
+            }
+        }
+
+        for (int i = 0; i < lstLimitedDay.size(); i++) {
+            if (lstLimitedDay.get(i).getLimitedDayID() == list.get(0).getLimitedDayID()) {
+                spLimitedDay.setSelection(i);
+                break;
+            }
+        }
+
+        for (int i = 0; i < lstBankPayment.size(); i++) {
+            if (lstBankPayment.get(i).getBankPaymentID() == list.get(0).getBankPaymentID()) {
+                spBankPayment.setSelection(i);
+                break;
+            }
+        }
+
+        if (list.get(0).getVoucherDiscount() != 0) {
+            if (list.get(0).getVouDisPercent() != 0) {
+                etVoucherDiscount.setText(String.valueOf(list.get(0).getVouDisPercent()));
+            } else if (list.get(0).getVouDisAmount() != 0) {
+                changeVoucherDiscountType(discountAmountType);
+                etVoucherDiscount.setText(String.valueOf(list.get(0).getVouDisAmount()));
+            }
+        }
+
+        if (list.get(0).getAdvancedPay() != 0) {
+            chkAdvancedPay.setChecked(true);
+            etAdvancedPay.setText(String.valueOf(list.get(0).getAdvancedPay()));
+        }
+
+        if (list.get(0).getPaymentPercent() != 0)
+            etPaymentPercent.setText(String.valueOf(list.get(0).getPaymentPercent()));
+//            editPaymentPercent = list.get(0).getPaymentPercent();
+
+        etRemark.setText(list.get(0).getRemark());
+
+        editSlipID = list.get(0).getSlipID();
+        editDate = list.get(0).getSaleDateTime();
+    }
+
+    private void updateSale() {
+        SaleMasterData data = db.getMasterSale();
+        data.setLstSaleTran(db.getTranSale());
+        data.setLstSaleTranLog(db.getTranSaleLog());
+        data.setClientSale(true);
+        data.setClientID(clientId);
+        data.setSaleID(editSaleID);
+        progressDialog.show();
+        progressDialog.setMessage(getResources().getString(R.string.loading));
+
+        Api.getClient().updateSale(data).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                progressDialog.dismiss();
+                if (response.isSuccessful()) {
+                    String customerName = tvCustomer.getText().toString();
+                    boolean isCredit = false;
+                    int paymentPosition = spPayment.getSelectedItemPosition();
+                    if (paymentPosition == 1) isCredit = true;
+                    Intent intent = new Intent(PayDetailActivity.this, SaleBillActivity.class);
+                    intent.putExtra("LocationID", data.getLocationID());
+                    intent.putExtra("CustomerName", customerName);
+                    intent.putExtra("SlipID", editSlipID);
+                    intent.putExtra("IsCredit", isCredit);
+                    intent.putExtra("SaleDateTime", editDate);
+                    intent.putExtra("IsSaleEdit", isSaleEdit);
+                    startActivity(intent);
+                    finish();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void showNumberDialog(int grandtotal) {
+        LayoutInflater reg = LayoutInflater.from(context);
+        View v = reg.inflate(R.layout.dialog_number, null);
+        android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(context);
+        dialog.setView(v);
+
+        final ImageButton btnClose = v.findViewById(R.id.btnClose);
+        final ImageButton btnBackspace = v.findViewById(R.id.btnBackspace);
+        final TextView tvTitle = v.findViewById(R.id.tvTitle);
+        final TextView tvInput = v.findViewById(R.id.tvInput);
+        final Button btnOK = v.findViewById(R.id.btnOK);
+        final Button btnClear = v.findViewById(R.id.btnClear);
+        final Button btnZero = v.findViewById(R.id.btnZero);
+        final Button btnOne = v.findViewById(R.id.btnOne);
+        final Button btnTwo = v.findViewById(R.id.btnTwo);
+        final Button btnThree = v.findViewById(R.id.btnThree);
+        final Button btnFour = v.findViewById(R.id.btnFour);
+        final Button btnFive = v.findViewById(R.id.btnFive);
+        final Button btnSix = v.findViewById(R.id.btnSix);
+        final Button btnSeven = v.findViewById(R.id.btnSeven);
+        final Button btnEight = v.findViewById(R.id.btnEight);
+        final Button btnNine = v.findViewById(R.id.btnNine);
+        final Button btnAdd = v.findViewById(R.id.btnAdd);
+
+        btnAdd.setVisibility(View.GONE);
+        dialog.setCancelable(true);
+        final android.app.AlertDialog alertDialog = dialog.create();
+        alertDialog.show();
+
+        btnBackspace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String value = tvInput.getText().toString();
+                if (value.length() != 0) {
+                    value = value.substring(0, value.length() - 1);
+                    tvInput.setText(value);
+                }
+            }
+        });
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
+        btnClear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tvInput.setText("0");
+            }
+        });
+        btnOK.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (!tvInput.getText().toString().equals("0") && tvInput.getText().toString().length() != 0) {
+                    if(Integer.parseInt(tvInput.getText().toString())<grandtotal){
+                        Toast.makeText(context,getResources().getString(R.string.paid_amount_validate_msg),Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    alertDialog.dismiss();
+                    tvPaidAmount.setText(tvInput.getText().toString());
+                    tvChangeAmount.setText(appSetting.df.format(Integer.parseInt(tvPaidAmount.getText().toString())-grandtotal));
+                }
+            }
+        });
+        btnZero.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setNumberValue(tvInput, 0);
+            }
+        });
+        btnOne.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setNumberValue(tvInput, 1);
+            }
+        });
+        btnTwo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setNumberValue(tvInput, 2);
+            }
+        });
+        btnThree.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setNumberValue(tvInput, 3);
+            }
+        });
+        btnFour.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setNumberValue(tvInput, 4);
+            }
+        });
+        btnFive.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setNumberValue(tvInput, 5);
+            }
+        });
+        btnSix.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setNumberValue(tvInput, 6);
+            }
+        });
+        btnSeven.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setNumberValue(tvInput, 7);
+            }
+        });
+        btnEight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setNumberValue(tvInput, 8);
+            }
+        });
+        btnNine.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                setNumberValue(tvInput, 9);
+            }
+        });
+    }
+
+    private void setNumberValue(TextView textView, int inputValue) {
+        String value = textView.getText().toString();
+        if (value.startsWith("0")) value = "";
+        value += inputValue;
+        textView.setText(value);
     }
 }

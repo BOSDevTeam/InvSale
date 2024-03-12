@@ -200,7 +200,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button android:id="@+id/btnOK"
-            android:text="@string/ok"
+            android:text="@string/str_continue"
             style="@style/DefaultButton"
             android:layout_marginTop="20dp" />
 

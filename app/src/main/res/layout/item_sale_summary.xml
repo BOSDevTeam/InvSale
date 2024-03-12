@@ -49,6 +49,15 @@
                     android:gravity="right"
                     android:layout_marginTop="10dp"/>
             </LinearLayout>
+
+            <ImageButton android:id="@+id/btnMore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_more_vert_24"
+                android:background="@drawable/btn_transparent"
+                android:padding="5dp"
+                app:tint="@color/black"
+                android:layout_marginLeft="10dp"/>
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>

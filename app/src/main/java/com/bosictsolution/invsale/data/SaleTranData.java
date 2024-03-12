@@ -2,9 +2,49 @@ package com.bosictsolution.invsale.data;
 
 public class SaleTranData {
 
-    private String ProductName;
-    private int ProductID,Number,Quantity, SalePrice, Amount, DefaultSalePrice, Discount, DiscountPercent;
-    private boolean IsFOC;
+    private String ProductName,ActionCode,ActionName;
+    private int ProductID,Number,Quantity, SalePrice, Amount, DefaultSalePrice, Discount, DiscountPercent,OrginalQuantity,RowNo;
+    private boolean IsFOC,IsNewInEdit;
+
+    public int getRowNo() {
+        return RowNo;
+    }
+
+    public void setRowNo(int rowNo) {
+        RowNo = rowNo;
+    }
+
+    public int getOrginalQuantity() {
+        return OrginalQuantity;
+    }
+
+    public void setOrginalQuantity(int orginalQuantity) {
+        OrginalQuantity = orginalQuantity;
+    }
+
+    public boolean isNewInEdit() {
+        return IsNewInEdit;
+    }
+
+    public void setNewInEdit(boolean newInEdit) {
+        IsNewInEdit = newInEdit;
+    }
+
+    public String getActionName() {
+        return ActionName;
+    }
+
+    public void setActionName(String actionName) {
+        ActionName = actionName;
+    }
+
+    public String getActionCode() {
+        return ActionCode;
+    }
+
+    public void setActionCode(String actionCode) {
+        ActionCode = actionCode;
+    }
 
     public String getProductName() {
         return ProductName;

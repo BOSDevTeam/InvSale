@@ -3,17 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layoutRoot"
+    tools:context=".SaleActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SaleActivity"
     android:orientation="vertical"
     android:background="@color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="5dp"
-        android:paddingRight="5dp">
+        android:layout_height="wrap_content">
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="0dp"
@@ -37,11 +35,14 @@
 
         <ImageButton android:id="@+id/btnAllProduct"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:src="@drawable/ic_menu_24"
             android:layout_gravity="center"
             android:background="@drawable/btn_primary"
-            android:padding="10dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
             app:tint="@color/white"/>
 
     </LinearLayout>
@@ -99,7 +100,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/bg_gray_10r"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingTop="5dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -109,9 +111,9 @@
             <TextView style="@style/AmountGroupTextView"
                 android:layout_width="0dp"
                 android:layout_weight="2"
-                android:text="@string/tax_colon" />
+                android:text="@string/charges_colon"/>
 
-            <TextView android:id="@+id/tvTax"
+            <TextView android:id="@+id/tvCharges"
                 style="@style/AmountGroupTextView"
                 android:layout_width="0dp"
                 android:layout_weight="1"
@@ -138,9 +140,9 @@
             <TextView style="@style/AmountGroupTextView"
                 android:layout_width="0dp"
                 android:layout_weight="2"
-                android:text="@string/charges_colon"/>
+                android:text="@string/tax_colon" />
 
-            <TextView android:id="@+id/tvCharges"
+            <TextView android:id="@+id/tvTax"
                 style="@style/AmountGroupTextView"
                 android:layout_width="0dp"
                 android:layout_weight="1"
@@ -175,10 +177,11 @@
                 style="@style/DefaultButton"
                 android:layout_width="0dp"
                 android:layout_weight="1"
-                android:text="@string/pay"
+                android:text="@string/str_continue"
                 android:layout_gravity="right" />
         </LinearLayout>
 
     </LinearLayout>
 
 </LinearLayout>
+

@@ -4,12 +4,66 @@ import java.util.List;
 
 public class SaleMasterData {
 
-    private String SaleDateTime, SystemVoucherNo, CustomerName,Remark,UserVoucherNo;
-    private int Grandtotal,CustomerID,LocationID,PaymentID, VoucherDiscount, AdvancedPay,TaxAmt,ChargesAmt,
-                Total,VouDisPercent,VouDisAmount,PayMethodID,BankPaymentID,PaymentPercent,ClientID,LimitedDayID,
-                PayPercentAmt,Subtotal,Tax,Charges,StaffID;
+    private String SaleDateTime, SystemVoucherNo, CustomerName,Remark,UserVoucherNo,ClientName;
+    private int Grandtotal;
+    private int CustomerID;
+    private int LocationID;
+
+    public String getClientName() {
+        return ClientName;
+    }
+
+    public void setClientName(String clientName) {
+        ClientName = clientName;
+    }
+
+    private int PaymentID;
+    private int VoucherDiscount;
+    private int AdvancedPay;
+    private int TaxAmt;
+    private int ChargesAmt;
+    private int Total;
+    private int VouDisPercent;
+    private int VouDisAmount;
+    private int PayMethodID;
+    private int BankPaymentID;
+    private int PaymentPercent;
+    private int ClientID;
+    private int LimitedDayID;
+    private int PayPercentAmt;
+    private int Subtotal;
+    private int Tax;
+    private int Charges;
+    private int StaffID;
+    private int SaleID;
+
+    public int getSaleID() {
+        return SaleID;
+    }
+
+    public void setSaleID(int saleID) {
+        SaleID = saleID;
+    }
+
+    public int getSlipID() {
+        return SlipID;
+    }
+
+    public void setSlipID(int slipID) {
+        SlipID = slipID;
+    }
+
+    private int SlipID;
     private boolean IsClientSale,IsDefaultCustomer,IsAdvancedPay;
-    private List<SaleTranData> lstSaleTran;
+    private List<SaleTranData> LstSaleTran,LstSaleTranLog;
+
+    public List<SaleTranData> getLstSaleTranLog() {
+        return LstSaleTranLog;
+    }
+
+    public void setLstSaleTranLog(List<SaleTranData> lstSaleTranLog) {
+        LstSaleTranLog = lstSaleTranLog;
+    }
 
     public String getSaleDateTime() {
         return SaleDateTime;
@@ -212,11 +266,11 @@ public class SaleMasterData {
     }
 
     public List<SaleTranData> getLstSaleTran() {
-        return lstSaleTran;
+        return LstSaleTran;
     }
 
     public void setLstSaleTran(List<SaleTranData> lstSaleTran) {
-        this.lstSaleTran = lstSaleTran;
+        this.LstSaleTran = lstSaleTran;
     }
 
     public String getUserVoucherNo() {

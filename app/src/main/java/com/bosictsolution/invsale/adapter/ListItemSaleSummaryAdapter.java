@@ -5,12 +5,14 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.bosictsolution.invsale.R;
 import com.bosictsolution.invsale.common.AppSetting;
 import com.bosictsolution.invsale.common.DatabaseAccess;
 import com.bosictsolution.invsale.data.SaleMasterData;
+import com.bosictsolution.invsale.listener.ListSaleListener;
 
 import java.util.List;
 
@@ -21,11 +23,16 @@ public class ListItemSaleSummaryAdapter extends RecyclerView.Adapter<ListItemSal
     List<SaleMasterData> list;
     AppSetting appSetting=new AppSetting();
     DatabaseAccess db;
+    ListSaleListener listSaleListener;
 
     public ListItemSaleSummaryAdapter(List<SaleMasterData> list, Context context) {
         this.list = list;
         this.context = context;
         this.db=new DatabaseAccess(context);
+    }
+
+    public void setOnListener(ListSaleListener listSaleListener){
+        this.listSaleListener=listSaleListener;
     }
 
     @Override
@@ -39,9 +46,18 @@ public class ListItemSaleSummaryAdapter extends RecyclerView.Adapter<ListItemSal
     @Override
     public void onBindViewHolder(ViewHolder holder, @SuppressLint("RecyclerView") int position) {
         holder.tvDate.setText(list.get(position).getSaleDateTime());
-        holder.tvCustomer.setText(list.get(position).getCustomerName());
+        holder.tvCustomer.setText(context.getResources().getString(R.string.slip_no)+context.getResources().getString(R.string.space)+list.get(position).getSlipID());
         holder.tvSaleNo.setText(context.getResources().getString(R.string.hash)+list.get(position).getUserVoucherNo());
         holder.tvGrandTotal.setText(db.getHomeCurrency()+context.getResources().getString(R.string.space)+appSetting.df.format(list.get(position).getGrandtotal()));
+
+        holder.btnMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                if(listSaleListener !=null){
+                    listSaleListener.onMoreClickListener(position);
+                }
+            }
+        });
     }
 
     @Override
@@ -52,6 +68,7 @@ public class ListItemSaleSummaryAdapter extends RecyclerView.Adapter<ListItemSal
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvDate,tvSaleNo,tvGrandTotal,tvCustomer;
+        ImageButton btnMore;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -59,6 +76,12 @@ public class ListItemSaleSummaryAdapter extends RecyclerView.Adapter<ListItemSal
             tvSaleNo =  itemView.findViewById(R.id.tvSaleNo);
             tvGrandTotal =  itemView.findViewById(R.id.tvGrandTotal);
             tvCustomer =  itemView.findViewById(R.id.tvCustomer);
+            btnMore =  itemView.findViewById(R.id.btnMore);
         }
+    }
+
+    public void updateItem(List<SaleMasterData> list){
+        this.list=list;
+        notifyDataSetChanged();
     }
 }

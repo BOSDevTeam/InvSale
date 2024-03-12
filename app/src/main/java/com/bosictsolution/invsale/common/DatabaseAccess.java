@@ -128,7 +128,7 @@ public class DatabaseAccess {
         }
         return data;
     }
-    public boolean insertTranSale(List<SaleTranData> list){
+    public boolean insertTranSale(List<SaleTranData> list,boolean isSaleEdit,List<SaleTranData> lstLog){
         deleteTranSale();
         database = openHelper.getWritableDatabase();
         for(int i=0;i<list.size();i++){
@@ -142,6 +142,24 @@ public class DatabaseAccess {
             cv.put("Discount", list.get(i).getDiscount());
             cv.put("DiscountPercent", list.get(i).getDiscountPercent());
             database.insert("TranSaleTemp", null, cv);
+        }
+        if(isSaleEdit){
+            deleteTranSaleLog();
+            for(int i=0;i<lstLog.size();i++){
+                ContentValues cv = new ContentValues();
+                cv.put("ProductID", lstLog.get(i).getProductID());
+                cv.put("Quantity", lstLog.get(i).getQuantity());
+                cv.put("SalePrice", lstLog.get(i).getSalePrice());
+                cv.put("Amount", lstLog.get(i).getAmount());
+                cv.put("IsFOC", lstLog.get(i).isFOC());
+                cv.put("ProductName",lstLog.get(i).getProductName());
+                cv.put("Discount", lstLog.get(i).getDiscount());
+                cv.put("DiscountPercent", lstLog.get(i).getDiscountPercent());
+                cv.put("ActionCode",lstLog.get(i).getActionCode());
+                cv.put("ActionName", lstLog.get(i).getActionName());
+                cv.put("OrginalQuantity", lstLog.get(i).getOrginalQuantity());
+                database.insert("TranSaleLogTemp", null, cv);
+            }
         }
         return true;
     }
@@ -164,6 +182,32 @@ public class DatabaseAccess {
             data.setProductName(cur.getString(5));
             data.setDiscount(cur.getInt(6));
             data.setDiscountPercent(cur.getInt(7));
+            list.add(data);
+        }
+        return list;
+    }
+    public List<SaleTranData> getTranSaleLog() {
+        database = openHelper.getReadableDatabase();
+        List<SaleTranData> list = new ArrayList<>();
+        int number=0;
+        Cursor cur = database.rawQuery("SELECT * FROM TranSaleLogTemp", null);
+        while (cur.moveToNext()) {
+            SaleTranData data = new SaleTranData();
+            data.setProductID(cur.getInt(0));
+            data.setQuantity(cur.getInt(1));
+            data.setSalePrice(cur.getInt(2));
+            data.setAmount(cur.getInt(3));
+            int foc = cur.getInt(4);
+            if (foc == 0) data.setFOC(false);
+            else if (foc == 1) data.setFOC(true);
+            number+=1;
+            data.setNumber(number);
+            data.setProductName(cur.getString(5));
+            data.setDiscount(cur.getInt(6));
+            data.setDiscountPercent(cur.getInt(7));
+            data.setActionCode(cur.getString(8));
+            data.setActionName(cur.getString(9));
+            data.setOrginalQuantity(cur.getInt(10));
             list.add(data);
         }
         return list;
@@ -479,6 +523,14 @@ public class DatabaseAccess {
         }
         return list;
     }
+    public String getBankPaymentName(int bankPaymentId) {
+        database = openHelper.getReadableDatabase();
+        String bankPaymentName = "";
+        Cursor cur = database.rawQuery("SELECT BankPaymentName FROM BankPaymentTemp WHERE BankPaymentID=" + bankPaymentId, null);
+        if (cur.moveToFirst())
+            bankPaymentName = cur.getString(0);
+        return bankPaymentName;
+    }
     public boolean insertVoucherSetting(List<VoucherSettingData> list){
         deleteVoucherSetting();
         database = openHelper.getWritableDatabase();
@@ -675,6 +727,11 @@ public class DatabaseAccess {
     private boolean deleteTranSale(){
         database=openHelper.getWritableDatabase();
         database.execSQL("DELETE FROM TranSaleTemp");
+        return true;
+    }
+    private boolean deleteTranSaleLog(){
+        database=openHelper.getWritableDatabase();
+        database.execSQL("DELETE FROM TranSaleLogTemp");
         return true;
     }
     private boolean deleteMainMenu(){

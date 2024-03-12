@@ -219,7 +219,7 @@ public class ProductActivity extends AppCompatActivity implements ListItemProduc
 
     @Override
     public void onProductClicked(int position) {
-        productPosition = position;
+        /*productPosition = position;
         productId = lstProduct.get(position).getProductID();
         productName = lstProduct.get(position).getProductName();
         description = lstProduct.get(position).getDescription();
@@ -240,6 +240,6 @@ public class ProductActivity extends AppCompatActivity implements ListItemProduc
             tvAlreadyInOrder.setVisibility(View.VISIBLE);
             tvQuantity.setText(String.valueOf(quantity));
         }
-        sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        sheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);*/
     }
 }

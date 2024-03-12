@@ -26,6 +26,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bosictsolution.invsale.R;
+import com.bosictsolution.invsale.SaleActivity;
+import com.bosictsolution.invsale.SaleBillActivity;
 import com.bosictsolution.invsale.adapter.ListItemSaleSummaryAdapter;
 import com.bosictsolution.invsale.api.Api;
 import com.bosictsolution.invsale.common.AppConstant;
@@ -33,6 +35,7 @@ import com.bosictsolution.invsale.common.AppSetting;
 import com.bosictsolution.invsale.common.DatabaseAccess;
 import com.bosictsolution.invsale.common.DateFilter;
 import com.bosictsolution.invsale.data.SaleMasterData;
+import com.bosictsolution.invsale.listener.ListSaleListener;
 import com.bosictsolution.invsale.ui.sale.SaleFragment;
 
 import java.util.ArrayList;
@@ -43,7 +46,7 @@ import java.util.List;
  * Use the {@link SaleSummaryFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SaleSummaryFragment extends Fragment implements SaleFragment.onFragmentInteractionListener, DateFilter.IDateFilter {
+public class SaleSummaryFragment extends Fragment implements SaleFragment.onFragmentInteractionListener, DateFilter.IDateFilter, ListSaleListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -57,15 +60,15 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
     RecyclerView rvSaleSummary;
     ListItemSaleSummaryAdapter listItemSaleSummaryAdapter;
     private ProgressDialog progressDialog;
-    TextView tvDate,tvFromDate,tvToDate,tvTotal;
-    String selectedDate,fromDate,toDate;
-    AppSetting appSetting=new AppSetting();
+    TextView tvDate, tvFromDate, tvToDate, tvTotal;
+    String selectedDate, fromDate, toDate;
+    AppSetting appSetting = new AppSetting();
     int clientId;
     SharedPreferences sharedpreferences;
     private SaleFragment.onFragmentInteractionListener listener;
-    List<SaleMasterData> list=new ArrayList<>();
+    List<SaleMasterData> list = new ArrayList<>();
     DatabaseAccess db;
-    DateFilter dateFilter=new DateFilter(this);
+    DateFilter dateFilter = new DateFilter(this);
 
     public SaleSummaryFragment() {
         // Required empty public constructor
@@ -120,79 +123,79 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
     @Override
     public void onAttachFragment(@NonNull Fragment childFragment) {
         super.onAttachFragment(childFragment);
-        if(childFragment instanceof SaleFragment.onFragmentInteractionListener){
-            listener=(SaleFragment.onFragmentInteractionListener) childFragment;
+        if (childFragment instanceof SaleFragment.onFragmentInteractionListener) {
+            listener = (SaleFragment.onFragmentInteractionListener) childFragment;
         }
     }
 
     private void getMasterSaleByDate() {
         progressDialog.show();
         progressDialog.setMessage(getResources().getString(R.string.loading));
-        Api.getClient().getMasterSaleByDate(selectedDate,clientId).enqueue(new Callback<List<SaleMasterData>>() {
+        Api.getClient().getMasterSaleByDate(selectedDate, clientId).enqueue(new Callback<List<SaleMasterData>>() {
             @Override
             public void onResponse(Call<List<SaleMasterData>> call, Response<List<SaleMasterData>> response) {
                 progressDialog.dismiss();
-                if (response.body() == null){
+                if (response.body() == null) {
                     Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
                     return;
                 }
-                list=response.body();
+                list = response.body();
                 setAdapter(list);
-                tvTotal.setText(db.getHomeCurrency()+getResources().getString(R.string.space)+calculateNetAmtTotal(list));
+                tvTotal.setText(db.getHomeCurrency() + getResources().getString(R.string.space) + calculateNetAmtTotal(list));
             }
 
             @Override
             public void onFailure(Call<List<SaleMasterData>> call, Throwable t) {
                 progressDialog.dismiss();
-                Toast.makeText(getContext(),t.getMessage(),Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
 
-    private void getMasterSaleByFromToDate(){
+    private void getMasterSaleByFromToDate() {
         progressDialog.show();
         progressDialog.setMessage(getResources().getString(R.string.loading));
-        Api.getClient().getMasterSaleByFromToDate(fromDate,toDate,clientId).enqueue(new Callback<List<SaleMasterData>>() {
+        Api.getClient().getMasterSaleByFromToDate(fromDate, toDate, clientId).enqueue(new Callback<List<SaleMasterData>>() {
             @Override
             public void onResponse(Call<List<SaleMasterData>> call, Response<List<SaleMasterData>> response) {
                 progressDialog.dismiss();
-                if (response.body() == null){
+                if (response.body() == null) {
                     Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
                     return;
                 }
-                list=response.body();
+                list = response.body();
                 setAdapter(list);
-                tvTotal.setText(db.getHomeCurrency()+getResources().getString(R.string.space)+calculateNetAmtTotal(list));
+                tvTotal.setText(db.getHomeCurrency() + getResources().getString(R.string.space) + calculateNetAmtTotal(list));
             }
 
             @Override
             public void onFailure(Call<List<SaleMasterData>> call, Throwable t) {
                 progressDialog.dismiss();
-                Toast.makeText(getContext(),t.getMessage(),Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
 
-    private void getMasterSaleByValue(String value){
+    private void getMasterSaleByValue(String value) {
         progressDialog.show();
         progressDialog.setMessage(getResources().getString(R.string.loading));
-        Api.getClient().getMasterSaleByValue(value,clientId).enqueue(new Callback<List<SaleMasterData>>() {
+        Api.getClient().getMasterSaleByValue(value, clientId).enqueue(new Callback<List<SaleMasterData>>() {
             @Override
             public void onResponse(Call<List<SaleMasterData>> call, Response<List<SaleMasterData>> response) {
                 progressDialog.dismiss();
-                if (response.body() == null){
+                if (response.body() == null) {
                     Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
                     return;
                 }
-                list=response.body();
+                list = response.body();
                 setAdapter(list);
-                tvTotal.setText(db.getHomeCurrency()+getResources().getString(R.string.space)+calculateNetAmtTotal(list));
+                tvTotal.setText(db.getHomeCurrency() + getResources().getString(R.string.space) + calculateNetAmtTotal(list));
             }
 
             @Override
             public void onFailure(Call<List<SaleMasterData>> call, Throwable t) {
                 progressDialog.dismiss();
-                Toast.makeText(getContext(),t.getMessage(),Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -220,13 +223,13 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
 
         final ImageButton btnClose = v.findViewById(R.id.btnClose);
         tvFromDate = v.findViewById(R.id.tvFromDate);
-        tvToDate=v.findViewById(R.id.tvToDate);
+        tvToDate = v.findViewById(R.id.tvToDate);
         final Button btnOK = v.findViewById(R.id.btnOK);
         final Button btnCancel = v.findViewById(R.id.btnCancel);
 
-        selectedDate= appSetting.getTodayDate();
-        fromDate=selectedDate;
-        toDate= selectedDate;
+        selectedDate = appSetting.getTodayDate();
+        fromDate = selectedDate;
+        toDate = selectedDate;
         tvFromDate.setText(fromDate);
         tvToDate.setText(toDate);
 
@@ -249,7 +252,7 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                tvDate.setText(fromDate+"-"+toDate);
+                tvDate.setText(fromDate + "-" + toDate);
                 getMasterSaleByFromToDate();
                 alertDialog.dismiss();
             }
@@ -277,28 +280,29 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
             // set the value of the editText
             tvDate.setText(selectedDate);
             getMasterSaleByDate();
-        }else if (requestCode == AppConstant.FROM_DATE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        } else if (requestCode == AppConstant.FROM_DATE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             fromDate = data.getStringExtra("selectedDate");
             tvFromDate.setText(fromDate);
-        }else if (requestCode == AppConstant.TO_DATE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        } else if (requestCode == AppConstant.TO_DATE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             toDate = data.getStringExtra("selectedDate");
             tvToDate.setText(toDate);
         }
     }
 
-    private void setAdapter(List<SaleMasterData> list){
-        listItemSaleSummaryAdapter=new ListItemSaleSummaryAdapter(list,getContext());
+    private void setAdapter(List<SaleMasterData> list) {
+        listItemSaleSummaryAdapter = new ListItemSaleSummaryAdapter(list, getContext());
         rvSaleSummary.setAdapter(listItemSaleSummaryAdapter);
         rvSaleSummary.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        listItemSaleSummaryAdapter.setOnListener(this);
     }
 
-    private void setLayoutResource(View root){
-        rvSaleSummary=root.findViewById(R.id.rvSaleSummary);
-        tvDate=root.findViewById(R.id.tvDate);
-        tvTotal=root.findViewById(R.id.tvTotal);
+    private void setLayoutResource(View root) {
+        rvSaleSummary = root.findViewById(R.id.rvSaleSummary);
+        tvDate = root.findViewById(R.id.tvDate);
+        tvTotal = root.findViewById(R.id.tvTotal);
     }
 
-    private void showDatePicker(int requestCode){
+    private void showDatePicker(int requestCode) {
         // create the datePickerFragment
         AppCompatDialogFragment newFragment = new DatePickerFragment();
         // set the targetFragment to receive the results, specifying the request code
@@ -307,25 +311,25 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
         newFragment.show(getFragmentManager(), "datePicker");
     }
 
-    private void init(){
+    private void init() {
         progressDialog = new ProgressDialog(getContext());
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setIndeterminate(true);
         progressDialog.setCancelable(false);
-        db=new DatabaseAccess(getContext());
+        db = new DatabaseAccess(getContext());
         sharedpreferences = getContext().getSharedPreferences(AppConstant.MYPREFERENCES, Context.MODE_PRIVATE);
     }
 
-    private void fillData(){
-        selectedDate= appSetting.getTodayDate();
+    private void fillData() {
+        selectedDate = appSetting.getTodayDate();
         tvDate.setText(selectedDate);
-        clientId=sharedpreferences.getInt(AppConstant.CLIENT_ID,0);
+        clientId = sharedpreferences.getInt(AppConstant.CLIENT_ID, 0);
         getMasterSaleByDate();
     }
 
     @Override
     public void refresh() {
-        selectedDate= appSetting.getTodayDate();
+        selectedDate = appSetting.getTodayDate();
         tvDate.setText(selectedDate);
         getMasterSaleByDate();
     }
@@ -344,5 +348,92 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
     @Override
     public void setOnFromToDateClick() {
         showFromToDateDialog();
+    }
+
+    @Override
+    public void onMoreClickListener(int position) {
+        showSaleMenuDialog(position);
+    }
+
+    private void showSaleMenuDialog(int position) {
+        LayoutInflater reg = LayoutInflater.from(getContext());
+        View v = reg.inflate(R.layout.dialog_sale_menu, null);
+        android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(getContext());
+        dialog.setView(v);
+
+        final ImageButton btnClose = v.findViewById(R.id.btnClose);
+        final TextView tvTitle = v.findViewById(R.id.tvTitle);
+        final TextView tvEdit = v.findViewById(R.id.tvEdit);
+        final TextView tvDelete = v.findViewById(R.id.tvDelete);
+        final TextView tvReprint = v.findViewById(R.id.tvReprint);
+
+        tvTitle.setText("");
+
+        dialog.setCancelable(true);
+        android.app.AlertDialog alertDialog = dialog.create();
+        alertDialog.show();
+
+        tvEdit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+                Intent i = new Intent(getContext(), SaleActivity.class);
+                i.putExtra("IsSaleEdit", true);
+                i.putExtra("SaleID", list.get(position).getSaleID());
+                startActivity(i);
+            }
+        });
+        tvDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+                deleteSale(list.get(position).getSaleID(),position);
+            }
+        });
+        tvReprint.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+                Intent i = new Intent(getContext(), SaleBillActivity.class);
+                i.putExtra("IsReprint", true);
+                i.putExtra("SaleID", list.get(position).getSaleID());
+                startActivity(i);
+            }
+        });
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
+    }
+
+    private void deleteSale(int saleId,int deletePosition) {
+        progressDialog.show();
+        progressDialog.setMessage(getResources().getString(R.string.loading));
+        Api.getClient().deleteSale(saleId).enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                progressDialog.dismiss();
+                if (response.body() == null) {
+                    Toast.makeText(getContext(), response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
+                boolean isSuccess = response.body();
+                if (isSuccess){
+                    list.remove(deletePosition);
+                    listItemSaleSummaryAdapter.updateItem(list);
+                    Toast.makeText(getContext(), getResources().getString(R.string.deleted), Toast.LENGTH_LONG).show();
+                }
+                else
+                    Toast.makeText(getContext(), getResources().getString(R.string.no_delete_by_outstanding), Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable t) {
+                progressDialog.dismiss();
+                Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

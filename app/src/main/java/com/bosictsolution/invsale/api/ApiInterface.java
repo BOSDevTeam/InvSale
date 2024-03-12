@@ -27,9 +27,11 @@ import java.util.List;
 import io.reactivex.Observable;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
 import retrofit2.http.Query;
 
 public interface ApiInterface {
@@ -175,4 +177,21 @@ public interface ApiInterface {
 
     @GET("summary")
     Call<SummaryData> getSummaryData(@Query("clientId") int clientId,@Query("date") String date);
+
+    @GET("sale/GetTranSaleBySaleID")
+    Call<List<SaleTranData>> getTranSaleBySaleID(@Query("saleId") int saleId);
+
+    @GET("sale/GetMasterSaleBySaleID")
+    Call<List<SaleMasterData>> getMasterSaleBySaleID(@Query("saleId") int saleId);
+
+    @Headers("Content-type: application/json")
+    @PUT("sale")
+    Call<Void> updateSale(@Body SaleMasterData model);
+
+    @Headers("Content-type: application/json")
+    @DELETE("sale")
+    Call<Boolean> deleteSale(@Query("saleId") int saleId);
+
+    @GET("sale/GetSaleBySaleID")
+    Call<List<SaleMasterData>> getSaleBySaleID(@Query("saleId") int saleId);
 }

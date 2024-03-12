@@ -14,7 +14,11 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function7;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
@@ -35,6 +39,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,6 +49,7 @@ import com.bosictsolution.invsale.adapter.GeneralExpandableListAdapter;
 import com.bosictsolution.invsale.adapter.ListItemSaleAdapter;
 import com.bosictsolution.invsale.api.Api;
 import com.bosictsolution.invsale.bluetooth.BtDeviceListAdapter;
+import com.bosictsolution.invsale.common.AppConstant;
 import com.bosictsolution.invsale.common.AppSetting;
 import com.bosictsolution.invsale.common.Confirmation;
 import com.bosictsolution.invsale.common.ConnectionLiveData;
@@ -57,6 +63,7 @@ import com.bosictsolution.invsale.data.MainMenuData;
 import com.bosictsolution.invsale.data.PaymentData;
 import com.bosictsolution.invsale.data.PaymentMethodData;
 import com.bosictsolution.invsale.data.ProductData;
+import com.bosictsolution.invsale.data.SaleMasterData;
 import com.bosictsolution.invsale.data.SaleTranData;
 import com.bosictsolution.invsale.data.StaffData;
 import com.bosictsolution.invsale.data.SubMenuData;
@@ -64,6 +71,7 @@ import com.bosictsolution.invsale.data.VoucherSettingData;
 import com.bosictsolution.invsale.listener.IConfirmation;
 import com.bosictsolution.invsale.listener.ListItemProductInfoListener;
 import com.bosictsolution.invsale.listener.ListItemSaleListener;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
@@ -75,29 +83,32 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
     AppCompatEditText etSearch;
     Button btnPay;
     RecyclerView rvItemSale;
-    ImageButton btnAllProduct,btnRemove;
-    TextView tvTax,tvSubtotal,tvCharges,tvTotal;
+    ImageButton btnAllProduct, btnRemove;
+    TextView tvTax, tvSubtotal, tvCharges, tvTotal;
     Spinner spMainMenu;
     ExpandableListView expList;
     ListItemSaleAdapter listItemSaleAdapter;
-    List<SaleTranData> lstSaleTran=new ArrayList<>();
-    private Context context=this;
-    List<ProductData> lstProduct=new ArrayList<>();
-    List<SubMenuData> lstSubMenu=new ArrayList<>();
-    List<MainMenuData> lstMainMenu=new ArrayList<>();
+    List<SaleTranData> lstSaleTran = new ArrayList<>();
+    private Context context = this;
+    List<ProductData> lstProduct = new ArrayList<>();
+    List<SubMenuData> lstSubMenu = new ArrayList<>();
+    List<MainMenuData> lstMainMenu = new ArrayList<>();
     List<String> listDataHeader;
-    HashMap<String,List<String>> listDataChild;
-    android.app.AlertDialog productInfoDialog,productMenuDialog;
+    HashMap<String, List<String>> listDataChild;
+    android.app.AlertDialog productInfoDialog, productMenuDialog;
     private ProgressDialog progressDialog;
-    int tax, charges, total, subtotal , taxAmount, chargesAmount;
-    AppSetting appSetting=new AppSetting();
-    Confirmation confirmation=new Confirmation(this);
+    int tax, charges, total, subtotal, taxAmount, chargesAmount, editSaleID,rowNo;
+    AppSetting appSetting = new AppSetting();
+    Confirmation confirmation = new Confirmation(this);
     DatabaseAccess db;
     public static boolean isSaleCompleted;
     ConnectionLiveData connectionLiveData;
     public static BluetoothAdapter BA;
     private BtDeviceListAdapter deviceAdapter;
     private BluetoothAdapter bluetoothAdapter;
+    boolean isSaleEdit;
+    public static Activity activity;
+    List<SaleTranData> lstSaleTranLog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,24 +121,35 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         actionbar.setBackgroundDrawable(colorDrawable);
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setDisplayShowTitleEnabled(true);
-        setTitle(getResources().getString(R.string.menu_sale));
 
         getTaxServiceCharges();
         checkConnection();
         loadData();
 
+        Intent intent = getIntent();
+        isSaleEdit = intent.getBooleanExtra("IsSaleEdit", false);
+
+        if (isSaleEdit) {
+            setTitle(getResources().getString(R.string.menu_sale_edit));
+            editSaleID = intent.getIntExtra("SaleID", 0);
+            lstSaleTranLog = new ArrayList<>();
+            getTranSaleBySaleID(editSaleID);
+        } else setTitle(getResources().getString(R.string.menu_sale));
+
         btnPay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(lstSaleTran.size()!=0) {
-                    if(db.insertTranSale(lstSaleTran)){
+                if (lstSaleTran.size() != 0) {
+                    if (db.insertTranSale(lstSaleTran, isSaleEdit, lstSaleTranLog)) {
                         Intent i = new Intent(SaleActivity.this, PayDetailActivity.class);
-                        i.putExtra("Subtotal",subtotal);
-                        i.putExtra("Tax",tax);
-                        i.putExtra("TaxAmount",taxAmount);
-                        i.putExtra("Charges",charges);
-                        i.putExtra("ChargesAmount",chargesAmount);
-                        i.putExtra("Total",total);
+                        i.putExtra("Subtotal", subtotal);
+                        i.putExtra("Tax", tax);
+                        i.putExtra("TaxAmount", taxAmount);
+                        i.putExtra("Charges", charges);
+                        i.putExtra("ChargesAmount", chargesAmount);
+                        i.putExtra("Total", total);
+                        i.putExtra("IsSaleEdit", isSaleEdit);
+                        i.putExtra("SaleID", editSaleID);
                         startActivity(i);
                     }
                 }
@@ -136,10 +158,10 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         etSearch.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
-                final int DRAWABLE_RIGHT=2;
-                if(event.getAction()==MotionEvent.ACTION_DOWN){
-                    if(event.getRawX() >= (etSearch.getRight() - etSearch.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
-                        if(etSearch.getText().toString().length()!=0){
+                final int DRAWABLE_RIGHT = 2;
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    if (event.getRawX() >= (etSearch.getRight() - etSearch.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        if (etSearch.getText().toString().length() != 0) {
                             searchProductByValue(etSearch.getText().toString());
                         }
                     }
@@ -151,7 +173,8 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    if(etSearch.getText().toString().length()!=0) searchProductByValue(etSearch.getText().toString());
+                    if (etSearch.getText().toString().length() != 0)
+                        searchProductByValue(etSearch.getText().toString());
                 }
                 return false;
             }
@@ -174,14 +197,15 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
     @Override
     protected void onResume() {
         super.onResume();
-        if(isSaleCompleted){
-            isSaleCompleted=false;
-            lstSaleTran=new ArrayList<>();
+        if (isSaleCompleted) {
+            isSaleCompleted = false;
+            lstSaleTran = new ArrayList<>();
+            rowNo=0;
             setSaleTranAdapter();
         }
     }
 
-    private void checkConnection(){
+    private void checkConnection() {
         connectionLiveData.observe(this, new Observer<ConnectionData>() {
             @Override
             public void onChanged(ConnectionData connectionData) {
@@ -191,10 +215,11 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         });
     }
 
-    private void init(){
+    private void init() {
         connectionLiveData = new ConnectionLiveData(context);
-        db=new DatabaseAccess(context);
-        progressDialog =new ProgressDialog(context);
+        db = new DatabaseAccess(context);
+        activity = this;
+        progressDialog = new ProgressDialog(context);
         appSetting.setupProgress(progressDialog);
         BA = BluetoothAdapter.getDefaultAdapter();
         deviceAdapter = new BtDeviceListAdapter(getApplicationContext(), null);
@@ -250,7 +275,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
 
     @Override
     public void onQuantityClickListener(int position, TextView tvQuantity, TextView tvAmount) {
-        showNumberDialog(lstSaleTran.get(position).getProductName(),lstSaleTran.get(position).getQuantity(),position,tvQuantity,tvAmount);
+        showNumberDialog(lstSaleTran.get(position).getProductName(), lstSaleTran.get(position).getQuantity(), position, tvQuantity, tvAmount, true, null, 0);
     }
 
     @Override
@@ -270,19 +295,19 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
     }
 
     @Override
-    public void onItemClickListener(int position,List<ProductData> list) {
-        setSaleTran(position,list);
+    public void onItemClickListener(int position, List<ProductData> list) {
+        setSaleTran(position, list, 1);
         setSaleTranAdapter();
-        if(productInfoDialog!=null)productInfoDialog.dismiss();
+        if (productInfoDialog != null) productInfoDialog.dismiss();
     }
 
     @Override
     public void setOnConfirmOKClick() {
-        lstSaleTran=new ArrayList<>();
+        lstSaleTran = new ArrayList<>();
         setSaleTranAdapter();
     }
 
-    private void showNumberDialog(String productName,int quantity,int position,TextView tvQuantity, TextView tvAmount) {
+    private void showNumberDialog(String productName, int quantity, int position, TextView tvQuantity, TextView tvAmount, boolean isEdit, List<ProductData> lstProductBySubMenu, int productPosition) {
         LayoutInflater reg = LayoutInflater.from(context);
         View v = reg.inflate(R.layout.dialog_number, null);
         android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(context);
@@ -304,9 +329,18 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         final Button btnSeven = v.findViewById(R.id.btnSeven);
         final Button btnEight = v.findViewById(R.id.btnEight);
         final Button btnNine = v.findViewById(R.id.btnNine);
+        final Button btnAdd = v.findViewById(R.id.btnAdd);
 
         tvTitle.setText(productName);
-        tvInput.setText(String.valueOf(quantity));
+
+        if (isEdit) {
+            btnAdd.setVisibility(View.GONE);
+            btnOK.setVisibility(View.VISIBLE);
+            tvInput.setText(String.valueOf(quantity));
+        } else {
+            btnAdd.setVisibility(View.VISIBLE);
+            btnOK.setVisibility(View.GONE);
+        }
 
         dialog.setCancelable(true);
         final android.app.AlertDialog alertDialog = dialog.create();
@@ -315,9 +349,9 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         btnBackspace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String value=tvInput.getText().toString();
-                if(value.length()!=0){
-                    value=value.substring(0,value.length()-1);
+                String value = tvInput.getText().toString();
+                if (value.length() != 0) {
+                    value = value.substring(0, value.length() - 1);
                     tvInput.setText(value);
                 }
             }
@@ -338,74 +372,85 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
             @Override
             public void onClick(View view) {
                 alertDialog.dismiss();
-                if (!tvInput.getText().toString().equals("0") && tvInput.getText().toString().length()!=0){
+                if (!tvInput.getText().toString().equals("0") && tvInput.getText().toString().length() != 0) {
                     editQuantity(position, tvQuantity, tvAmount, Integer.parseInt(tvInput.getText().toString()));
+                }
+            }
+        });
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!tvInput.getText().toString().equals("0") && tvInput.getText().toString().length() != 0) {
+                    alertDialog.dismiss();
+                    setSaleTran(productPosition, lstProductBySubMenu, Integer.parseInt(tvInput.getText().toString()));
+                    setSaleTranAdapter();
+                    Toast.makeText(context, getResources().getString(R.string.added), Toast.LENGTH_SHORT).show();
                 }
             }
         });
         btnZero.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setNumberValue(tvInput,0);
+                setNumberValue(tvInput, 0);
             }
         });
         btnOne.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setNumberValue(tvInput,1);
+                setNumberValue(tvInput, 1);
             }
         });
         btnTwo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setNumberValue(tvInput,2);
+                setNumberValue(tvInput, 2);
             }
         });
         btnThree.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setNumberValue(tvInput,3);
+                setNumberValue(tvInput, 3);
             }
         });
         btnFour.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setNumberValue(tvInput,4);
+                setNumberValue(tvInput, 4);
             }
         });
         btnFive.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setNumberValue(tvInput,5);
+                setNumberValue(tvInput, 5);
             }
         });
         btnSix.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setNumberValue(tvInput,6);
+                setNumberValue(tvInput, 6);
             }
         });
         btnSeven.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setNumberValue(tvInput,7);
+                setNumberValue(tvInput, 7);
             }
         });
         btnEight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setNumberValue(tvInput,8);
+                setNumberValue(tvInput, 8);
             }
         });
         btnNine.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                setNumberValue(tvInput,9);
+                setNumberValue(tvInput, 9);
             }
         });
     }
 
-    private void showSaleItemMenuDialog(String productName,int position,TextView tvPrice, TextView tvAmount, TextView tvDiscount) {
+    private void showSaleItemMenuDialog(String productName, int position, TextView tvPrice, TextView tvAmount, TextView tvDiscount) {
         LayoutInflater reg = LayoutInflater.from(context);
         View v = reg.inflate(R.layout.dialog_sale_item_menu, null);
         android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(context);
@@ -421,13 +466,13 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         final TextView tvDeleteItem = v.findViewById(R.id.tvDeleteItem);
 
         tvTitle.setText(productName);
-        if(lstSaleTran.get(position).isFOC())tvPayFOC.setVisibility(View.GONE);
+        if (lstSaleTran.get(position).isFOC()) tvPayFOC.setVisibility(View.GONE);
         else tvCancelFOC.setVisibility(View.GONE);
 
-        if(lstSaleTran.get(position).getDiscountPercent() == 0){
+        if (lstSaleTran.get(position).getDiscountPercent() == 0) {
             tvEditDiscount.setVisibility(View.GONE);
             tvRemoveDiscount.setVisibility(View.GONE);
-        }else tvPayDiscount.setVisibility(View.GONE);
+        } else tvPayDiscount.setVisibility(View.GONE);
 
         dialog.setCancelable(true);
         android.app.AlertDialog alertDialog = dialog.create();
@@ -437,7 +482,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
             @Override
             public void onClick(View v) {
                 alertDialog.dismiss();
-                showDiscountDialog(position,tvDiscount,tvAmount,false);
+                showDiscountDialog(position, tvDiscount, tvAmount, false);
             }
         });
 
@@ -445,7 +490,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
             @Override
             public void onClick(View v) {
                 alertDialog.dismiss();
-                showDiscountDialog(position,tvDiscount,tvAmount,true);
+                showDiscountDialog(position, tvDiscount, tvAmount, true);
             }
         });
 
@@ -455,7 +500,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
                 alertDialog.dismiss();
                 lstSaleTran.get(position).setDiscountPercent(0);
                 tvDiscount.setText("");
-                calculateDiscountAmount(position,0,tvAmount);
+                calculateDiscountAmount(position, 0, tvAmount);
                 calculateAmount();
             }
         });
@@ -478,13 +523,13 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
             @Override
             public void onClick(View v) {
                 alertDialog.dismiss();
-                if(lstSaleTran.get(position).isFOC()){
+                if (lstSaleTran.get(position).isFOC()) {
                     tvPrice.setText(appSetting.df.format(lstSaleTran.get(position).getDefaultSalePrice()));
                     lstSaleTran.get(position).setSalePrice(lstSaleTran.get(position).getDefaultSalePrice());
                     lstSaleTran.get(position).setDefaultSalePrice(0);
                     lstSaleTran.get(position).setFOC(false);
-                    int discountPercent=lstSaleTran.get(position).getDiscountPercent();
-                    calculateDiscountAmount(position,discountPercent,tvAmount);
+                    int discountPercent = lstSaleTran.get(position).getDiscountPercent();
+                    calculateDiscountAmount(position, discountPercent, tvAmount);
                     calculateAmount();
                 }
             }
@@ -493,11 +538,25 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         tvDeleteItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (isSaleEdit) {
+                    if (lstSaleTran.get(position).isNewInEdit()) {
+                        for (int i = 0; i < lstSaleTranLog.size(); i++) { // delete from log
+                            if (lstSaleTranLog.get(i).getRowNo() == lstSaleTran.get(position).getRowNo()) {
+                                lstSaleTranLog.remove(i);
+                                break;
+                            }
+                        }
+                    } else {
+                        lstSaleTran.get(position).setActionCode(AppConstant.Action.DeleteActionCode);
+                        lstSaleTran.get(position).setActionName(AppConstant.Action.DeleteActionName);
+                        lstSaleTranLog.add(lstSaleTran.get(position));
+                    }
+                }
                 lstSaleTran.remove(position);
-                int number=1;
-                for(int i=0;i<lstSaleTran.size();i++){
+                int number = 1;
+                for (int i = 0; i < lstSaleTran.size(); i++) {
                     lstSaleTran.get(i).setNumber(number);
-                    number+=1;
+                    number += 1;
                 }
                 setSaleTranAdapter();
                 alertDialog.dismiss();
@@ -512,7 +571,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         });
     }
 
-    private void showDiscountDialog(int position,TextView tvDiscount,TextView tvAmount,boolean isEdit) {
+    private void showDiscountDialog(int position, TextView tvDiscount, TextView tvAmount, boolean isEdit) {
         LayoutInflater reg = LayoutInflater.from(context);
         View v = reg.inflate(R.layout.dialog_discount, null);
         android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(context);
@@ -524,7 +583,8 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         final Button btnCancel = v.findViewById(R.id.btnCancel);
         final Button btnOK = v.findViewById(R.id.btnOK);
 
-        if(isEdit)etDiscount.setText(String.valueOf(lstSaleTran.get(position).getDiscountPercent()));
+        if (isEdit)
+            etDiscount.setText(String.valueOf(lstSaleTran.get(position).getDiscountPercent()));
 
         dialog.setCancelable(true);
         android.app.AlertDialog alertDialog = dialog.create();
@@ -545,18 +605,18 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         btnOK.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(etDiscount.getText().toString().length() == 0){
+                if (etDiscount.getText().toString().length() == 0) {
                     inputDiscount.setError(getResources().getString(R.string.enter_value));
                     return;
                 }
-                int discountPercent=Integer.parseInt(etDiscount.getText().toString());
-                if(validatePercent(discountPercent)){
+                int discountPercent = Integer.parseInt(etDiscount.getText().toString());
+                if (validatePercent(discountPercent)) {
                     lstSaleTran.get(position).setDiscountPercent(discountPercent);
-                    tvDiscount.setText(discountPercent+"%");
-                    calculateDiscountAmount(position,discountPercent,tvAmount);
+                    tvDiscount.setText(discountPercent + "%");
+                    calculateDiscountAmount(position, discountPercent, tvAmount);
                     calculateAmount();
                     alertDialog.dismiss();
-                }else{
+                } else {
                     inputDiscount.setError(getResources().getString(R.string.enter_valid_value));
                 }
             }
@@ -605,7 +665,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         expList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView expandableListView, View view, int groupPosition, int childPosition, long l) {
-                List<ProductData> list=new ArrayList<>();
+                List<ProductData> list = new ArrayList<>();
 
                 int subMenuId = lstSubMenu.get(groupPosition).getSubMenuID();
                 for (int i = 0; i < lstProduct.size(); i++) {
@@ -614,16 +674,17 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
                     }
                 }
 
-                setSaleTran(childPosition,list);
+                showNumberDialog(list.get(childPosition).getProductName(), 0, 0, null, null, false, list, childPosition);
+                /*setSaleTran(childPosition,list);
                 setSaleTranAdapter();
-                Toast.makeText(context, getResources().getString(R.string.added), Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, getResources().getString(R.string.added), Toast.LENGTH_SHORT).show();*/
                 //if(productMenuDialog!=null)productMenuDialog.dismiss();
                 return false;
             }
         });
     }
 
-    private void showProductInfoDialog(String keyword,List<ProductData> lstProduct) {
+    private void showProductInfoDialog(String keyword, List<ProductData> lstProduct) {
         ListItemProductInfoAdapter listItemProductInfoAdapter;
         LayoutInflater reg = LayoutInflater.from(context);
         View v = reg.inflate(R.layout.dialog_product_info, null);
@@ -634,9 +695,9 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         final RecyclerView rvProduct = v.findViewById(R.id.rvProduct);
         final TextView tvKeyword = v.findViewById(R.id.tvKeyword);
 
-        tvKeyword.setText(getResources().getString(R.string.start_keyword)+keyword);
+        tvKeyword.setText(getResources().getString(R.string.start_keyword) + keyword);
 
-        listItemProductInfoAdapter=new ListItemProductInfoAdapter(lstProduct,context);
+        listItemProductInfoAdapter = new ListItemProductInfoAdapter(lstProduct, context);
         rvProduct.setAdapter(listItemProductInfoAdapter);
         rvProduct.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
         listItemProductInfoAdapter.setOnListener(this);
@@ -653,9 +714,9 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         });
     }
 
-    private void setNumberValue(TextView textView,int inputValue) {
+    private void setNumberValue(TextView textView, int inputValue) {
         String value = textView.getText().toString();
-        if(value.startsWith("0"))value="";
+        if (value.startsWith("0")) value = "";
         value += inputValue;
         textView.setText(value);
     }
@@ -681,18 +742,25 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         expList.setAdapter(expListAdapter);
     }
 
-    private void setSaleTran(int position, List<ProductData> list) {
+    private void setSaleTran(int position, List<ProductData> list, int quantity) {
         SaleTranData data = new SaleTranData();
+        data.setRowNo(++rowNo);
         data.setNumber(lstSaleTran.size() + 1);
         data.setProductID(list.get(position).getProductID());
         data.setProductName(list.get(position).getProductName());
         data.setSalePrice(list.get(position).getSalePrice());
-        data.setQuantity(1);
-        data.setAmount(list.get(position).getSalePrice());
+        data.setQuantity(quantity);
+        data.setAmount(list.get(position).getSalePrice() * quantity);
+        if (isSaleEdit) {
+            data.setNewInEdit(true);
+            data.setActionCode(AppConstant.Action.NewActionCode);
+            data.setActionName(AppConstant.Action.NewActionName);
+            lstSaleTranLog.add(data);
+        }
         lstSaleTran.add(data);
     }
 
-    private void setSaleTranAdapter(){
+    private void setSaleTranAdapter() {
         while (rvItemSale.getItemDecorationCount() > 0) {
             rvItemSale.removeItemDecorationAt(0);
         }
@@ -705,31 +773,55 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         calculateAmount();
     }
 
-    private void editQuantity(int position,TextView tvQuantity, TextView tvAmount,int quantity){
+    private void editQuantity(int position, TextView tvQuantity, TextView tvAmount, int quantity) {
+        if (lstSaleTran.get(position).getQuantity() == quantity) return;
+
+        int originalQuantity = 0;
+        if (isSaleEdit && !lstSaleTran.get(position).isNewInEdit()) {
+            originalQuantity = lstSaleTran.get(position).getQuantity();
+        }
+
         tvQuantity.setText(String.valueOf(quantity));
         lstSaleTran.get(position).setQuantity(quantity);
-        int discountPercent=lstSaleTran.get(position).getDiscountPercent();
-        calculateDiscountAmount(position,discountPercent,tvAmount);
+        int discountPercent = lstSaleTran.get(position).getDiscountPercent();
+        calculateDiscountAmount(position, discountPercent, tvAmount);
         calculateAmount();
+
+        if (isSaleEdit && !lstSaleTran.get(position).isNewInEdit()) {
+            boolean isExistingInLog = false;
+            for (int i = 0; i < lstSaleTranLog.size(); i++) {
+                if (lstSaleTranLog.get(i).getRowNo() == lstSaleTran.get(position).getRowNo()) { // again edit
+                    lstSaleTranLog.get(i).setQuantity(quantity);
+                    isExistingInLog = true;
+                    break;
+                }
+            }
+            if (!isExistingInLog) {
+                lstSaleTran.get(position).setOrginalQuantity(originalQuantity);
+                lstSaleTran.get(position).setActionCode(AppConstant.Action.EditActionCode);
+                lstSaleTran.get(position).setActionName(AppConstant.Action.EditActionName);
+                lstSaleTranLog.add(lstSaleTran.get(position));
+            }
+        }
     }
 
-    private void calculateDiscountAmount(int position,int discountPercent,TextView tvAmount){
-        int salePrice=lstSaleTran.get(position).getSalePrice();
-        int quantity=lstSaleTran.get(position).getQuantity();
-        int discountAmount=((salePrice*quantity)*discountPercent)/100;
-        int amount=(quantity*salePrice)-discountAmount;
+    private void calculateDiscountAmount(int position, int discountPercent, TextView tvAmount) {
+        int salePrice = lstSaleTran.get(position).getSalePrice();
+        int quantity = lstSaleTran.get(position).getQuantity();
+        int discountAmount = ((salePrice * quantity) * discountPercent) / 100;
+        int amount = (quantity * salePrice) - discountAmount;
         lstSaleTran.get(position).setDiscount(discountAmount);
         lstSaleTran.get(position).setAmount(amount);
         tvAmount.setText(appSetting.df.format(amount));
     }
 
     private void calculateAmount() {
-        subtotal=0;
+        subtotal = 0;
         for (int i = 0; i < lstSaleTran.size(); i++) {
             subtotal += lstSaleTran.get(i).getAmount();
         }
-        taxAmount = (subtotal * tax) / 100;
         chargesAmount = (subtotal * charges) / 100;
+        taxAmount = ((subtotal + chargesAmount) * tax) / 100;
         total = subtotal + taxAmount + chargesAmount;
         tvTax.setText(appSetting.df.format(taxAmount));
         tvCharges.setText(appSetting.df.format(chargesAmount));
@@ -737,7 +829,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         tvTotal.setText(appSetting.df.format(total));
     }
 
-    private void setMainMenu(Spinner spMainMenu){
+    private void setMainMenu(Spinner spMainMenu) {
         String[] mainMenus = new String[lstMainMenu.size()];
         for (int i = 0; i < lstMainMenu.size(); i++) {
             mainMenus[i] = lstMainMenu.get(i).getMainMenuName();
@@ -756,14 +848,14 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
     }
 
     private void getSubMenuByMainMenu(int mainMenuId) {
-        lstSubMenu=db.getSubMenuByMainMenu(mainMenuId);
+        lstSubMenu = db.getSubMenuByMainMenu(mainMenuId);
         if (lstSubMenu.size() != 0) {
-            String subMenuIdList="";
-            for(int i=0;i<lstSubMenu.size();i++){
-                subMenuIdList+=lstSubMenu.get(i).getSubMenuID()+",";
+            String subMenuIdList = "";
+            for (int i = 0; i < lstSubMenu.size(); i++) {
+                subMenuIdList += lstSubMenu.get(i).getSubMenuID() + ",";
             }
-            if(subMenuIdList.length()!=0){
-                subMenuIdList=subMenuIdList.substring(0,subMenuIdList.length()-1);
+            if (subMenuIdList.length() != 0) {
+                subMenuIdList = subMenuIdList.substring(0, subMenuIdList.length() - 1);
             }
             getProductBySubMenuList(subMenuIdList);
         } else {
@@ -773,43 +865,43 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
     }
 
     private void getProductBySubMenuList(String subMenuIdList) {
-        lstProduct=db.getProductBySubMenuList(subMenuIdList);
+        lstProduct = db.getProductBySubMenuList(subMenuIdList);
         setDataToExpList(expList);
     }
 
-    private void getTaxServiceCharges(){
-        CompanySettingData data=db.getTaxServiceCharges();
-        if(data!=null){
-            tax=data.getTax();
-            charges =data.getServiceCharges();
+    private void getTaxServiceCharges() {
+        CompanySettingData data = db.getTaxServiceCharges();
+        if (data != null) {
+            tax = data.getTax();
+            charges = data.getServiceCharges();
         }
     }
 
     private void searchProductByValue(String value) {
         progressDialog.show();
         progressDialog.setMessage(getResources().getString(R.string.loading));
-        List<ProductData> list=db.searchProductByValue(value);
+        List<ProductData> list = db.searchProductByValue(value);
         progressDialog.dismiss();
         if (list.size() == 0)
             Toast.makeText(context, getResources().getString(R.string.product_not_found_by_value), Toast.LENGTH_LONG).show();
         else if (list.size() > 1)
             showProductInfoDialog(value, list);
-        else if (list.size() == 1){
-            setSaleTran(0, list);
+        else if (list.size() == 1) {
+            setSaleTran(0, list, 1);
             setSaleTranAdapter();
         }
     }
 
-    private void setLayoutResource(){
-        btnPay=findViewById(R.id.btnPay);
-        rvItemSale =findViewById(R.id.rvItemSale);
-        etSearch=findViewById(R.id.etSearch);
-        btnAllProduct=findViewById(R.id.btnAllProduct);
-        tvTax=findViewById(R.id.tvTax);
-        tvCharges=findViewById(R.id.tvCharges);
-        tvSubtotal=findViewById(R.id.tvSubtotal);
-        tvTotal=findViewById(R.id.tvTotal);
-        btnRemove=findViewById(R.id.btnRemove);
+    private void setLayoutResource() {
+        btnPay = findViewById(R.id.btnPay);
+        rvItemSale = findViewById(R.id.rvItemSale);
+        etSearch = findViewById(R.id.etSearch);
+        btnAllProduct = findViewById(R.id.btnAllProduct);
+        tvTax = findViewById(R.id.tvTax);
+        tvCharges = findViewById(R.id.tvCharges);
+        tvSubtotal = findViewById(R.id.tvSubtotal);
+        tvTotal = findViewById(R.id.tvTotal);
+        btnRemove = findViewById(R.id.btnRemove);
     }
 
     private void loadData() {
@@ -825,7 +917,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
 
         Observable<Boolean> result = io.reactivex.Observable.zip(obLocation.subscribeOn(Schedulers.io()),
                 obPayment.subscribeOn(Schedulers.io()), obPaymentMethod.subscribeOn(Schedulers.io()), obBankPayment.subscribeOn(Schedulers.io()),
-                obLimitedDay.subscribeOn(Schedulers.io()), obVoucherSetting.subscribeOn(Schedulers.io()),obStaff.subscribeOn(Schedulers.io()),
+                obLimitedDay.subscribeOn(Schedulers.io()), obVoucherSetting.subscribeOn(Schedulers.io()), obStaff.subscribeOn(Schedulers.io()),
                 new Function7<List<LocationData>, List<PaymentData>, List<PaymentMethodData>, List<BankPaymentData>, List<LimitedDayData>, List<VoucherSettingData>, List<StaffData>, Boolean>() {
                     @NonNull
                     @Override
@@ -856,7 +948,7 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
             @Override
             public void onError(@NonNull Throwable e) {
                 progressDialog.dismiss();
-                Toast.makeText(context,e.getMessage(),Toast.LENGTH_LONG).show();
+                Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -864,5 +956,44 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
                 Log.i("SaleActivity", "complete");
             }
         });
+    }
+
+    private void getTranSaleBySaleID(int saleId) {
+        progressDialog.show();
+        progressDialog.setMessage(getResources().getString(R.string.get_edit_data));
+        Api.getClient().getTranSaleBySaleID(saleId).enqueue(new Callback<List<SaleTranData>>() {
+            @Override
+            public void onResponse(Call<List<SaleTranData>> call, Response<List<SaleTranData>> response) {
+                if (response.body() == null) {
+                    Toast.makeText(context, response.message(), Toast.LENGTH_LONG).show();
+                    return;
+                }
+                setSaleTranEditData(response.body());
+                setSaleTranAdapter();
+            }
+
+            @Override
+            public void onFailure(Call<List<SaleTranData>> call, Throwable t) {
+                Toast.makeText(context, t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void setSaleTranEditData(List<SaleTranData> list) {
+        SaleTranData data;
+        for (int i = 0; i < list.size(); i++) {
+            data = new SaleTranData();
+            data.setRowNo(++rowNo);
+            data.setNumber(i + 1);
+            data.setProductID(list.get(i).getProductID());
+            data.setProductName(list.get(i).getProductName());
+            data.setSalePrice(list.get(i).getSalePrice());
+            data.setQuantity(list.get(i).getQuantity());
+            data.setAmount(list.get(i).getAmount());
+            data.setDiscountPercent(list.get(i).getDiscountPercent());
+            data.setDiscount(list.get(i).getDiscount());
+            data.setFOC(list.get(i).isFOC());
+            lstSaleTran.add(data);
+        }
     }
 }

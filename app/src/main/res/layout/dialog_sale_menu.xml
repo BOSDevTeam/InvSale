@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+    <LinearLayout style="@style/DialogLayout"
+        android:gravity="center">
+
+        <TextView android:id="@+id/tvTitle"
+            style="@style/DialogTitle" />
+
+        <ImageButton android:id="@+id/btnClose"
+            style="@style/DialogClose"/>
+
+    </LinearLayout>
+
+    <View style="@style/Divider"/>
+
+    <LinearLayout style="@style/DialogLayout"
+        android:orientation="vertical">
+
+        <TextView android:id="@+id/tvEdit"
+            android:text="@string/edit"
+            android:drawableLeft="@drawable/ic_edit_24"
+            style="@style/SaleItemMenuTextView"
+            android:drawableTint="@color/primary_500"
+            android:background="@drawable/border_bottom"/>
+
+        <TextView android:id="@+id/tvDelete"
+            android:text="@string/delete"
+            android:drawableLeft="@drawable/ic_clear_24"
+            style="@style/SaleItemMenuTextView"
+            android:drawableTint="@color/red"
+            android:background="@drawable/border_bottom"/>
+
+        <TextView android:id="@+id/tvReprint"
+            android:text="@string/reprint"
+            android:drawableLeft="@drawable/ic_print_24"
+            style="@style/SaleItemMenuTextView"
+            android:drawableTint="@color/black_soft"
+            android:background="@drawable/border_bottom"/>
+
+    </LinearLayout>
+
+</LinearLayout>

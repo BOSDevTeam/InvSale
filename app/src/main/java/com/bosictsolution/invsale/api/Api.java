@@ -13,8 +13,8 @@ public class Api {
 
     public static ApiInterface getClient() {  // this is manual dependency injection
 
-//        String BASE_URL = "http://192.168.100.11/InventoryWebService/api/";
-        String BASE_URL = "http://bosasp-001-site18.gtempurl.com/api/";
+        String BASE_URL = "http://192.168.100.11/InventoryWebService/api/";
+//        String BASE_URL = "http://bosasp-001-site18.gtempurl.com/api/";
 //        String BASE_URL = "genius hosting";
 //        String BASE_URL = "http://bosasp-001-site23.gtempurl.com/api/"; // spicy house
 
