@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.bosictsolution.invsale.data.BankPaymentData;
+import com.bosictsolution.invsale.data.ClientAccessSettingData;
 import com.bosictsolution.invsale.data.CompanySettingData;
 import com.bosictsolution.invsale.data.LimitedDayData;
 import com.bosictsolution.invsale.data.LocationData;
@@ -370,6 +371,7 @@ public class DatabaseAccess {
             cv.put("HomeCurrency",data.getHomeCurrency());
             cv.put("IsClientPhoneVerify",data.getIsClientPhoneVerify());
             cv.put("ShopTypeCode",data.getShopTypeCode());
+            cv.put("AccessPasswordClientApp",data.getAccessPasswordClientApp());
             database.insert("CompanySettingTemp", null, cv);
         }
         return true;
@@ -407,6 +409,35 @@ public class DatabaseAccess {
         if (cur.moveToFirst())
             shopTypeCode = cur.getString(0);
         return shopTypeCode;
+    }
+    public String getAccessPasswordClientApp() {
+        database = openHelper.getReadableDatabase();
+        String accessPasswordClientApp = "";
+        Cursor cur = database.rawQuery("SELECT AccessPasswordClientApp FROM CompanySettingTemp", null);
+        if (cur.moveToFirst())
+            accessPasswordClientApp = cur.getString(0);
+        return accessPasswordClientApp;
+    }
+    public boolean insertClientAccessSetting(ClientAccessSettingData data) {
+        deleteClientAccessSetting();
+        database = openHelper.getWritableDatabase();
+        if (data != null) {
+            ContentValues cv = new ContentValues();
+            cv.put("IsEditAccessClientApp", data.isEditAccessClientApp());
+            cv.put("IsDeleteAccessClientApp", data.isDeleteAccessClientApp());
+            database.insert("ClientAccessSetting", null, cv);
+        }
+        return true;
+    }
+    public ClientAccessSettingData getClientAccessSetting() {
+        database = openHelper.getReadableDatabase();
+        ClientAccessSettingData data=new ClientAccessSettingData();
+        Cursor cur = database.rawQuery("SELECT IsEditAccessClientApp,IsDeleteAccessClientApp FROM ClientAccessSetting", null);
+        if (cur.moveToFirst()) {
+            data.setEditAccessClientApp(cur.getShort(0));
+            data.setDeleteAccessClientApp(cur.getShort(1));
+        }
+        return data;
     }
     public boolean insertLocation(List<LocationData> list){
         deleteLocation();
@@ -807,6 +838,11 @@ public class DatabaseAccess {
     public boolean deleteBluetoothPrinter(){
         database=openHelper.getWritableDatabase();
         database.execSQL("DELETE FROM BluetoothPrinter");
+        return true;
+    }
+    private boolean deleteClientAccessSetting(){
+        database=openHelper.getWritableDatabase();
+        database.execSQL("DELETE FROM ClientAccessSetting");
         return true;
     }
 }

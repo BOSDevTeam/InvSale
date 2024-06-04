@@ -6,7 +6,7 @@ import androidx.lifecycle.Observer;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Function3;
+import io.reactivex.functions.Function5;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -29,8 +29,10 @@ import com.bosictsolution.invsale.common.AppSetting;
 import com.bosictsolution.invsale.common.Confirmation;
 import com.bosictsolution.invsale.common.ConnectionLiveData;
 import com.bosictsolution.invsale.common.DatabaseAccess;
+import com.bosictsolution.invsale.data.ClientAccessSettingData;
 import com.bosictsolution.invsale.data.ClientData;
 import com.bosictsolution.invsale.data.ConnectionData;
+import com.bosictsolution.invsale.data.LocationData;
 import com.bosictsolution.invsale.data.MainMenuData;
 import com.bosictsolution.invsale.data.ProductData;
 import com.bosictsolution.invsale.data.SubMenuData;
@@ -175,7 +177,7 @@ public class LoginActivity extends AppCompatActivity implements IConfirmation {
                 SharedPreferences.Editor editor = sharedpreferences.edit();
                 editor.putString(AppConstant.CLIENT_PASSWORD, newPassword);
                 editor.commit();
-                loadData();
+                loadData(clientId);
             }
 
             @Override
@@ -255,22 +257,24 @@ public class LoginActivity extends AppCompatActivity implements IConfirmation {
         tvCode4=findViewById(R.id.tvCode4);
     }
 
-    private void loadData() {
+    private void loadData(int clientId) {
         progressDialog.show();
         progressDialog.setMessage(getResources().getString(R.string.data_loading));
         Observable<List<MainMenuData>> obMainMenu = Api.getClient().getMainMenu();
         Observable<List<SubMenuData>> obSubMenu = Api.getClient().getSubMenu();
         Observable<List<ProductData>> obProduct = Api.getClient().getProduct();
+        Observable<ClientAccessSettingData> obClientAccessSetting = Api.getClient().getAccessClientApp(clientId);
+        Observable<List<LocationData>> obLocation = Api.getClient().getLocation();
 
-        Observable<Boolean> result = io.reactivex.Observable.zip(
-                obMainMenu.subscribeOn(Schedulers.io()), obSubMenu.subscribeOn(Schedulers.io()), obProduct.subscribeOn(Schedulers.io()),
-                new Function3<List<MainMenuData>, List<SubMenuData>, List<ProductData>, Boolean>() {
-                    @NonNull
+        Observable<Boolean> result=io.reactivex.Observable.zip(obMainMenu.subscribeOn(Schedulers.io()), obSubMenu.subscribeOn(Schedulers.io()), obProduct.subscribeOn(Schedulers.io()), obClientAccessSetting.subscribeOn(Schedulers.io()),obLocation.subscribeOn(Schedulers.io()),
+                new Function5<List<MainMenuData>, List<SubMenuData>, List<ProductData>, ClientAccessSettingData,List<LocationData>, Boolean>() {
                     @Override
-                    public Boolean apply(@NonNull List<MainMenuData> mainMenuData, @NonNull List<SubMenuData> subMenuData, @NonNull List<ProductData> productData) throws Exception {
+                    public Boolean apply(List<MainMenuData> mainMenuData, List<SubMenuData> subMenuData, List<ProductData> productData, ClientAccessSettingData clientAccessSettingData,List<LocationData> locationData) throws Exception {
                         db.insertMainMenu(mainMenuData);
                         db.insertSubMenu(subMenuData);
                         db.insertProduct(productData);
+                        db.insertClientAccessSetting(clientAccessSettingData);
+                        db.insertLocation(locationData);
                         progressDialog.dismiss();
                         return true;
                     }
@@ -318,7 +322,7 @@ public class LoginActivity extends AppCompatActivity implements IConfirmation {
                     confirmation.showConfirmDialog(LoginActivity.this, getResources().getString(R.string.invalid_user_message),getResources().getString(R.string.invalid_user));
                 } else {
                     String inputPassword = tvCode1.getText().toString() + tvCode2.getText().toString() + tvCode3.getText().toString() + tvCode4.getText().toString();
-                    if (clientPassword.equals(inputPassword)) loadData();
+                    if (clientPassword.equals(inputPassword)) loadData(data.getClientID());
                     else
                         Toast.makeText(context, getResources().getString(R.string.incorrect_password), Toast.LENGTH_LONG).show();
                 }

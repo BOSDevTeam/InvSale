@@ -30,4 +30,15 @@
     <View style="@style/Divider"
         android:visibility="gone"/>
 
+    <TextView android:id="@+id/tvLocationSetting"
+        style="@style/DefaultTextView"
+        android:text="@string/location_setting"
+        android:drawableLeft="@drawable/ic_home_filled_24"
+        android:drawablePadding="10dp"
+        android:drawableTint="@color/primary_700"
+        android:background="@drawable/btn_transparent"
+        android:padding="20dp"/>
+
+    <View style="@style/Divider" />
+
 </LinearLayout>

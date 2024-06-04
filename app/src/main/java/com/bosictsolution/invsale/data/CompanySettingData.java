@@ -16,6 +16,16 @@ public class CompanySettingData {
     private String HomeCurrency;
     private String ShopTypeCode;
 
+    public String getAccessPasswordClientApp() {
+        return AccessPasswordClientApp;
+    }
+
+    public void setAccessPasswordClientApp(String accessPasswordClientApp) {
+        AccessPasswordClientApp = accessPasswordClientApp;
+    }
+
+    private String AccessPasswordClientApp;
+
     public int getTax() {
         return Tax;
     }

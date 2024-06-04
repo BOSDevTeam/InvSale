@@ -223,5 +223,10 @@
     <string name="deleted">Deleted</string>
     <string name="no_delete_by_outstanding">Not allow to delete! This voucher has payments in outstanding!</string>
     <string name="paid_amount_validate_msg">Paid Amount is less than Grandtotal!</string>
+    <string name="enter_access_password">Enter Access Password</string>
+    <string name="password">Password</string>
+    <string name="location_setting">Location Setting</string>
+    <string name="selected">Selected</string>
+    <string name="select_default_location">Select a default location</string>
 
 </resources>

@@ -1,6 +1,7 @@
 package com.bosictsolution.invsale.api;
 
 import com.bosictsolution.invsale.data.BankPaymentData;
+import com.bosictsolution.invsale.data.ClientAccessSettingData;
 import com.bosictsolution.invsale.data.ClientData;
 import com.bosictsolution.invsale.data.CompanySettingData;
 import com.bosictsolution.invsale.data.CustomerData;
@@ -194,4 +195,7 @@ public interface ApiInterface {
 
     @GET("sale/GetSaleBySaleID")
     Call<List<SaleMasterData>> getSaleBySaleID(@Query("saleId") int saleId);
+
+    @GET("client/GetAccessClientApp")
+    Observable<ClientAccessSettingData> getAccessClientApp(@Query("clientId") int clientId);
 }

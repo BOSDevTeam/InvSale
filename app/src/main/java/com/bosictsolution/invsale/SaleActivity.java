@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function6;
 import io.reactivex.functions.Function7;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
@@ -907,7 +908,6 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
     private void loadData() {
         progressDialog.show();
         progressDialog.setMessage(getResources().getString(R.string.loading));
-        Observable<List<LocationData>> obLocation = Api.getClient().getLocation();
         Observable<List<PaymentData>> obPayment = Api.getClient().getPayment();
         Observable<List<PaymentMethodData>> obPaymentMethod = Api.getClient().getPaymentMethod();
         Observable<List<BankPaymentData>> obBankPayment = Api.getClient().getBankPayment();
@@ -915,14 +915,13 @@ public class SaleActivity extends AppCompatActivity implements ListItemSaleListe
         Observable<List<VoucherSettingData>> obVoucherSetting = Api.getClient().getVoucherSetting();
         Observable<List<StaffData>> obStaff = Api.getClient().getStaff();
 
-        Observable<Boolean> result = io.reactivex.Observable.zip(obLocation.subscribeOn(Schedulers.io()),
+        Observable<Boolean> result = io.reactivex.Observable.zip(
                 obPayment.subscribeOn(Schedulers.io()), obPaymentMethod.subscribeOn(Schedulers.io()), obBankPayment.subscribeOn(Schedulers.io()),
                 obLimitedDay.subscribeOn(Schedulers.io()), obVoucherSetting.subscribeOn(Schedulers.io()), obStaff.subscribeOn(Schedulers.io()),
-                new Function7<List<LocationData>, List<PaymentData>, List<PaymentMethodData>, List<BankPaymentData>, List<LimitedDayData>, List<VoucherSettingData>, List<StaffData>, Boolean>() {
+                new Function6<List<PaymentData>, List<PaymentMethodData>, List<BankPaymentData>, List<LimitedDayData>, List<VoucherSettingData>, List<StaffData>, Boolean>() {
                     @NonNull
                     @Override
-                    public Boolean apply(@NonNull List<LocationData> locationData, @NonNull List<PaymentData> paymentData, @NonNull List<PaymentMethodData> paymentMethodData, @NonNull List<BankPaymentData> bankPaymentData, @NonNull List<LimitedDayData> limitedDayData, @NonNull List<VoucherSettingData> voucherSettingData, @NonNull List<StaffData> staffData) throws Exception {
-                        db.insertLocation(locationData);
+                    public Boolean apply( @NonNull List<PaymentData> paymentData, @NonNull List<PaymentMethodData> paymentMethodData, @NonNull List<BankPaymentData> bankPaymentData, @NonNull List<LimitedDayData> limitedDayData, @NonNull List<VoucherSettingData> voucherSettingData, @NonNull List<StaffData> staffData) throws Exception {
                         db.insertPayment(paymentData);
                         db.insertPaymentMethod(paymentMethodData);
                         db.insertBankPayment(bankPaymentData);

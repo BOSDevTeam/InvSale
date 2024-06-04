@@ -168,7 +168,7 @@ public class SaleBillActivity extends AppCompatActivity {
     }
 
     private void setVoucherSetting(VoucherSettingData data) {
-        if (data.getHeaderName().length() != 0) tvTitle1.setText(data.getHeaderName());
+        if (data.getHeaderName() != null && data.getHeaderName().length() != 0) tvTitle1.setText(data.getHeaderName());
         else tvTitle1.setVisibility(View.GONE);
        /* if (data.getHeaderDesp().length() != 0) tvTitle2.setText(data.getHeaderDesp());
         else tvTitle2.setVisibility(View.GONE);
@@ -176,18 +176,18 @@ public class SaleBillActivity extends AppCompatActivity {
         else tvTitle3.setVisibility(View.GONE);
         if (data.getHeaderAddress().length() != 0) tvTitle4.setText(data.getHeaderAddress());
         else tvTitle4.setVisibility(View.GONE);*/
-        if (data.getOtherHeader1().length() != 0) tvTitle5.setText(data.getOtherHeader1());
+        if (data.getOtherHeader1() != null && data.getOtherHeader1().length() != 0) tvTitle5.setText(data.getOtherHeader1());
         else tvTitle5.setVisibility(View.GONE);
-        if (data.getOtherHeader2().length() != 0) tvTitle6.setText(data.getOtherHeader2());
+        if (data.getOtherHeader2() != null && data.getOtherHeader2().length() != 0) tvTitle6.setText(data.getOtherHeader2());
         else tvTitle6.setVisibility(View.GONE);
-        if (data.getFooterMessage1().length() != 0) tvMessage1.setText(data.getFooterMessage1());
+        if (data.getFooterMessage1() != null && data.getFooterMessage1().length() != 0) tvMessage1.setText(data.getFooterMessage1());
         else tvMessage1.setVisibility(View.GONE);
-        if (data.getFooterMessage2().length() != 0) tvMessage2.setText(data.getFooterMessage2());
+        if (data.getFooterMessage2() != null && data.getFooterMessage2().length() != 0) tvMessage2.setText(data.getFooterMessage2());
         else tvMessage2.setVisibility(View.GONE);
-        if (data.getFooterMessage3().length() != 0) tvMessage3.setText(data.getFooterMessage3());
+        if (data.getFooterMessage3() != null && data.getFooterMessage3().length() != 0) tvMessage3.setText(data.getFooterMessage3());
         else tvMessage3.setVisibility(View.GONE);
 
-        if (data.getVoucherLogoUrl().length() != 0)
+        if (data.getVoucherLogoUrl() != null && data.getVoucherLogoUrl().length() != 0)
             Picasso.with(context).load(data.getVoucherLogoUrl()).into(imgLogo);
         else imgLogo.setVisibility(View.GONE);
     }

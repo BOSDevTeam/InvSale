@@ -76,7 +76,8 @@ public class PayDetailActivity extends AppCompatActivity {
     private Context context = this;
     int voucherDiscountType, discountPercentType = 1, discountAmountType = 2, total,
             subtotal, taxAmount, chargesAmount, clientId, tax, charges, selectedCustomerPosition, selectedCustomerId,
-            editSaleID, editSlipID,paymentSpinnerSelected=0,payMethodSpinnerSelected=0,paymentCount=1,payMethodCount=1;
+            editSaleID, editSlipID,paymentSpinnerSelected=0,payMethodSpinnerSelected=0,paymentCount=1,payMethodCount=1,
+            defaultLocationId,editLocationId;
     AppSetting appSetting = new AppSetting();
     DatabaseAccess db;
     SharedPreferences sharedpreferences;
@@ -410,8 +411,16 @@ public class PayDetailActivity extends AppCompatActivity {
         if (isDefaultCustomer) customerId = 0;
         else customerId = selectedCustomerId;
 
-        position = spLocation.getSelectedItemPosition();
-        locationId = lstLocation.get(position).getLocationID();
+        if(!isSaleEdit){
+            if (defaultLocationId == 0) {
+                position = spLocation.getSelectedItemPosition();
+                locationId = lstLocation.get(position).getLocationID();
+            } else {
+                locationId = defaultLocationId;
+            }
+        }else{
+            locationId=editLocationId;
+        }
 
         if (shopTypeCode.equals(AppConstant.ShopType.BeautyAndHairStyleShop)) {
             if (lstStaff.size() != 0) {
@@ -627,10 +636,22 @@ public class PayDetailActivity extends AppCompatActivity {
     }
 
     private void setLocation() {
-        String[] locations = new String[lstLocation.size()];
-        for (int i = 0; i < lstLocation.size(); i++) {
-            locations[i] = lstLocation.get(i).getShortName();
+        String[] locations= new String[1];
+
+        defaultLocationId = sharedpreferences.getInt(AppConstant.LOCATION_ID, 0);
+        if (defaultLocationId != 0) {
+            for (int i = 0; i < lstLocation.size(); i++) {
+                if (lstLocation.get(i).getLocationID() == defaultLocationId) {
+                    locations[0] = lstLocation.get(i).getShortName();
+                    break;
+                }
+            }
+        } else {
+            if(lstLocation.size() != 0){
+                locations[0] = lstLocation.get(0).getShortName();
+            }
         }
+        
         ArrayAdapter adapter = new ArrayAdapter(context, R.layout.spinner_item, locations);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spLocation.setAdapter(adapter);
@@ -712,7 +733,7 @@ public class PayDetailActivity extends AppCompatActivity {
 
     private void getLocation() {
         lstLocation = db.getLocation();
-        Collections.reverse(lstLocation);
+        //Collections.reverse(lstLocation);
         setLocation();
     }
 
@@ -806,12 +827,25 @@ public class PayDetailActivity extends AppCompatActivity {
             }
         }
 
-        for (int i = 0; i < lstLocation.size(); i++) {
+       /* for (int i = 0; i < lstLocation.size(); i++) {
             if (lstLocation.get(i).getLocationID() == list.get(0).getLocationID()) {
                 spLocation.setSelection(i);
                 break;
             }
+        }*/
+
+        String[] locations= new String[1];
+        editLocationId = list.get(0).getLocationID();
+        for (int i = 0; i < lstLocation.size(); i++) {
+            if (lstLocation.get(i).getLocationID() == editLocationId) {
+                locations[0] = lstLocation.get(i).getShortName();
+                break;
+            }
         }
+        ArrayAdapter adapter = new ArrayAdapter(context, R.layout.spinner_item, locations);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spLocation.setAdapter(adapter);
+        spLocation.setEnabled(false);
 
         for (int i = 0; i < lstPayment.size(); i++) {
             if (lstPayment.get(i).getPaymentID() == list.get(0).getPaymentID()) {

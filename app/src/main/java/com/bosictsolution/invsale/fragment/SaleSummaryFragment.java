@@ -21,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,9 +35,11 @@ import com.bosictsolution.invsale.common.AppConstant;
 import com.bosictsolution.invsale.common.AppSetting;
 import com.bosictsolution.invsale.common.DatabaseAccess;
 import com.bosictsolution.invsale.common.DateFilter;
+import com.bosictsolution.invsale.data.ClientAccessSettingData;
 import com.bosictsolution.invsale.data.SaleMasterData;
 import com.bosictsolution.invsale.listener.ListSaleListener;
 import com.bosictsolution.invsale.ui.sale.SaleFragment;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,6 +72,7 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
     List<SaleMasterData> list = new ArrayList<>();
     DatabaseAccess db;
     DateFilter dateFilter = new DateFilter(this);
+    short isAllowEditAccess,isAllowDeleteAccess;
 
     public SaleSummaryFragment() {
         // Required empty public constructor
@@ -324,6 +328,9 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
         selectedDate = appSetting.getTodayDate();
         tvDate.setText(selectedDate);
         clientId = sharedpreferences.getInt(AppConstant.CLIENT_ID, 0);
+        ClientAccessSettingData clientAccessSettingData = db.getClientAccessSetting();
+        isAllowEditAccess= clientAccessSettingData.isEditAccessClientApp();
+        isAllowDeleteAccess=clientAccessSettingData.isDeleteAccessClientApp();
         getMasterSaleByDate();
     }
 
@@ -369,6 +376,9 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
 
         tvTitle.setText("");
 
+        if(isAllowEditAccess == 0)tvEdit.setVisibility(View.GONE);
+        if(isAllowDeleteAccess == 0)tvDelete.setVisibility(View.GONE);
+
         dialog.setCancelable(true);
         android.app.AlertDialog alertDialog = dialog.create();
         alertDialog.show();
@@ -377,17 +387,14 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
             @Override
             public void onClick(View v) {
                 alertDialog.dismiss();
-                Intent i = new Intent(getContext(), SaleActivity.class);
-                i.putExtra("IsSaleEdit", true);
-                i.putExtra("SaleID", list.get(position).getSaleID());
-                startActivity(i);
+                showPasswordDialog(true,list.get(position).getSaleID(),-1);
             }
         });
         tvDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 alertDialog.dismiss();
-                deleteSale(list.get(position).getSaleID(),position);
+                showPasswordDialog(false,list.get(position).getSaleID(),position);
             }
         });
         tvReprint.setOnClickListener(new View.OnClickListener() {
@@ -404,6 +411,58 @@ public class SaleSummaryFragment extends Fragment implements SaleFragment.onFrag
             @Override
             public void onClick(View view) {
                 alertDialog.dismiss();
+            }
+        });
+    }
+
+    private void showPasswordDialog(boolean isEdit, int saleId, int deletePosition) {
+        LayoutInflater reg = LayoutInflater.from(getContext());
+        View v = reg.inflate(R.layout.dialog_password, null);
+        android.app.AlertDialog.Builder dialog = new android.app.AlertDialog.Builder(getContext());
+        dialog.setView(v);
+
+        final ImageButton btnClose = v.findViewById(R.id.btnClose);
+        final TextInputLayout inputPassword = v.findViewById(R.id.inputPassword);
+        final EditText etPassword = v.findViewById(R.id.etPassword);
+        final Button btnCancel = v.findViewById(R.id.btnCancel);
+        final Button btnOK = v.findViewById(R.id.btnOK);
+
+        dialog.setCancelable(true);
+        android.app.AlertDialog alertDialog = dialog.create();
+        alertDialog.show();
+
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                alertDialog.dismiss();
+            }
+        });
+        btnOK.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (etPassword.getText().toString().length() == 0) {
+                    inputPassword.setError(getResources().getString(R.string.enter_value));
+                } else {
+                    if (etPassword.getText().toString().equals(db.getAccessPasswordClientApp())) {
+                        alertDialog.dismiss();
+                        if (isEdit) {
+                            Intent i = new Intent(getContext(), SaleActivity.class);
+                            i.putExtra("IsSaleEdit", true);
+                            i.putExtra("SaleID", saleId);
+                            startActivity(i);
+                        } else {
+                            deleteSale(saleId, deletePosition);
+                        }
+                    } else {
+                        inputPassword.setError(getResources().getString(R.string.incorrect_password));
+                    }
+                }
             }
         });
     }
