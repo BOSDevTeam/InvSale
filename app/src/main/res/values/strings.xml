@@ -202,4 +202,6 @@
     <string name="update_client_token">Updating Client Token...</string>
     <string name="insert_client">Inserting Client...</string>
 
+    <string name="test">test</string>
+
 </resources>
